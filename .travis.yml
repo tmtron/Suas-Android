@@ -1,0 +1,36 @@
+sudo: required
+dist: precise
+language: android
+jdk:
+- oraclejdk8
+before_cache:
+- rm -f $HOME/.gradle/caches/modules-2/modules-2.lock
+cache:
+  directories:
+  - "$HOME/.gradle/caches/"
+  - "$HOME/.gradle/wrapper/"
+android:
+  components:
+  - tools
+  - android-26
+  - platform-tools
+  - build-tools-26.0.0
+  - extra-android-m2repository
+  licenses:
+  - android-sdk-license-[0-9a-f]{8}
+  - android-sdk-preview-license-[0-9a-f]{8}
+branches:
+  only:
+  - master
+env:
+  matrix:
+  - COMPONENT=unit
+  - COMPONENT=sample
+  - COMPONENT=build
+  global:
+    # zdRepoUsername
+    - secure: "sa1bEDd6ZztBUZVAdscqyjuLzROuf+JowoQ2WrwuN6ndFerTfh77VJD56bjBhJH5DEDNgJdR/XEmkHXiUXNwseDlJPTOXPyiu0/sIhxTiJWQWWgULdGrF1El+Y5zEhqoQPCtqnQhKe5KvxPFY3k77nRgPTVu2BGeP4nPzOTBiP6ku2teqGx5EfixKUSu094xLpCDr+f7Ljki9MDhxOMOItTxUFFltz9n51ep99ueeRImfSTcUoBOsGI1eEW6N5fKqer5G5DfxpkyPYBD/Hqm2mPnv7fsRkSn+WlEsfidH5EYpAESBSZOqvEGioqY8iB8fXq5hxA25fa56Yp8qR2ea7vbkvRy9BCMQ5vCev4pgrw8FMOv2xSjWu/Gk+mKmTjcsq7EKskEBvFuC2Q30n/H6DEkeAQEYIFCyl2iaoLI4Hy/ZasaNsN93eDTF4NvYbvOghlNdAXGuBE7xElUshzLGIbv0S4MAziFF2bls0BX2/FWKlSwGtwGOnAYgvzecNA81jNVTaUIUfMLATNVSSKNB4womM7wYQorr4dDRgkiAJZPpcRw2V8myeoYgMskh4lz+HCiL5QUHyOWs14nIDnRnmNxrB9BwQvcgRDNNy3qrrd95gRDTqw+aUJjoatgqtJ9PzlxTCEI+T2GAkzE8SjuIjT3QUDMzYM+nlGasRyc/io="
+    # zdRepoPassword
+    - secure: "VqbqiM5iilJ2CEBQMfG/TuDSeqNPGQqNqaEZoTZ8PLfMg+9WuIvAYiJfppcZkCOcOJdn10qpz3LSU4NhSrgVZNLhOtb+X6y/1i/ni58kz0acaw4amUGK6Y3/mscESMXMt1QDY3r77L5ev0TnlFLiDqCFVN/9gdneunu5gVu7WwlsYsgxEsEi8FfMSvaiY9wBGF9fYiUXYmXGxzJeI+QaOZrTlBZZefNFk2HFgq6sLel+aoXDnH+fv2TLGsY78XpwJbHNYoUJMzSvC8VKFupA/367bkUmbVX4YvnO9rNEGoXDx4Rfh4efDZMUkJA9vCLmtipdDTfiUtMM2Dkq2oKO45Tye6/cJgZYUwHe3plpKBnPB12G3R8IkmCiTNInb41DkhPSjz5mZ0MSGtDoX2AJaOK8nLQT2dWsNqdimzlC+YbVH/wJgsbmhiP4tKsr8juKm2CG4bWoKLHQwPSt5H4KZ3OMmdA6gnF8Uztz1vfJjhRCXwja8byI1OGWacJeDulfs+xvjWwUDRmOrvIAmyaPX6slzvT2keMSX6PcGTBT+86zUZ6I0ThEYYac4x3qXCEhYjPq/86tKtFGNrJN9z2Dq5T2RCDAYLM0VSI2T3y/bLJj/tKlpXT4tfwSNdftELfKhQjoAn9Nf0BbfVRx5zYhYLps0yvp20Vc/fab/gbcdfU="
+script:
+- "./scripts/travis.sh"

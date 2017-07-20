@@ -1,0 +1,20 @@
+ext {
+
+    getConfigurationParameter = { keyName ->
+        return System.getenv(keyName) ?:
+                rootProject.hasProperty(keyName) ? rootProject.properties[keyName] : ''
+    }
+
+    buildingOnCi = {
+        "$System.env.CI" != "null"
+    }
+
+    useLocalDependency = {
+        if("$System.env.LOCAL_BUILD" != "null") {
+            return System.env.LOCAL_BUILD.toBoolean()
+        }
+
+        return rootProject.ext.buildSettings.localBuild
+    }
+
+}

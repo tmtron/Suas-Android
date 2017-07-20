@@ -1,4 +1,12 @@
+
+ext {
+    artifactId = 'suas'
+    packaging = 'jar'
+}
+
 apply plugin: 'java'
+apply from: '../scripts/gradle/gradle-deploy.gradle'
+apply from: '../scripts/gradle/gradle-commons.gradle'
 
 compileJava {
     sourceCompatibility = JavaVersion.VERSION_1_7
@@ -7,6 +15,5 @@ compileJava {
 
 dependencies {
     testImplementation 'junit:junit:4.12'
-    implementation 'com.android.support:support-annotations:26.0.0-beta2'
-    compileOnly group: 'com.google.android', name: 'android', version: '4.1.1.4'
+    implementation 'com.android.support:support-annotations:25.4.0'
 }
