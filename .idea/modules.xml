@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/Suas-Android.iml" filepath="$PROJECT_DIR$/Suas-Android.iml" />
+      <module fileurl="file://$PROJECT_DIR$/suas-lib/suas-lib.iml" filepath="$PROJECT_DIR$/suas-lib/suas-lib.iml" />
+      <module fileurl="file://$PROJECT_DIR$/suas-middleware/suas-middleware.iml" filepath="$PROJECT_DIR$/suas-middleware/suas-middleware.iml" />
+      <module fileurl="file://$PROJECT_DIR$/suas-sample/suas-sample.iml" filepath="$PROJECT_DIR$/suas-sample/suas-sample.iml" />
+    </modules>
+  </component>
+</project>
