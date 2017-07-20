@@ -1,3 +1,15 @@
+apply from: 'scripts/gradle/gradle-commons.gradle'
+apply from: 'scripts/gradle/gradle-repos.gradle'
+
+ext {
+    versionName = '0.1.0-SNAPSHOT'
+
+    buildSettings = [
+            localBuild : true,
+            libVersion : '0.1.0-SNAPSHOT',
+            middleWareVersion : '0.1.0-SNAPSHOT'
+    ]
+}
 
 buildscript {
     
@@ -5,18 +17,8 @@ buildscript {
         google()
         jcenter()
     }
+
     dependencies {
         classpath 'com.android.tools.build:gradle:3.0.0-alpha7'
     }
-}
-
-allprojects {
-    repositories {
-        google()
-        jcenter()
-    }
-}
-
-task clean(type: Delete) {
-    delete rootProject.buildDir
 }
