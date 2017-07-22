@@ -2,6 +2,11 @@ apply from: 'scripts/gradle/gradle-commons.gradle'
 apply from: 'scripts/gradle/gradle-repos.gradle'
 
 ext {
+    compileSdkVersion = 26
+    buildToolsVersion = '26.0.0'
+    minSdkVersion = 16
+    targetSdkVersion = 26
+
     versionName = '0.1.0-SNAPSHOT'
 
     buildSettings = [
@@ -9,6 +14,8 @@ ext {
             libVersion : '0.1.0-SNAPSHOT',
             middleWareVersion : '0.1.0-SNAPSHOT'
     ]
+
+    supportLibVersion = '26.0.0-beta2'
 }
 
 buildscript {

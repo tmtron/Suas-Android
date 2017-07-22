@@ -25,7 +25,8 @@ branches:
 env:
   matrix:
   - COMPONENT=unit
-  - COMPONENT=sample
+  - COMPONENT=sample_todo
+  - COMPONENT=sample_weather
   - COMPONENT=build
   global:
     # zdRepoUsername
