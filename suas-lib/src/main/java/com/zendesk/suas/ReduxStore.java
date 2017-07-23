@@ -192,6 +192,7 @@ public class ReduxStore implements Store {
     private void registerComponent(Listener<State> listener, Component component) {
         componentListenerMap.put(component, listener);
         listeners.add(listener);
+        listener.update(reducer.getEmptyState(), getState());
     }
 
     @Override
@@ -200,11 +201,6 @@ public class ReduxStore implements Store {
             final Listener listener = componentListenerMap.remove(component);
             removeListener(listener);
         }
-    }
-
-    @Override
-    public void updateAll() {
-        notifyListener(reducer.getEmptyState(), getState());
     }
 
     public static class Builder {

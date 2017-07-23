@@ -37,7 +37,6 @@ class LocationListActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         subscriptions.forEach { it.connect(store) }
-        store.updateAll()
     }
 
     override fun onPause() {
