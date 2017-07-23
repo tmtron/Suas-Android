@@ -1,5 +1,8 @@
 package com.zendesk.suas;
 
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.HashMap;
@@ -15,14 +18,38 @@ public class State implements Serializable {
     /**
      * Used for testing and creating a copy.
      */
-    public State(Map<String, Object> state) {
+    public State(@NonNull Map<String, Object> state) {
         this.state = Collections.unmodifiableMap(state);
     }
 
-    public Object getState(String key) {
+    @Nullable
+    public Object getState(@NonNull String key) {
         return state.get(key);
     }
 
+    @Nullable
+    public <E> E getState(@NonNull Class<E> clazz) {
+        final Object data = state.get(clazz.getSimpleName());
+        if(clazz.isInstance(data)) {
+            //noinspection unchecked
+            return (E) data;
+        } else {
+            return null;
+        }
+    }
+
+    @Nullable
+    public <E> E getState(@NonNull String key, @NonNull Class<E> clazz) {
+        final Object data = state.get(key);
+        if(clazz.isInstance(data)) {
+            //noinspection unchecked
+            return (E) data;
+        } else {
+            return null;
+        }
+    }
+
+    @NonNull
     public State copy() {
         return new State(new HashMap<>(state));
     }
@@ -30,11 +57,11 @@ public class State implements Serializable {
     /**
      * Add or update the provided scope.
      */
-    public void updateKey(String key, Object newState) {
+    void updateKey(String key, Object newState) {
         state.put(key, newState);
     }
 
-    public void updateKey(Class key, Object newState) {
+    void updateKey(Class key, Object newState) {
         state.put(key.getSimpleName(), newState);
     }
 

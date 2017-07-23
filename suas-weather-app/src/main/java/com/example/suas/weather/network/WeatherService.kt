@@ -24,8 +24,8 @@ class WeatherService(val autocomplete: AutocompleteService, val weather: Wunderg
         return AsyncMiddleware.create { dispatcher, getState ->
             dispatcher.dispatchAction(LoadWeather(location))
 
-            val observations = getState.state.getState(StateModels.LoadedObservations::class.java.simpleName) as StateModels.LoadedObservations
-            val o = observations.data[location]
+            val observations = getState.state.getState(StateModels.LoadedObservations::class.java)
+            val o = observations?.data?.get(location)
 
             if(o != null) {
                 dispatcher.dispatchAction(LoadWeatherSuccess(o, location))

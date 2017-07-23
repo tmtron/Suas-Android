@@ -20,9 +20,14 @@ class NoResultsComponent(val view: TextView) : Component<State, Boolean>, Subscr
     }
 
     override fun getSelector(): Selector<State, Boolean> = Selector {
-        val progress = it.getState(StateModels.Progress::class.java.simpleName) as StateModels.Progress
-        val locations = it.getState(StateModels.FoundLocations::class.java.simpleName) as StateModels.FoundLocations
-        progress.count == 0 && locations.query.isNotBlank() && locations.foundLocation.isEmpty()
+        val progress = it.getState(StateModels.Progress::class.java)
+        val locations = it.getState(StateModels.FoundLocations::class.java)
+
+        if(progress != null && locations != null) {
+            progress.count == 0 && locations.query.isNotBlank() && locations.foundLocation.isEmpty()
+        } else {
+            false
+        }
     }
 
     override fun disconnect(store: Store) {

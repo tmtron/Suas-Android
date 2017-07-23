@@ -4,7 +4,6 @@ import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import com.example.suas.weather.Subscription
-import com.example.suas.weather.network.NetworkModels
 import com.example.suas.weather.suas.StateModels
 import com.squareup.picasso.Picasso
 import com.zendesk.suas.Component
@@ -39,11 +38,11 @@ class WeatherComponent(val imageView: ImageView,
     }
 
     override fun getSelector(): Selector<State, WeatherComponent.Weather> = Selector { state ->
-        val selectedLocation = state.getState(StateModels.SelectedLocation::class.java.simpleName) as StateModels.SelectedLocation
-        val loadedLocation = state.getState(StateModels.LoadedObservations::class.java.simpleName) as StateModels.LoadedObservations
+        val selectedLocation = state.getState(StateModels.SelectedLocation::class.java)
+        val loadedLocation = state.getState(StateModels.LoadedObservations::class.java)
 
-        if (selectedLocation.location != null && loadedLocation.data.containsKey(selectedLocation.location)) {
-            val observation: NetworkModels.Observation = loadedLocation.data[selectedLocation.location]!!
+        val observation = selectedLocation?.location?.let { loadedLocation?.data?.get(it) }
+        if (observation != null) {
             Weather.Forecast(observation.location.full, observation.temp, observation.iconUrl, observation.weather, observation.wind, observation.precip)
         } else {
             Weather.NoForecast
