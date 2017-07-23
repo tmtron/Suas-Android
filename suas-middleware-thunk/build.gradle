@@ -1,0 +1,26 @@
+ext {
+    artifactId = 'suas-middleware-thunk'
+    packaging = 'jar'
+}
+
+apply plugin: 'java'
+apply from: '../scripts/gradle/gradle-deploy.gradle'
+apply from: '../scripts/gradle/gradle-commons.gradle'
+
+compileJava {
+    sourceCompatibility = JavaVersion.VERSION_1_7
+    targetCompatibility = JavaVersion.VERSION_1_7
+}
+
+dependencies {
+    if(useLocalDependency()) {
+        implementation project(':suas-lib')
+    } else {
+        implementation group: 'com.zendesk.suas', name: 'suas', version: rootProject.ext.buildSettings.libVersion
+    }
+
+    compileOnly group: 'com.google.android', name: 'android', version: '4.1.1.4'
+    implementation 'com.android.support:support-annotations:25.4.0'
+
+    testImplementation 'junit:junit:4.12'
+}
