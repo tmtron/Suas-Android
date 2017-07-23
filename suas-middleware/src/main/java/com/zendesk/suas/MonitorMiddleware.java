@@ -1,87 +1,55 @@
 package com.zendesk.suas;
 
 import android.content.Context;
-import android.net.LocalSocket;
-import android.net.nsd.NsdManager;
-import android.net.nsd.NsdServiceInfo;
+import android.os.Build;
 import android.support.annotation.NonNull;
 
 import com.google.gson.Gson;
-import com.zendesk.suas.monitor.LocalSocketServer;
-import com.zendesk.suas.monitor.ProcessUtil;
-import com.zendesk.suas.monitor.SocketHandler;
+import com.zendesk.suas.monitor.ConnectionHandler;
+import com.zendesk.suas.monitor.NetworkSocketServer;
+import com.zendesk.suas.monitor.UnixSocketServer;
 
 import java.io.BufferedOutputStream;
 import java.io.IOException;
-import java.net.ServerSocket;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
+import java.util.concurrent.atomic.AtomicBoolean;
 
-public class MonitorMiddleware implements Middleware, SocketHandler {
+public class MonitorMiddleware implements Middleware, ConnectionHandler {
 
-    private final LocalSocketServer localServerSocket;
-    private final Gson gson = new Gson();
+    private NetworkSocketServer network;
+    private UnixSocketServer unixSocketServer;
 
-    private final List<StateUpdate> data = new ArrayList<>();
+    private final Gson gson;
+    private final AtomicBoolean started;
+    private final List<StateUpdate> data;
     private StateUpdate lastItem = null;
 
-    public MonitorMiddleware(Context context) {
-        localServerSocket = new LocalSocketServer("main", "redux_monitor_" + ProcessUtil.getProcessName(), this);
+
+    public MonitorMiddleware(final Context context) {
+        this.gson = new Gson();
+        this.data = new ArrayList<>();
+        this.started = new AtomicBoolean(false);
+
+        final String name = String.format(Locale.US, "%s - %s", Build.MODEL, context.getPackageName().replace(".", "-"));
         new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
-                    localServerSocket.run();
+                    network = new NetworkSocketServer(name, "_redux-monitor._tcp.", MonitorMiddleware.this);
+                    unixSocketServer = new UnixSocketServer("redux_monitor_" + context.getPackageName().replace(".", "-"), MonitorMiddleware.this);
+                    network.start(context);
+                    unixSocketServer.start();
+                    started.set(true);
                 } catch (IOException e) {
+                    started.set(false);
                     e.printStackTrace();
                 }
             }
         }).start();
-        try {
-            initBonjour(context);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void initBonjour(Context context) throws IOException {
-        // Create the NsdServiceInfo object, and populate it.
-        NsdServiceInfo serviceInfo  = new NsdServiceInfo();
-
-        // The name is subject to change based on conflicts
-        // with other services advertised on the same network.
-        serviceInfo.setServiceName(ProcessUtil.getProcessName());
-        serviceInfo.setServiceType("_redux-monitor._tcp.");
-
-        ServerSocket mServerSocket = new ServerSocket(0);
-        serviceInfo.setPort(mServerSocket.getLocalPort());
-
-            // Store the chosen port.
-        final NsdManager systemService = (NsdManager)context.getSystemService(Context.NSD_SERVICE);
-        systemService.registerService(serviceInfo, NsdManager.PROTOCOL_DNS_SD, new NsdManager.RegistrationListener() {
-            @Override
-            public void onRegistrationFailed(NsdServiceInfo serviceInfo, int errorCode) {
-
-            }
-
-            @Override
-            public void onUnregistrationFailed(NsdServiceInfo serviceInfo, int errorCode) {
-
-            }
-
-            @Override
-            public void onServiceRegistered(NsdServiceInfo serviceInfo) {
-
-            }
-
-            @Override
-            public void onServiceUnregistered(NsdServiceInfo serviceInfo) {
-
-            }
-        });
-
-
-
     }
 
     @Override
@@ -90,18 +58,20 @@ public class MonitorMiddleware implements Middleware, SocketHandler {
         final State newState = state.getState();
 
         lastItem = new StateUpdate(action.getActionType(), action.getData(), newState);
-        data.add(lastItem);
+        if(started.get()) {
+            data.add(lastItem);
+        }
     }
 
     @Override
-    public void onAccepted(LocalSocket socket) throws IOException {
-        BufferedOutputStream output = new BufferedOutputStream(socket.getOutputStream());
-        if(lastItem != null) {
+    public synchronized void handle(InputStream inputStream, OutputStream outputStream) throws IOException {
+        BufferedOutputStream output = new BufferedOutputStream(outputStream);
+        if (lastItem != null) {
             writeToStream(lastItem, output);
         }
 
-        while(true) {
-            if(!data.isEmpty()) {
+        while (true) {
+            if (!data.isEmpty()) {
                 final StateUpdate remove = data.remove(0);
                 writeToStream(remove, output);
             }
@@ -125,7 +95,6 @@ public class MonitorMiddleware implements Middleware, SocketHandler {
             this.actionData = actionData;
             this.state = state;
         }
-
     }
 
 }
