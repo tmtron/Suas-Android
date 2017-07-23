@@ -1,89 +1,131 @@
 package com.zendesk.suas;
 
-public class MonitorMiddleware implements Middleware {
+import android.content.Context;
+import android.net.LocalSocket;
+import android.net.nsd.NsdManager;
+import android.net.nsd.NsdServiceInfo;
+import android.support.annotation.NonNull;
+
+import com.google.gson.Gson;
+import com.zendesk.suas.monitor.LocalSocketServer;
+import com.zendesk.suas.monitor.ProcessUtil;
+import com.zendesk.suas.monitor.SocketHandler;
+
+import java.io.BufferedOutputStream;
+import java.io.IOException;
+import java.net.ServerSocket;
+import java.util.ArrayList;
+import java.util.List;
+
+public class MonitorMiddleware implements Middleware, SocketHandler {
+
+    private final LocalSocketServer localServerSocket;
+    private final Gson gson = new Gson();
+
+    private final List<StateUpdate> data = new ArrayList<>();
+    private StateUpdate lastItem = null;
+
+    public MonitorMiddleware(Context context) {
+        localServerSocket = new LocalSocketServer("main", "redux_monitor_" + ProcessUtil.getProcessName(), this);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    localServerSocket.run();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+        try {
+            initBonjour(context);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void initBonjour(Context context) throws IOException {
+        // Create the NsdServiceInfo object, and populate it.
+        NsdServiceInfo serviceInfo  = new NsdServiceInfo();
+
+        // The name is subject to change based on conflicts
+        // with other services advertised on the same network.
+        serviceInfo.setServiceName(ProcessUtil.getProcessName());
+        serviceInfo.setServiceType("_redux-monitor._tcp.");
+
+        ServerSocket mServerSocket = new ServerSocket(0);
+        serviceInfo.setPort(mServerSocket.getLocalPort());
+
+            // Store the chosen port.
+        final NsdManager systemService = (NsdManager)context.getSystemService(Context.NSD_SERVICE);
+        systemService.registerService(serviceInfo, NsdManager.PROTOCOL_DNS_SD, new NsdManager.RegistrationListener() {
+            @Override
+            public void onRegistrationFailed(NsdServiceInfo serviceInfo, int errorCode) {
+
+            }
+
+            @Override
+            public void onUnregistrationFailed(NsdServiceInfo serviceInfo, int errorCode) {
+
+            }
+
+            @Override
+            public void onServiceRegistered(NsdServiceInfo serviceInfo) {
+
+            }
+
+            @Override
+            public void onServiceUnregistered(NsdServiceInfo serviceInfo) {
+
+            }
+        });
 
 
-    public MonitorMiddleware() {
 
     }
 
     @Override
-    public void onAction(Action<?> action, GetState state, Dispatcher dispatcher, Continuation continuation) {
+    public void onAction(@NonNull Action<?> action, @NonNull GetState state, @NonNull Dispatcher dispatcher, @NonNull Continuation continuation) {
+        continuation.next(action);
+        final State newState = state.getState();
 
+        lastItem = new StateUpdate(action.getActionType(), action.getData(), newState);
+        data.add(lastItem);
     }
 
+    @Override
+    public void onAccepted(LocalSocket socket) throws IOException {
+        BufferedOutputStream output = new BufferedOutputStream(socket.getOutputStream());
+        if(lastItem != null) {
+            writeToStream(lastItem, output);
+        }
 
-/*
-    object ReduxMonitor {
-
-        val running = AtomicBoolean(false)
-
-        fun init() {
-            if(running.compareAndSet(false, true)) {
-                val server = LocalSocketServer("main", "redux_monitor") {
-                    handler(it)
-                }
-                Thread { server.run() }.start()
+        while(true) {
+            if(!data.isEmpty()) {
+                final StateUpdate remove = data.remove(0);
+                writeToStream(remove, output);
             }
         }
-
-        val list = mutableListOf<String>()
-        var lastString: String = "&&__&&__&&"
-
-        fun handler(socket:LocalSocket) {
-            try {
-                val output = BufferedOutputStream(socket.outputStream)
-                writeToStream(lastString, output)
-
-                while(true) {
-                    synchronized(this) {
-                        if (list.isNotEmpty()) {
-                            val str = list.removeAt(0) + "&&__&&__&&"
-                            lastString = str
-                            writeToStream(str, output)
-                        }
-                    }
-                }
-
-            } catch(e : Exception) {
-                e.printStackTrace()
-            }
-        }
-
-        fun writeToStream(data: String, outputStream:BufferedOutputStream) {
-            outputStream.write(data.toByteArray(Charset.forName("ascii")))
-            outputStream.flush()
-        }
-
-        fun sendStuff(actionType: String, actionData: Any?, newState: Any) {
-            synchronized(this) {
-                val json = Gson().toJson(StateUpdate(actionType, actionData, newState))
-                list.add(json)
-            }
-        }
-
-        data class StateUpdate(val action: String, val actionData: Any?, val state: Any)
-
     }
-*/
+
+    private void writeToStream(StateUpdate data, BufferedOutputStream outputStream) throws IOException {
+        final String dump = gson.toJson(data) + "&&__&&__&&";
+        outputStream.write(dump.getBytes("ASCII"));
+        outputStream.flush();
+    }
 
     private static class StateUpdate {
 
-        private final Action<?> action;
-        private final State newState;
+        private final String action;
+        private final Object actionData;
+        private final State state;
 
-        private StateUpdate(Action<?> action, State newState) {
+        private StateUpdate(String action, Object actionData, State state) {
             this.action = action;
-            this.newState = newState;
+            this.actionData = actionData;
+            this.state = state;
         }
 
-        public Action<?> getAction() {
-            return action;
-        }
-
-        public State getNewState() {
-            return newState;
-        }
     }
 
 }

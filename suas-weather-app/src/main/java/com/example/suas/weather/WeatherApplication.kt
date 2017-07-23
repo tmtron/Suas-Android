@@ -9,10 +9,7 @@ import com.example.suas.weather.network.WundergroundService
 import com.example.suas.weather.storage.Storage
 import com.example.suas.weather.suas.Reducers
 import com.example.suas.weather.suas.StateModels
-import com.zendesk.suas.LoggerMiddleware
-import com.zendesk.suas.ReduxStore
-import com.zendesk.suas.State
-import com.zendesk.suas.Store
+import com.zendesk.suas.*
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.lang.RuntimeException
@@ -65,10 +62,12 @@ class WeatherApplication : Application() {
         }
 
         val store = ReduxStore.Builder(reducers).apply {
-                withMiddleware(AsyncMiddleware(), logger)
+                withMiddleware(AsyncMiddleware(), MonitorMiddleware(applicationContext), logger)
+
                 if(state != null) {
                     withInitialState(state)
                 }
+
         }.build()
 
         storage.register(store)
