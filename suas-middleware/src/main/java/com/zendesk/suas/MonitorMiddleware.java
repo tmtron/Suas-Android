@@ -1,88 +1,137 @@
 package com.zendesk.suas;
 
-public class MonitorMiddleware implements Middleware {
+import android.content.Context;
+import android.os.Build;
+import android.support.annotation.NonNull;
 
+import com.google.gson.Gson;
+import com.zendesk.suas.monitor.ConnectionHandler;
+import com.zendesk.suas.monitor.NetworkSocketServer;
+import com.zendesk.suas.monitor.UnixSocketServer;
 
-    public MonitorMiddleware() {
+import java.io.BufferedOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+import java.util.concurrent.atomic.AtomicBoolean;
 
+public class MonitorMiddleware implements Middleware, ConnectionHandler {
+
+    private NetworkSocketServer network;
+    private UnixSocketServer unixSocketServer;
+
+    private final Gson gson;
+    private final AtomicBoolean started;
+    private final List<StateUpdate> data;
+    private StateUpdate lastItem = null;
+
+    public MonitorMiddleware(final Context context) {
+        this(new Builder(context));
+    }
+
+    private MonitorMiddleware(final Builder builder) {
+        this.gson = new Gson();
+        this.data = new ArrayList<>();
+        this.started = new AtomicBoolean(false);
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    final String packageName = builder.context.getPackageName().replace(".", "-");
+                    final String name = String.format(Locale.US, "%s - %s", Build.MODEL, packageName);
+
+                    if(builder.enableBonjour) {
+                        network = new NetworkSocketServer(name, "_redux-monitor._tcp.", MonitorMiddleware.this);
+                        network.start(builder.context);
+                    }
+
+                    if(builder.enableAdb) {
+                        unixSocketServer = new UnixSocketServer("redux_monitor_" + packageName, MonitorMiddleware.this);
+                        unixSocketServer.start();
+                    }
+
+                    started.set(true);
+                } catch (IOException e) {
+                    started.set(false);
+                    e.printStackTrace();
+                }
+            }
+        }).start();
     }
 
     @Override
-    public void onAction(Action<?> action, GetState state, Dispatcher dispatcher, Continuation continuation) {
+    public void onAction(@NonNull Action<?> action, @NonNull GetState state, @NonNull Dispatcher dispatcher, @NonNull Continuation continuation) {
+        continuation.next(action);
+        final State newState = state.getState();
 
+        lastItem = new StateUpdate(action.getActionType(), action.getData(), newState);
+        if(started.get()) {
+            data.add(new StateUpdate(action.getActionType(), action.getData(), newState));
+        }
     }
 
+    @Override
+    public synchronized void handle(InputStream inputStream, OutputStream outputStream) throws IOException {
+        BufferedOutputStream output = new BufferedOutputStream(outputStream);
+        if (lastItem != null) {
+            writeToStream(lastItem, output);
+        }
 
-/*
-    object ReduxMonitor {
-
-        val running = AtomicBoolean(false)
-
-        fun init() {
-            if(running.compareAndSet(false, true)) {
-                val server = LocalSocketServer("main", "redux_monitor") {
-                    handler(it)
-                }
-                Thread { server.run() }.start()
+        while (true) {
+            if (!data.isEmpty()) {
+                final StateUpdate remove = data.remove(0);
+                writeToStream(remove, output);
             }
         }
-
-        val list = mutableListOf<String>()
-        var lastString: String = "&&__&&__&&"
-
-        fun handler(socket:LocalSocket) {
-            try {
-                val output = BufferedOutputStream(socket.outputStream)
-                writeToStream(lastString, output)
-
-                while(true) {
-                    synchronized(this) {
-                        if (list.isNotEmpty()) {
-                            val str = list.removeAt(0) + "&&__&&__&&"
-                            lastString = str
-                            writeToStream(str, output)
-                        }
-                    }
-                }
-
-            } catch(e : Exception) {
-                e.printStackTrace()
-            }
-        }
-
-        fun writeToStream(data: String, outputStream:BufferedOutputStream) {
-            outputStream.write(data.toByteArray(Charset.forName("ascii")))
-            outputStream.flush()
-        }
-
-        fun sendStuff(actionType: String, actionData: Any?, newState: Any) {
-            synchronized(this) {
-                val json = Gson().toJson(StateUpdate(actionType, actionData, newState))
-                list.add(json)
-            }
-        }
-
-        data class StateUpdate(val action: String, val actionData: Any?, val state: Any)
-
     }
-*/
+
+    private void writeToStream(StateUpdate data, BufferedOutputStream outputStream) throws IOException {
+        final String dump = gson.toJson(data) + "&&__&&__&&";
+        outputStream.write(dump.getBytes("ASCII"));
+        outputStream.flush();
+    }
 
     private static class StateUpdate {
 
-        private final Action<?> action;
-        private final State newState;
+        private final String action;
+        private final Object actionData;
+        private final State state;
 
-        private StateUpdate(Action<?> action, State newState) {
+        private StateUpdate(String action, Object actionData, State state) {
             this.action = action;
-            this.newState = newState;
+            this.actionData = actionData;
+            this.state = state;
+        }
+    }
+
+    public static class Builder {
+
+        private final Context context;
+        private boolean enableAdb;
+        private boolean enableBonjour;
+
+        public Builder(Context context) {
+            this.context = context;
+            this.enableAdb = true;
+            this.enableBonjour = true;
         }
 
-        public Action<?> getAction() {
-            return action;
+        public Builder setEnableAdb(boolean enableAdb) {
+            this.enableAdb = enableAdb;
+            return this;
         }
 
-        public State getNewState() {
-            return newState;
+        public Builder setEnableBonjour(boolean enableBonjour) {
+            this.enableBonjour = enableBonjour;
+            return this;
+        }
+
+        public Middleware build() {
+            return new MonitorMiddleware(this);
         }
     }
 
