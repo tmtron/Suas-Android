@@ -45,6 +45,11 @@ class WeatherApplication : Application() {
                 .setLineLength(-1)
                 .build()
 
+        val monitor = MonitorMiddleware.Builder(this)
+                .setEnableAdb(true)
+                .setEnableBonjour(true)
+                .build()
+
         val reducers = listOf(
                 Reducers.SuggestedLocationsReducer(),
                 Reducers.ProgressReducer(),
@@ -62,7 +67,7 @@ class WeatherApplication : Application() {
         }
 
         val store = ReduxStore.Builder(reducers).apply {
-                withMiddleware(AsyncMiddleware(), MonitorMiddleware(applicationContext), logger)
+                withMiddleware(AsyncMiddleware(), monitor, logger)
 
                 if(state != null) {
                     withInitialState(state)

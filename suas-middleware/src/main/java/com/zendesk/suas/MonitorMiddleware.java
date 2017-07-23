@@ -28,21 +28,32 @@ public class MonitorMiddleware implements Middleware, ConnectionHandler {
     private final List<StateUpdate> data;
     private StateUpdate lastItem = null;
 
-
     public MonitorMiddleware(final Context context) {
+        this(new Builder(context));
+    }
+
+    private MonitorMiddleware(final Builder builder) {
         this.gson = new Gson();
         this.data = new ArrayList<>();
         this.started = new AtomicBoolean(false);
 
-        final String name = String.format(Locale.US, "%s - %s", Build.MODEL, context.getPackageName().replace(".", "-"));
         new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
-                    network = new NetworkSocketServer(name, "_redux-monitor._tcp.", MonitorMiddleware.this);
-                    unixSocketServer = new UnixSocketServer("redux_monitor_" + context.getPackageName().replace(".", "-"), MonitorMiddleware.this);
-                    network.start(context);
-                    unixSocketServer.start();
+                    final String packageName = builder.context.getPackageName().replace(".", "-");
+                    final String name = String.format(Locale.US, "%s - %s", Build.MODEL, packageName);
+
+                    if(builder.enableBonjour) {
+                        network = new NetworkSocketServer(name, "_redux-monitor._tcp.", MonitorMiddleware.this);
+                        network.start(builder.context);
+                    }
+
+                    if(builder.enableAdb) {
+                        unixSocketServer = new UnixSocketServer("redux_monitor_" + packageName, MonitorMiddleware.this);
+                        unixSocketServer.start();
+                    }
+
                     started.set(true);
                 } catch (IOException e) {
                     started.set(false);
@@ -59,7 +70,7 @@ public class MonitorMiddleware implements Middleware, ConnectionHandler {
 
         lastItem = new StateUpdate(action.getActionType(), action.getData(), newState);
         if(started.get()) {
-            data.add(lastItem);
+            data.add(new StateUpdate(action.getActionType(), action.getData(), newState));
         }
     }
 
@@ -94,6 +105,33 @@ public class MonitorMiddleware implements Middleware, ConnectionHandler {
             this.action = action;
             this.actionData = actionData;
             this.state = state;
+        }
+    }
+
+    public static class Builder {
+
+        private final Context context;
+        private boolean enableAdb;
+        private boolean enableBonjour;
+
+        public Builder(Context context) {
+            this.context = context;
+            this.enableAdb = true;
+            this.enableBonjour = true;
+        }
+
+        public Builder setEnableAdb(boolean enableAdb) {
+            this.enableAdb = enableAdb;
+            return this;
+        }
+
+        public Builder setEnableBonjour(boolean enableBonjour) {
+            this.enableBonjour = enableBonjour;
+            return this;
+        }
+
+        public Middleware build() {
+            return new MonitorMiddleware(this);
         }
     }
 
