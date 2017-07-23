@@ -1,5 +1,5 @@
 ext {
-    artifactId = 'suas-middleware-thunk'
+    artifactId = 'suas-thunk'
     packaging = 'jar'
 }
 

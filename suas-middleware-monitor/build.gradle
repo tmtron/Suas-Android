@@ -1,5 +1,5 @@
 ext {
-    artifactId = 'suas-middleware-monitor'
+    artifactId = 'suas-monitor'
     packaging = 'jar'
 }
 

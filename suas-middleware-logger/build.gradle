@@ -1,5 +1,5 @@
 ext {
-    artifactId = 'suas-middleware-logger'
+    artifactId = 'suas-logger'
     packaging = 'jar'
 }
 
