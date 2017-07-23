@@ -28,8 +28,8 @@ dependencies {
         implementation project(':suas-lib')
         implementation project(':suas-middleware')
     } else {
-        implementation group: 'com.zendesk', name: 'suas', version: rootProject.ext.buildSettings.libVersion
-        implementation group: 'com.zendesk', name: 'suas-middleware', version: rootProject.ext.buildSettings.middleWareVersion
+        implementation group: 'com.zendesk.suas', name: 'suas', version: rootProject.ext.buildSettings.libVersion
+        implementation group: 'com.zendesk.suas', name: 'suas-middleware', version: rootProject.ext.buildSettings.middleWareVersion
     }
 
     implementation group: 'com.android.support', name: 'appcompat-v7', version: rootProject.ext.supportLibVersion

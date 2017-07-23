@@ -2,13 +2,11 @@ package com.example.suas.weather
 
 import android.app.Activity
 import android.app.Application
-import com.example.suas.weather.async.AsyncMiddleware
 import com.example.suas.weather.network.AutocompleteService
 import com.example.suas.weather.network.WeatherService
 import com.example.suas.weather.network.WundergroundService
 import com.example.suas.weather.storage.Storage
 import com.example.suas.weather.suas.Reducers
-import com.example.suas.weather.suas.StateModels
 import com.zendesk.suas.*
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -38,6 +36,7 @@ class WeatherApplication : Application() {
     private val storage: Storage by lazy { Storage(this) }
 
     val weatherService: WeatherService by lazy { WeatherService(autocomplete = autocompleteService, weather = wundergroundService) }
+
     val store : Store by lazy {
 
         val logger = LoggerMiddleware.Builder()
@@ -58,24 +57,13 @@ class WeatherApplication : Application() {
                 Reducers.LoadedObservationsReducer()
         )
 
-        val locationState = storage.load()
-        val state = if(locationState != null) {
-            val map = reducers.map { it.emptyState.javaClass.simpleName to it.emptyState }.toMap()
-            State(map.plus(StateModels.Locations::class.java.simpleName to locationState))
-        } else {
-            null
-        }
+        val store = ReduxStore.Builder(reducers)
+                .withMiddleware(AsyncMiddleware(), monitor, logger)
+                .build()
 
-        val store = ReduxStore.Builder(reducers).apply {
-                withMiddleware(AsyncMiddleware(), monitor, logger)
-
-                if(state != null) {
-                    withInitialState(state)
-                }
-
-        }.build()
-
+        store.dispatchAction(storage.loadAction())
         storage.register(store)
+
         store
     }
 

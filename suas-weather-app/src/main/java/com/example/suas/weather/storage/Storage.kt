@@ -4,12 +4,11 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.os.Handler
 import android.os.Looper
-import com.example.suas.weather.async.Async
-import com.example.suas.weather.async.AsyncMiddleware
 import com.example.suas.weather.suas.LocationsLoaded
 import com.example.suas.weather.suas.StateModels
 import com.google.gson.Gson
 import com.zendesk.suas.Action
+import com.zendesk.suas.AsyncMiddleware
 import com.zendesk.suas.Store
 
 class Storage(context: Context) {
@@ -24,7 +23,7 @@ class Storage(context: Context) {
                 .apply()
     }
 
-    fun load(): StateModels.Locations? {
+    private fun load(): StateModels.Locations? {
         val data = sharedPrefs.getString("l", "")
         return try {
             gson.fromJson(data, StateModels.Locations::class.java)
@@ -33,16 +32,14 @@ class Storage(context: Context) {
         }
     }
 
-    fun loadAction(): Action<Async> {
-        return AsyncMiddleware.create { dispatcher, _ ->
-            Thread({
-                val data = load()
-                data?.let {
-                    Handler(Looper.getMainLooper()).post({
-                        dispatcher.dispatchAction(LocationsLoaded(it))
-                    })
-                }
-            }).run()
+    fun loadAction(): Action<*> {
+        return AsyncMiddleware.forBlockingAction{ dispatcher, _ ->
+            val data = load()
+            data?.let {
+                Handler(Looper.getMainLooper()).post({
+                    dispatcher.dispatchAction(LocationsLoaded(it))
+                })
+            }
         }
     }
 
