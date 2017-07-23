@@ -49,11 +49,7 @@ class ListComponent(recyclerView: RecyclerView, weatherService: WeatherService, 
     }
 
     override fun connect(store: Store) {
-        store.connect(this, StateModels.Locations::class.java, { oldState, newState, listener ->
-            if(oldState != newState) {
-                listener.update(oldState, newState)
-            }
-        })
+        store.connect(this, StateModels.Locations::class.java)
     }
 
     class LocationAdapter(val listComponent: ListComponent, val listener: LocationSelected) : RecyclerView.Adapter<LocationViewHolder>() {

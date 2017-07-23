@@ -12,7 +12,7 @@ import java.net.Socket;
 import java.util.concurrent.atomic.AtomicInteger;
 
 
-public class NetworkSocketServer implements NsdManager.RegistrationListener{
+class NetworkSocketServer implements NsdManager.RegistrationListener{
 
     private static final String LOG_TAG = "Suas-Bonjour";
 
@@ -20,14 +20,14 @@ public class NetworkSocketServer implements NsdManager.RegistrationListener{
     private final ServerSocket serverSocket;
     private final ConnectionHandler socketHandler;
 
-    public NetworkSocketServer(String name, String type, ConnectionHandler socketHandler) throws IOException {
+    NetworkSocketServer(String name, String type, ConnectionHandler socketHandler) throws IOException {
         this.serverSocket = getServerSocket();
         this.serviceInfo = getServiceInfo(name, type, serverSocket.getLocalPort());
         this.socketHandler = socketHandler;
     }
 
     private NsdServiceInfo getServiceInfo(String name, String type, int localPort) {
-        NsdServiceInfo serviceInfo = new NsdServiceInfo();
+        final NsdServiceInfo serviceInfo = new NsdServiceInfo();
         serviceInfo.setServiceName(name);
         serviceInfo.setServiceType(type);
         serviceInfo.setPort(localPort);
@@ -38,9 +38,13 @@ public class NetworkSocketServer implements NsdManager.RegistrationListener{
         return new ServerSocket(0);
     }
 
-    public void start(Context context) {
+    void start(Context context) {
         final NsdManager manager = (NsdManager) context.getSystemService(Context.NSD_SERVICE);
-        manager.registerService(serviceInfo, NsdManager.PROTOCOL_DNS_SD, this);
+        if(manager != null) {
+            manager.registerService(serviceInfo, NsdManager.PROTOCOL_DNS_SD, this);
+        } else {
+            Log.e(LOG_TAG, "NsdManager is null");
+        }
     }
 
     @Override
@@ -57,7 +61,7 @@ public class NetworkSocketServer implements NsdManager.RegistrationListener{
     public void onServiceRegistered(NsdServiceInfo serviceInfo) {
         Log.d(LOG_TAG, "Service registered. Start listening for connections.");
         final ServerThread serverThread = new ServerThread(serverSocket, socketHandler);
-        serverThread.setName("Suas NW Server Thread");
+        serverThread.setName("Suas NW Server");
         serverThread.start();
     }
 
@@ -85,7 +89,7 @@ public class NetworkSocketServer implements NsdManager.RegistrationListener{
                     final Socket accept = serverSocket.accept();
 
                     final WorkerThread workerThread = new WorkerThread(accept, socketHandler);
-                    workerThread.setName("Suas Network Worker Thread. Id: " + threadId.incrementAndGet());
+                    workerThread.setName("SuasNwSocket " + threadId.incrementAndGet());
                     workerThread.setDaemon(true);
                     workerThread.start();
 

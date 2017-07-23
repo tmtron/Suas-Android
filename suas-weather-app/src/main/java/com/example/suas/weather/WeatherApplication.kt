@@ -59,6 +59,7 @@ class WeatherApplication : Application() {
 
         val store = ReduxStore.Builder(reducers)
                 .withMiddleware(AsyncMiddleware(), monitor, logger)
+                .withDefaultNotifier(Notifiers.EQUALS)
                 .build()
 
         store.dispatchAction(storage.loadAction())

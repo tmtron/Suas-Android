@@ -10,9 +10,9 @@ import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class MonitorMiddleware implements Middleware, ConnectionHandler {
@@ -22,7 +22,7 @@ public class MonitorMiddleware implements Middleware, ConnectionHandler {
 
     private final Gson gson;
     private final AtomicBoolean started;
-    private final List<StateUpdate> data;
+    private final BlockingQueue<StateUpdate> data;
     private StateUpdate lastItem = null;
 
     public MonitorMiddleware(final Context context) {
@@ -31,7 +31,7 @@ public class MonitorMiddleware implements Middleware, ConnectionHandler {
 
     private MonitorMiddleware(final Builder builder) {
         this.gson = new Gson();
-        this.data = new ArrayList<>();
+        this.data = new LinkedBlockingQueue<>();
         this.started = new AtomicBoolean(false);
 
         new Thread(new Runnable() {
@@ -79,9 +79,12 @@ public class MonitorMiddleware implements Middleware, ConnectionHandler {
         }
 
         while (true) {
-            if (!data.isEmpty()) {
-                final StateUpdate remove = data.remove(0);
-                writeToStream(remove, output);
+            try {
+                final StateUpdate stateUpdate = data.take();
+                writeToStream(stateUpdate, output);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+                break;
             }
         }
     }
