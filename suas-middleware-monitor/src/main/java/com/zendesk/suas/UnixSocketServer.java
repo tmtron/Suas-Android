@@ -8,21 +8,21 @@ import android.util.Log;
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class UnixSocketServer {
+class UnixSocketServer {
 
     private static final String LOG_TAG = "Suas-Adb";
 
     private final LocalServerSocket localServerSocket;
     private final ConnectionHandler connectionHandler;
 
-    public UnixSocketServer(String address, ConnectionHandler connectionHandler) throws IOException {
+    UnixSocketServer(String address, ConnectionHandler connectionHandler) throws IOException {
         this.localServerSocket = getSocket(address);
         this.connectionHandler = connectionHandler;
     }
 
-    public void start() {
+    void start() {
         final ServerThread serverThread = new ServerThread(localServerSocket, connectionHandler);
-        serverThread.setName("Suas ADB Server Thread");
+        serverThread.setName("Suas ADB Server");
         serverThread.start();
     }
 
@@ -49,7 +49,7 @@ public class UnixSocketServer {
                     final LocalSocket socket = localServerSocket.accept();
 
                     final WorkerThread workerThread = new WorkerThread(socket, socketHandler);
-                    workerThread.setName("Suas Local Socket Worker Thread. Id: " + threadId.incrementAndGet());
+                    workerThread.setName("SuasUnixSocket " + threadId.incrementAndGet());
                     workerThread.setDaemon(true);
                     workerThread.start();
 
