@@ -55,4 +55,7 @@ public interface Store extends GetState, Dispatcher {
 
     void disconnect(Component component);
 
+
+    void updateAll();
+
 }

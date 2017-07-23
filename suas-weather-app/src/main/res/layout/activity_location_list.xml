@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="?actionBarSize"
+        android:background="?colorPrimary"
+        android:contentInsetEnd="0dp"
+        android:contentInsetStart="0dp"
+        android:elevation="2dp" >
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="16dp">
+
+                <TextView
+                    android:id="@+id/locationTemperature"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentTop="true"
+                    android:textSize="20sp"
+                    android:textColor="#ffffff"
+                    tools:text="7 in Dublin, Ireland"
+                    />
+
+                <TextView
+                    android:id="@+id/weather"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/locationTemperature"
+                    android:textSize="16sp"
+                    android:layout_marginTop="4dp"
+                    android:textColor="#8Affffff"
+                    tools:text="7"/>
+
+                <TextView
+                    android:id="@+id/precip"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/weather"
+                    android:textSize="16sp"
+                    android:layout_marginTop="2dp"
+                    android:textColor="#8Affffff"
+                    tools:text="7"/>
+
+                <TextView
+                    android:id="@+id/wind"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/precip"
+                    android:textSize="16sp"
+                    android:layout_marginTop="2dp"
+                    android:textColor="#8Affffff"
+                    tools:text="7"/>
+
+                <ImageView
+                    android:id="@+id/weatherIcon"
+                    android:layout_alignParentEnd="true"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp" />
+
+
+            </RelativeLayout>
+
+
+            <ProgressBar
+                style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+                android:id="@+id/locationProgressbar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:indeterminate="true"
+                android:visibility="invisible"
+                />
+
+        </FrameLayout>
+
+
+
+    </Toolbar>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/addLocation"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end|bottom"
+            android:src="@drawable/ic_add"
+            app:useCompatPadding="true"
+            app:fabSize="normal"
+            />
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/locationList"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clipToPadding="false"
+            android:paddingBottom="16dp"
+            android:paddingTop="16dp" />
+
+    </FrameLayout>
+
+
+
+</LinearLayout>

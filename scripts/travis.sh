@@ -26,9 +26,14 @@ runUnitTests() {
     exitOnFailedBuild "suas-middleware unit tests"
 }
 
-buildSampleApp() {
-    ./gradlew :suas-sample:assembleDebug :suas-sample:assembleDebug
-    exitOnFailedBuild "suas-sample"
+buildSampleAppTodo() {
+    ./gradlew :suas-todo-app:assembleDebug :suas-todo-app:assembleDebug
+    exitOnFailedBuild "suas-todo-app"
+}
+
+buildSampleAppWeather() {
+    ./gradlew :suas-weather-app:assembleDebug :suas-weather-app:assembleDebug
+    exitOnFailedBuild "suas-weather-app"
 }
 
 deployArtifacts() {
@@ -46,9 +51,13 @@ prBuild() {
         boxOut "Running unit tests"
         runUnitTests
 
-    elif [ "$COMPONENT" == "sample" ]; then
-        boxOut "Building Sample App"
-        buildSampleApp
+    elif [ "$COMPONENT" == "sample_todo" ]; then
+        boxOut "Building Sample App: Todo"
+        buildSampleAppTodo
+
+    elif [ "$COMPONENT" == "sample_weather" ]; then
+        boxOut "Building Sample App: Weather"
+        buildSampleAppWeather
 
     else
         boxOut "Module doesn't exist: $COMPONENT"
