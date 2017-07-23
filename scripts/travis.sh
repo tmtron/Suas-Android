@@ -22,7 +22,7 @@ runUnitTests() {
     ./gradlew --settings-file settings-suas-lib.gradle :suas-lib:test
     exitOnFailedBuild "suas-lib unit tests"
 
-    ./gradlew --settings-file settings-suas-middleware.gradle  :suas-middleware:test
+    ./gradlew --settings-file settings-suas-middleware.gradle :suas-middleware-thunk:test :suas-middleware-monitor:test :suas-middleware-logger:test
     exitOnFailedBuild "suas-middleware unit tests"
 }
 
@@ -40,8 +40,8 @@ deployArtifacts() {
     boxOut "Deploying suas-lib artefact"
     ./gradlew :suas-lib:assemble :suas-lib:uploadArchives
 
-    boxOut "Deploying suas-middleware artefact"
-    ./gradlew --settings-file settings-suas-middleware.gradle :suas-lib:assemble :suas-middleware:uploadArchives
+    boxOut "Deploying suas-middleware-* artefacts"
+    ./gradlew --settings-file settings-suas-middleware.gradle :suas-lib:assemble :suas-middleware-logger:uploadArchives :suas-middleware-monitor:uploadArchives :suas-middleware-thunk:uploadArchives
 }
 
 prBuild() {
@@ -73,7 +73,8 @@ branchBuild() {
     if [ "$COMPONENT" == "build" ]; then
         boxOut "Upload Snapshot"
         deployArtifacts
-        deployHockeyApp
+        buildSampleAppTodo
+        buildSampleAppWeather
     else
         boxOut "Module doesn't exist: $COMPONENT"
     fi
