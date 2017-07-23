@@ -202,6 +202,11 @@ public class ReduxStore implements Store {
         }
     }
 
+    @Override
+    public void updateAll() {
+        notifyListener(reducer.getEmptyState(), getState());
+    }
+
     public static class Builder {
 
         private final List<Reducer> reducers;

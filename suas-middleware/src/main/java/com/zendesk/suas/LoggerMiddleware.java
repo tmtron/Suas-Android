@@ -1,6 +1,7 @@
 package com.zendesk.suas;
 
 import android.os.Build;
+import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.google.gson.Gson;
@@ -37,7 +38,7 @@ public class LoggerMiddleware implements Middleware {
     }
 
     @Override
-    public void onAction(Action<?> action, GetState state, Dispatcher dispatcher, Continuation continuation) {
+    public void onAction(@NonNull Action<?> action, @NonNull GetState state, @NonNull Dispatcher dispatcher, @NonNull Continuation continuation) {
         if(predicate.predicate(state, action)) {
             final Date timestamp = new Date();
             final long start = System.nanoTime();
@@ -168,7 +169,7 @@ public class LoggerMiddleware implements Middleware {
             return this;
         }
 
-        public LoggerMiddleware build() {
+        public Middleware build() {
             return new LoggerMiddleware(this);
         }
 

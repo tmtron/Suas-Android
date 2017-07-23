@@ -1,5 +1,7 @@
 package com.zendesk.suas;
 
+import android.support.annotation.NonNull;
+
 /**
  * Component definition. Usually implemented by UI elements.
  *
@@ -10,11 +12,12 @@ public interface Component<E, F> {
     /**
      * Called if there's an update to the view model
      */
-    void update(F e);
+    void update(@NonNull F e);
 
     /**
      * Implementation of a {@link Selector} used to transform {@link State} to {@code E}
      */
+    @NonNull
     Selector<E, F> getSelector();
 
 }

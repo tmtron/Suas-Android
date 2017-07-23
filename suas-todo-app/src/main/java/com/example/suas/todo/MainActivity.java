@@ -14,6 +14,7 @@ import com.zendesk.suas.Action;
 import com.zendesk.suas.Component;
 import com.zendesk.suas.Listener;
 import com.zendesk.suas.LoggerMiddleware;
+import com.zendesk.suas.Middleware;
 import com.zendesk.suas.Notifiers;
 import com.zendesk.suas.ReduxStore;
 import com.zendesk.suas.Selector;
@@ -35,7 +36,7 @@ public class MainActivity extends AppCompatActivity implements Component<TodoLis
         final TodoListAdapter todoListAdapter = new TodoListAdapter(new ArrayList<String>());
         listView.setAdapter(todoListAdapter);
 
-        final LoggerMiddleware build = new LoggerMiddleware.Builder()
+        final Middleware build = new LoggerMiddleware.Builder()
                 .setSerialization(LoggerMiddleware.Serialization.TO_STRING)
                 .setLineLength(120)
                 .build();
