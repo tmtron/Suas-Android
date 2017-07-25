@@ -1,73 +1,44 @@
 package com.zendesk.suas;
 
-import java.util.ArrayList;
-import java.util.List;
+import android.support.annotation.NonNull;
+
+import java.util.Collection;
+import java.util.Iterator;
 
 class CombinedMiddleware implements Middleware {
 
-    private final LinkedMiddleware linkedMiddleware;
+    private final Collection<Middleware> middleware;
 
-    CombinedMiddleware(List<Middleware> middleware) {
+    CombinedMiddleware(Collection<Middleware> middleware) {
         if(middleware == null || middleware.size() == 0) {
-            this.linkedMiddleware = null;
+            this.middleware = null;
         } else {
-            this.linkedMiddleware = LinkedMiddleware.fromList(middleware);
+            this.middleware = middleware;
         }
     }
 
     @Override
-    public void onAction(Action<?> action, GetState state, Dispatcher dispatcher, Continuation continuation) {
-        if(linkedMiddleware != null) {
-            loopThroughIt(action, state, dispatcher, continuation, linkedMiddleware);
+    public void onAction(@NonNull Action<?> action, @NonNull GetState state,
+                         @NonNull Dispatcher dispatcher, @NonNull Continuation continuation) {
+        if(middleware != null) {
+            loopThroughMiddleware(action, state, dispatcher, continuation, middleware.iterator());
         } else {
             continuation.next(action);
         }
     }
 
-    private void loopThroughIt(Action<?> action, final GetState state, final Dispatcher dispatcher,
-                               final Continuation continuation, final LinkedMiddleware decoratedMiddleware) {
-        decoratedMiddleware.onAction(action, state, dispatcher, new Continuation() {
-            @Override
-            public void next(Action<?> action) {
-                if(decoratedMiddleware.getNext() != null) {
-                    loopThroughIt(action, state, dispatcher, continuation, decoratedMiddleware.getNext());
-                } else {
-                    continuation.next(action);
+    private void loopThroughMiddleware(Action<?> action, final GetState state, final Dispatcher dispatcher,
+                                       final Continuation continuation, final Iterator<Middleware> middleware) {
+        if (middleware.hasNext()) {
+            final Middleware next = middleware.next();
+            next.onAction(action, state, dispatcher, new Continuation() {
+                @Override
+                public void next(Action<?> action) {
+                    loopThroughMiddleware(action, state, dispatcher, continuation, middleware);
                 }
-            }
-        });
-    }
-
-    private static class LinkedMiddleware implements Middleware {
-
-        static LinkedMiddleware fromList(List<Middleware> middleware) {
-            final List<LinkedMiddleware> result = new ArrayList<>();
-
-            LinkedMiddleware prevItem = null;
-            for(int i = middleware.size() - 1; i >= 0; i--) {
-                final LinkedMiddleware item = new LinkedMiddleware(middleware.get(i), prevItem);
-                result.add(0, item);
-                prevItem = item;
-            }
-
-            return result.get(0);
-        }
-
-        private final Middleware middleware;
-        private final LinkedMiddleware next;
-
-        LinkedMiddleware(Middleware middleware, LinkedMiddleware next) {
-            this.middleware = middleware;
-            this.next = next;
-        }
-
-        @Override
-        public void onAction(Action<?> action, GetState state, Dispatcher dispatcher, Continuation continuation) {
-            middleware.onAction(action, state, dispatcher, continuation);
-        }
-
-        LinkedMiddleware getNext() {
-            return next;
+            });
+        } else {
+            continuation.next(action);
         }
     }
 

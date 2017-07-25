@@ -30,13 +30,14 @@ public class ReduxStore implements Store {
         this.componentListenerMap = new HashMap<>();
     }
 
+    @NonNull
     @Override
     public State getState() {
         return state.copy();
     }
 
     @Override
-    public synchronized void dispatchAction(Action action) {
+    public synchronized void dispatchAction(@NonNull Action action) {
         middleware.onAction(action, this, this, new Continuation() {
             @Override
             public void next(Action<?> action) {

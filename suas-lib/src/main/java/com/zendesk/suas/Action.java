@@ -44,12 +44,26 @@ public class Action<E> {
     /**
      * Gets the payload.
      */
-    @SuppressWarnings("TypeParameterHidesVisibleType")
     @Nullable
-    public <E> E getData() {
-        //noinspection unchecked
-        return (E) data;
+    public E getRawData() {
+        return data;
     }
+
+    @Nullable
+    public <F> F getData(@NonNull Class<F> clazz) {
+        if(clazz.isInstance(data)) {
+            return clazz.cast(data);
+        } else {
+            return null;
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    @Nullable
+    public <F> F getData() {
+        return (F)data;
+    }
+
 
     @Override
     public String toString() {

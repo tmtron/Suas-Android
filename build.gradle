@@ -2,11 +2,6 @@ apply from: 'scripts/gradle/gradle-commons.gradle'
 apply from: 'scripts/gradle/gradle-repos.gradle'
 
 ext {
-    compileSdkVersion = 26
-    buildToolsVersion = '26.0.0'
-    minSdkVersion = 16
-    targetSdkVersion = 26
-
     versionName = '0.1.0-SNAPSHOT'
 
     buildSettings = [
@@ -15,7 +10,11 @@ ext {
             middleWareVersion : '0.1.0-SNAPSHOT'
     ]
 
-    supportLibVersion = '26.0.0-beta2'
+    compileSdkVersion = 26
+    buildToolsVersion = '26.0.1'
+    minSdkVersion = 21
+    targetSdkVersion = 26
+    supportLibVersion = '26.0.0'
 }
 
 buildscript {
@@ -30,7 +29,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.0.0-alpha7'
+        classpath 'com.android.tools.build:gradle:3.0.0-alpha8'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:${rootProject.ext.kotlinVersion}"
     }
 }
