@@ -30,7 +30,7 @@ public abstract class Reducer<E> {
      */
     @NonNull
     public String getKey() {
-        return getEmptyState().getClass().getSimpleName();
+        return State.keyForClass(getEmptyState().getClass());
     }
 
 }

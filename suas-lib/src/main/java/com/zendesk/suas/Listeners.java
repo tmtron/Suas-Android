@@ -82,7 +82,10 @@ class Listeners {
 
         @Override
         public void update(State oldState, State newState) {
-            notifier.update((E)oldState.getState(key), (E)newState.getState(key), listener);
+            notifier.update(
+                    (E)oldState.getState(key), // type check
+                    (E)newState.getState(key), // type check
+                    listener);
         }
 
         @Override
@@ -116,8 +119,8 @@ class Listeners {
         @Override
         public void update(State oldState, State newState) {
             notifier.update(
-                    (E)oldState.getState(clazz.getSimpleName()),
-                    (E)newState.getState(clazz.getSimpleName()),
+                    (E)oldState.getState(clazz), // FIXME null check
+                    (E)newState.getState(clazz), // FIXME null check
                     listener
             );
         }
@@ -156,8 +159,8 @@ class Listeners {
         @Override
         public void update(State oldState, State newState) {
             notifier.update(
-                    (E)oldState.getState(clazz.getSimpleName()),
-                    (E)newState.getState(clazz.getSimpleName()),
+                    (E)oldState.getState(key, clazz), // FIXME
+                    (E)newState.getState(key, clazz), // FIXME null check
                     listener
             );
         }

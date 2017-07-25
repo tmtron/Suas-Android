@@ -1,6 +1,7 @@
 sudo: required
-dist: precise
+dist: trusty
 language: android
+group: edge
 jdk:
 - oraclejdk8
 before_cache:
@@ -14,7 +15,7 @@ android:
   - tools
   - android-26
   - platform-tools
-  - build-tools-26.0.0
+  - build-tools-26.0.1
   - extra-android-m2repository
   licenses:
   - android-sdk-license-[0-9a-f]{8}

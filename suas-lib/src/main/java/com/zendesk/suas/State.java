@@ -4,7 +4,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import java.io.Serializable;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -13,13 +12,22 @@ import java.util.Map;
  */
 public class State implements Serializable {
 
+    static String keyForClass(Class clazz) {
+        return clazz.getSimpleName();
+    }
+
+
     private final Map<String, Object> state;
 
     /**
      * Used for testing and creating a copy.
      */
     public State(@NonNull Map<String, Object> state) {
-        this.state = Collections.unmodifiableMap(state);
+        this.state = new HashMap<>(state);
+    }
+
+    public State() {
+        this.state = new HashMap<>();
     }
 
     @Nullable
@@ -29,7 +37,7 @@ public class State implements Serializable {
 
     @Nullable
     public <E> E getState(@NonNull Class<E> clazz) {
-        final Object data = state.get(clazz.getSimpleName());
+        final Object data = state.get(keyForClass(clazz));
         if(clazz.isInstance(data)) {
             //noinspection unchecked
             return (E) data;
@@ -50,7 +58,7 @@ public class State implements Serializable {
     }
 
     @NonNull
-    public State copy() {
+    State copy() {
         return new State(new HashMap<>(state));
     }
 
@@ -62,7 +70,7 @@ public class State implements Serializable {
     }
 
     void updateKey(Class key, Object newState) {
-        state.put(key.getSimpleName(), newState);
+        state.put(keyForClass(key), newState);
     }
 
     @Override
