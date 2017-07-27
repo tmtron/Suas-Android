@@ -8,22 +8,22 @@ public interface Store extends GetState, Dispatcher {
 
     void addListener(Listener<State> listener);
 
-    void addListener(Notifier<State> notifier, Listener<State> listener);
+    void addListener(Filter<State> filter, Listener<State> listener);
 
 
     <E> void addListener(String key, Listener<E> listener);
 
-    <E> void addListener(String key, Notifier<E> notifier, Listener<E> listener);
+    <E> void addListener(String key, Filter<E> filter, Listener<E> listener);
 
 
     <E> void addListener(Class<E> clazz, Listener<E> listener);
 
-    <E> void addListener(Class<E> clazz, Notifier<E> notifier, Listener<E> listener);
+    <E> void addListener(Class<E> clazz, Filter<E> filter, Listener<E> listener);
 
 
     <E> void addListener(String key, Class<E> clazz, Listener<E> listener);
 
-    <E> void addListener(String key, Class<E> clazz, Notifier<E> notifier, Listener<E> listener);
+    <E> void addListener(String key, Class<E> clazz, Filter<E> filter, Listener<E> listener);
 
 
     void removeListener(Listener<?> listener);
@@ -31,22 +31,22 @@ public interface Store extends GetState, Dispatcher {
 
     <E> void connect(Component<State, E> component);
 
-    <E> void connect(Component<State, E> component, Notifier<State> notifier);
+    <E> void connect(Component<State, E> component, Filter<State> filter);
 
 
     <E, F> void connect(Component<E, F> component, String key);
 
-    <E, F> void connect(Component<E, F> component, String key, Notifier<E> notifier);
+    <E, F> void connect(Component<E, F> component, String key, Filter<E> filter);
 
 
     <E, F> void connect(Component<E, F> component, Class<E> clazz);
 
-    <E, F> void connect(Component<E, F> component, Class<E> clazz, Notifier<E> notifier);
+    <E, F> void connect(Component<E, F> component, Class<E> clazz, Filter<E> filter);
 
 
     <E, F> void connect(Component<E, F> component, String key, Class<E> clazz);
 
-    <E, F> void connect(Component<E, F> component, String key, Class<E> clazz, Notifier<E> notifier);
+    <E, F> void connect(Component<E, F> component, String key, Class<E> clazz, Filter<E> filter);
 
 
     void disconnect(Component component);

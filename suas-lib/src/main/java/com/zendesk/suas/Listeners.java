@@ -8,19 +8,19 @@ class Listeners {
 
     private static final Logger L = Logger.getLogger("Suas");
 
-    static <E> StateListener create(String key, Notifier<E> notifier, Listener<E> listener) {
+    static <E> StateListener create(String key, Filter<E> notifier, Listener<E> listener) {
         return new StringKeyedListener<>(key, listener, notifier);
     }
 
-    static <E> StateListener create(Class<E> clazz, Notifier<E> notifier, Listener<E> listener) {
+    static <E> StateListener create(Class<E> clazz, Filter<E> notifier, Listener<E> listener) {
         return new ClassKeyedListener<>(clazz, listener, notifier);
     }
 
-    static <E> StateListener create(String key, Class<E> clazz, Notifier<E> notifier, Listener<E> listener) {
+    static <E> StateListener create(String key, Class<E> clazz, Filter<E> notifier, Listener<E> listener) {
         return new ClassStringKeyedListener<>(key, clazz, listener, notifier);
     }
 
-    static StateListener create(Notifier<State> notifier, Listener<State> listener) {
+    static StateListener create(Filter<State> notifier, Listener<State> listener) {
         return new Default(listener, notifier);
     }
 
@@ -49,16 +49,18 @@ class Listeners {
     private static class Default implements StateListener {
 
         private final Listener<State> listener;
-        private final Notifier<State> notifier;
+        private final Filter<State> filter;
 
-        private Default(Listener<State> listener, Notifier<State> notifier) {
+        private Default(Listener<State> listener, Filter<State> filter) {
             this.listener = listener;
-            this.notifier = notifier;
+            this.filter = filter;
         }
 
         @Override
         public void update(State oldState, State newState) {
-            notifier.update(oldState, newState, listener);
+            if(filter.filter(oldState, newState)) {
+                listener.update(oldState, newState);
+            }
         }
 
         @Override
@@ -86,12 +88,12 @@ class Listeners {
 
         private final String key;
         private final Listener<E> listener;
-        private final Notifier<E> notifier;
+        private final Filter<E> filter;
 
-        private StringKeyedListener(String key, Listener<E> listener, Notifier<E> notifier) {
+        private StringKeyedListener(String key, Listener<E> listener, Filter<E> filter) {
             this.key = key;
             this.listener = listener;
-            this.notifier = notifier;
+            this.filter = filter;
         }
 
         @Override
@@ -99,7 +101,9 @@ class Listeners {
             try {
                 @SuppressWarnings("unchecked") final E oldStateTyped = (E) oldState.getState(key);
                 @SuppressWarnings("unchecked") final E newStateTyped = (E) oldState.getState(key);
-                notifier.update(oldStateTyped, newStateTyped, listener);
+                if(filter.filter(oldStateTyped, newStateTyped)) {
+                    listener.update(oldStateTyped, newStateTyped);
+                }
             } catch (ClassCastException ignored) {
                 L.log(Level.WARNING, "Either new value or old value cannot be converted to type expected type.");
             }
@@ -130,12 +134,12 @@ class Listeners {
 
         private final Class<E> clazz;
         private final Listener<E> listener;
-        private final Notifier<E> notifier;
+        private final Filter<E> filter;
 
-        private ClassKeyedListener(Class<E> clazz, Listener<E> listener, Notifier<E> notifier) {
+        private ClassKeyedListener(Class<E> clazz, Listener<E> listener, Filter<E> filter) {
             this.clazz = clazz;
             this.listener = listener;
-            this.notifier = notifier;
+            this.filter = filter;
         }
 
         @Override
@@ -144,7 +148,9 @@ class Listeners {
             E newStateTyped = newState.getState(clazz);
 
             if(oldStateTyped != null && newStateTyped != null) {
-                notifier.update(oldStateTyped, newStateTyped, listener);
+                if(filter.filter(oldStateTyped, newStateTyped)) {
+                    listener.update(oldStateTyped, newStateTyped);
+                }
             } else {
                 L.log(Level.WARNING, "Either new value or old value cannot be converted to type expected type.");
             }
@@ -177,13 +183,13 @@ class Listeners {
         private final Class<E> clazz;
         private final String key;
         private final Listener<E> listener;
-        private final Notifier<E> notifier;
+        private final Filter<E> filter;
 
-        private ClassStringKeyedListener(String key, Class<E> clazz, Listener<E> listener, Notifier<E> notifier) {
+        private ClassStringKeyedListener(String key, Class<E> clazz, Listener<E> listener, Filter<E> filter) {
             this.clazz = clazz;
             this.listener = listener;
             this.key = key;
-            this.notifier = notifier;
+            this.filter = filter;
         }
 
         @Override
@@ -192,7 +198,9 @@ class Listeners {
             E newStateTyped = newState.getState(key, clazz);
 
             if(oldStateTyped != null && newStateTyped != null) {
-                notifier.update(oldStateTyped, newStateTyped, listener);
+                if(filter.filter(oldStateTyped, newStateTyped)) {
+                    listener.update(oldStateTyped, newStateTyped);
+                }
             } else {
                 L.log(Level.WARNING, "Either new value or old value cannot be converted to type expected type.");
             }

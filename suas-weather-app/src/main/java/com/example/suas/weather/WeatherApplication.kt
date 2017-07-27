@@ -24,6 +24,8 @@ class WeatherApplication : Application() {
         }
     }
 
+    private val storage: Storage by lazy { Storage(this) }
+
     private val retrofit: Retrofit by lazy {
         Retrofit.Builder().apply {
             baseUrl("http://api.wunderground.com/api/").build()
@@ -31,11 +33,11 @@ class WeatherApplication : Application() {
         }.build()
     }
 
-    private val autocompleteService: AutocompleteService by lazy { retrofit.create(AutocompleteService::class.java) }
-    private val wundergroundService: WundergroundService by lazy { retrofit.create(WundergroundService::class.java) }
-    private val storage: Storage by lazy { Storage(this) }
-
-    val weatherService: WeatherService by lazy { WeatherService(autocomplete = autocompleteService, weather = wundergroundService) }
+    val weatherService: WeatherService by lazy {
+        val autocompleteService = retrofit.create(AutocompleteService::class.java)
+        val wundergroundService = retrofit.create(WundergroundService::class.java)
+        WeatherService(autocomplete = autocompleteService, weather = wundergroundService)
+    }
 
     val store : Store by lazy {
 
@@ -59,7 +61,7 @@ class WeatherApplication : Application() {
 
         val store = ReduxStore.Builder(reducers)
                 .withMiddleware(AsyncMiddleware(), monitor, logger)
-                .withDefaultNotifier(Notifiers.EQUALS)
+                .withDefaultNotifier(Filters.EQUALS)
                 .build()
 
         store.dispatchAction(storage.loadAction())

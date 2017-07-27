@@ -46,14 +46,8 @@ class Storage(context: Context) {
     fun register(store: Store) {
         store.addListener(
                 StateModels.Locations::class.java,
-                { oldState, newState, listener ->
-                    if(newState != oldState) {
-                        listener.update(oldState, newState)
-                    }
-                },
-                { _, newState ->
-                    store(newState)
-                }
+                { oldState, newState -> newState != oldState },
+                { _, newState -> store(newState) }
         )
     }
 }
