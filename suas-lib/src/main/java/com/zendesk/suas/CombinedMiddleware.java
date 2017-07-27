@@ -27,13 +27,13 @@ class CombinedMiddleware implements Middleware {
         }
     }
 
-    private void loopThroughMiddleware(Action<?> action, final GetState state, final Dispatcher dispatcher,
+    private void loopThroughMiddleware(final Action<?> action, final GetState state, final Dispatcher dispatcher,
                                        final Continuation continuation, final Iterator<Middleware> middleware) {
         if (middleware.hasNext()) {
             final Middleware next = middleware.next();
             next.onAction(action, state, dispatcher, new Continuation() {
                 @Override
-                public void next(Action<?> action) {
+                public void next(@NonNull Action<?> action) {
                     loopThroughMiddleware(action, state, dispatcher, continuation, middleware);
                 }
             });

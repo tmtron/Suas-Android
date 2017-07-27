@@ -1,6 +1,8 @@
 package com.zendesk.suas;
 
 
+import android.support.annotation.NonNull;
+
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -41,8 +43,11 @@ class Listeners {
         }
 
         @Override
-        public void update(E oldState, E newState) {
-            component.update(component.getSelector().selectData(newState));
+        public void update(@NonNull E oldState, @NonNull E newState) {
+            final F selectedData = component.getSelector().selectData(newState);
+            if(selectedData != null) {
+                component.update(selectedData);
+            }
         }
     }
 
@@ -57,7 +62,7 @@ class Listeners {
         }
 
         @Override
-        public void update(State oldState, State newState) {
+        public void update(@NonNull State oldState, @NonNull State newState) {
             if(filter.filter(oldState, newState)) {
                 listener.update(oldState, newState);
             }
@@ -97,7 +102,7 @@ class Listeners {
         }
 
         @Override
-        public void update(State oldState, State newState) {
+        public void update(@NonNull State oldState, @NonNull State newState) {
             try {
                 @SuppressWarnings("unchecked") final E oldStateTyped = (E) oldState.getState(key);
                 @SuppressWarnings("unchecked") final E newStateTyped = (E) oldState.getState(key);
@@ -143,7 +148,7 @@ class Listeners {
         }
 
         @Override
-        public void update(State oldState, State newState) {
+        public void update(@NonNull State oldState, @NonNull State newState) {
             E oldStateTyped = oldState.getState(clazz);
             E newStateTyped = newState.getState(clazz);
 
@@ -193,7 +198,7 @@ class Listeners {
         }
 
         @Override
-        public void update(State oldState, State newState) {
+        public void update(@NonNull State oldState, @NonNull State newState) {
             E oldStateTyped = oldState.getState(key, clazz);
             E newStateTyped = newState.getState(key, clazz);
 

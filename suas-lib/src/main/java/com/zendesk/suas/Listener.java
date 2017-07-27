@@ -1,5 +1,7 @@
 package com.zendesk.suas;
 
+import android.support.annotation.NonNull;
+
 public interface Listener<E> {
-    void update(E oldState, E newState);
+    void update(@NonNull E oldState, @NonNull E newState);
 }

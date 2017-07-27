@@ -40,7 +40,7 @@ public class ReduxStore implements Store {
     public synchronized void dispatchAction(@NonNull Action action) {
         middleware.onAction(action, this, this, new Continuation() {
             @Override
-            public void next(Action<?> action) {
+            public void next(@NonNull Action<?> action) {
                 final State oldState = getState();
                 final CombinedReducer.ReduceResult result = reducer.reduce(getState(), action);
                 ReduxStore.this.state = result.getNewState();
@@ -58,59 +58,59 @@ public class ReduxStore implements Store {
     }
 
     @Override
-    public void resetFullState(State state) {
+    public void resetFullState(@NonNull State state) {
         final State oldState = getState();
         this.state = state.copy();
         notifyListener(oldState, this.state, reducer.getAllKeys());
     }
 
     @Override
-    public <E> void addListener(String key, Listener<E> listener) {
+    public <E> void addListener(@NonNull String key, @NonNull Listener<E> listener) {
         listeners.add(Listeners.create(key, defaultFilter, listener));
     }
 
     @Override
-    public <E> void addListener(String key, Filter<E> filter, Listener<E> listener) {
+    public <E> void addListener(@NonNull String key, @NonNull Filter<E> filter, @NonNull Listener<E> listener) {
         listeners.add(Listeners.create(key, filter, listener));
     }
 
     @Override
-    public <E> void addListener(Class<E> clazz, Listener<E> listener) {
+    public <E> void addListener(@NonNull Class<E> clazz, @NonNull Listener<E> listener) {
         listeners.add(Listeners.create(clazz, defaultFilter, listener));
     }
 
     @Override
-    public <E> void addListener(Class<E> clazz, Filter<E> filter, Listener<E> listener) {
+    public <E> void addListener(@NonNull Class<E> clazz, @NonNull Filter<E> filter, @NonNull Listener<E> listener) {
         listeners.add(Listeners.create(clazz, filter, listener));
     }
 
     @Override
-    public <E> void addListener(String key, Class<E> clazz, Listener<E> listener) {
+    public <E> void addListener(@NonNull String key, @NonNull Class<E> clazz, @NonNull Listener<E> listener) {
         listeners.add(Listeners.create(key, clazz, defaultFilter, listener));
     }
 
     @Override
-    public <E> void addListener(String key, Class<E> clazz, Filter<E> filter, Listener<E> listener) {
+    public <E> void addListener(@NonNull String key, @NonNull Class<E> clazz, @NonNull Filter<E> filter, @NonNull Listener<E> listener) {
         listeners.add(Listeners.create(key, clazz, filter, listener));
     }
 
     @Override
-    public void addListener(Listener<State> listener) {
+    public void addListener(@NonNull Listener<State> listener) {
         listeners.add(Listeners.create(defaultFilter, listener));
     }
 
     @Override
-    public void addListener(Filter<State> filter, Listener<State> listener) {
+    public void addListener(@NonNull Filter<State> filter, @NonNull Listener<State> listener) {
         listeners.add(Listeners.create(filter, listener));
     }
 
     @Override
-    public void removeListener(Listener<?> listener) {
+    public void removeListener(@NonNull Listener<?> listener) {
         listeners.remove(listener);
     }
 
     @Override
-    public <E> void connect(Component<State, E> component) {
+    public <E> void connect(@NonNull Component<State, E> component) {
         Listener<State> listener = Listeners.create(component);
         Listeners.StateListener stateListener = Listeners.create(defaultFilter, listener);
 
@@ -118,7 +118,7 @@ public class ReduxStore implements Store {
     }
 
     @Override
-    public <E> void connect(Component<State, E> component, Filter<State> filter) {
+    public <E> void connect(@NonNull Component<State, E> component, @NonNull Filter<State> filter) {
         Listener<State> listener = Listeners.create(component);
         Listeners.StateListener stateListener = Listeners.create(filter, listener);
 
@@ -127,7 +127,7 @@ public class ReduxStore implements Store {
 
 
     @Override
-    public <E, F> void connect(Component<E, F> component, String key) {
+    public <E, F> void connect(@NonNull Component<E, F> component, @NonNull String key) {
         Listener<E> listener = Listeners.create(component);
         Listeners.StateListener stateListener = Listeners.create(key, defaultFilter, listener);
 
@@ -135,7 +135,7 @@ public class ReduxStore implements Store {
     }
 
     @Override
-    public <E, F> void connect(Component<E, F> component, String key, Filter<E> filter) {
+    public <E, F> void connect(@NonNull Component<E, F> component, @NonNull String key, @NonNull Filter<E> filter) {
         Listener<E> listener = Listeners.create(component);
         Listeners.StateListener stateListener = Listeners.create(key, filter, listener);
 
@@ -143,7 +143,7 @@ public class ReduxStore implements Store {
     }
 
     @Override
-    public <E, F> void connect(final Component<E, F> component, Class<E> clazz) {
+    public <E, F> void connect(@NonNull final Component<E, F> component, @NonNull Class<E> clazz) {
         Listener<E> listener = Listeners.create(component);
         Listeners.StateListener stateListener = Listeners.create(clazz, defaultFilter, listener);
 
@@ -151,7 +151,7 @@ public class ReduxStore implements Store {
     }
 
     @Override
-    public <E, F> void connect(Component<E, F> component, Class<E> clazz, Filter<E> filter) {
+    public <E, F> void connect(@NonNull Component<E, F> component, @NonNull Class<E> clazz, @NonNull Filter<E> filter) {
         Listener<E> listener = Listeners.create(component);
         Listeners.StateListener stateListener = Listeners.create(clazz, filter, listener);
 
@@ -159,7 +159,7 @@ public class ReduxStore implements Store {
     }
 
     @Override
-    public <E, F> void connect(Component<E, F> component, String key, Class<E> clazz) {
+    public <E, F> void connect(@NonNull Component<E, F> component, @NonNull String key, @NonNull Class<E> clazz) {
         Listener<E> listener = Listeners.create(component);
         Listeners.StateListener stateListener = Listeners.create(key, clazz, defaultFilter, listener);
 
@@ -167,7 +167,7 @@ public class ReduxStore implements Store {
     }
 
     @Override
-    public <E, F> void connect(Component<E, F> component, String key, Class<E> clazz, Filter<E> filter) {
+    public <E, F> void connect(@NonNull Component<E, F> component, @NonNull String key, @NonNull Class<E> clazz, @NonNull Filter<E> filter) {
         Listener<E> listener = Listeners.create(component);
         Listeners.StateListener stateListener = Listeners.create(key, clazz, filter, listener);
 
@@ -182,7 +182,7 @@ public class ReduxStore implements Store {
     }
 
     @Override
-    public void disconnect(Component component) {
+    public void disconnect(@NonNull Component component) {
         if(componentListenerMap.containsKey(component)) {
             final Listener listener = componentListenerMap.remove(component);
             removeListener(listener);
@@ -197,36 +197,36 @@ public class ReduxStore implements Store {
         private Filter<Object> notifier = Filters.DEFAULT;
 
         public Builder(@NonNull List<Reducer> reducers) {
-            if(reducers == null) throw new IllegalArgumentException("Reducer must not be null");
+            assertArgumentsNotNull(reducers, "Reducer must not be null");
             this.reducers = reducers;
         }
 
         public Builder(@NonNull Reducer... reducers) {
-            if(reducers == null) throw new IllegalArgumentException("Reducer must not be null");
+            assertArgumentsNotNull(reducers, "Reducer must not be null");
             this.reducers = Arrays.asList(reducers);
         }
 
         public Builder withInitialState(@NonNull State state) {
-            if(state == null) throw new IllegalArgumentException("Initial state must not be null");
+            assertArgumentsNotNull(state, "Initial state must not be null");
             this.state = state;
             return this;
         }
 
         public Builder withMiddleware(@NonNull List<Middleware> middleware) {
-            if(middleware == null) throw new IllegalArgumentException("Middleware must not be null");
+            assertArgumentsNotNull(middleware, "Middleware must not be null");
             this.middleware = middleware;
             return this;
         }
 
         public Builder withMiddleware(@NonNull Middleware... middleware) {
-            if(middleware == null) throw new IllegalArgumentException("Middleware must not be null");
+            assertArgumentsNotNull(middleware, "Middleware must not be null");
             this.middleware = Arrays.asList(middleware);
             return this;
         }
 
-        public Builder withDefaultNotifier(Filter<Object> notifier) {
-            if(notifier == null) throw new IllegalArgumentException("Notifier must not be null");
-            this.notifier = notifier;
+        public Builder withDefaultNotifier(Filter<Object> filter) {
+            assertArgumentsNotNull(filter, "Notifier must not be null");
+            this.notifier = filter;
             return this;
         }
 
@@ -243,6 +243,13 @@ public class ReduxStore implements Store {
 
             return new ReduxStore(initialState, combinedReducer, combinedMiddleware, notifier);
         }
+
+        private void assertArgumentsNotNull(Object input, String msg) {
+            if(input == null) {
+                throw new IllegalArgumentException(msg);
+            }
+        }
+
     }
 
 }

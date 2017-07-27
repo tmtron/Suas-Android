@@ -1,6 +1,8 @@
 package com.example.suas.todo;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -70,7 +72,7 @@ public class MainActivity extends AppCompatActivity implements Component<TodoLis
 
         store.addListener(TodoList.class, new Listener<TodoList>() {
             @Override
-            public void update(TodoList oldState, TodoList newState) {
+            public void update(@NonNull TodoList oldState, @NonNull TodoList newState) {
                 todoListAdapter.update(newState.getItems());
             }
         });
@@ -90,15 +92,17 @@ public class MainActivity extends AppCompatActivity implements Component<TodoLis
     }
 
     @Override
-    public void update(String s) {
+    public void update(@NonNull String s) {
         System.out.println("update update " + s);
     }
 
+    @NonNull
     @Override
     public Selector<TodoList, String> getSelector() {
         return new Selector<TodoList, String>() {
+            @Nullable
             @Override
-            public String selectData(TodoList data) {
+            public String selectData(@NonNull TodoList data) {
                 return data.getItems().toString();
             }
         };

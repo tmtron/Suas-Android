@@ -1,5 +1,7 @@
 package com.zendesk.suas;
 
+import android.support.annotation.NonNull;
+
 public class Filters {
 
     public static final Filter DEFAULT = new DefaultFilter();
@@ -8,7 +10,7 @@ public class Filters {
     private static class DefaultFilter implements Filter {
 
         @Override
-        public boolean filter(Object oldState, Object newState) {
+        public boolean filter(@NonNull Object oldState, @NonNull Object newState) {
             return true;
         }
 
@@ -17,9 +19,10 @@ public class Filters {
     private static class EqualsFilter implements Filter {
 
         @Override
-        public boolean filter(Object oldState, Object newState) {
+        public boolean filter(@NonNull Object oldState, @NonNull Object newState) {
             return !oldState.equals(newState);
         }
+
     }
 
 }
