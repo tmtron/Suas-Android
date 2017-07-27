@@ -1,12 +1,16 @@
 package com.zendesk.suas;
 
 
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+
 /**
  * Definition to transform {@link State} into a view model
  * @param <E> type of the view model
  */
 public interface Selector<E, F> {
 
-    F selectData(E data);
+    @Nullable
+    F selectData(@NonNull E data);
 
 }

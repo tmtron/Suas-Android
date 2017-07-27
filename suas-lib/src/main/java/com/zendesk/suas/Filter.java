@@ -1,5 +1,7 @@
 package com.zendesk.suas;
 
+import android.support.annotation.NonNull;
+
 public interface Filter<E> {
-    boolean filter(E oldState, E newState);
+    boolean filter(@NonNull E oldState, @NonNull E newState);
 }
