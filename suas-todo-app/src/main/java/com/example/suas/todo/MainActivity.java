@@ -15,7 +15,7 @@ import com.zendesk.suas.Component;
 import com.zendesk.suas.Listener;
 import com.zendesk.suas.LoggerMiddleware;
 import com.zendesk.suas.Middleware;
-import com.zendesk.suas.Notifiers;
+import com.zendesk.suas.Filters;
 import com.zendesk.suas.ReduxStore;
 import com.zendesk.suas.Selector;
 import com.zendesk.suas.Store;
@@ -43,7 +43,7 @@ public class MainActivity extends AppCompatActivity implements Component<TodoLis
 
         store = new ReduxStore.Builder(new TodoReducer())
                 .withMiddleware(build)
-                .withDefaultNotifier(Notifiers.EQUALS)
+                .withDefaultNotifier(Filters.EQUALS)
                 .build();
 
         findViewById(R.id.add_item).setOnClickListener(new View.OnClickListener() {
@@ -85,7 +85,7 @@ public class MainActivity extends AppCompatActivity implements Component<TodoLis
 
     @Override
     protected void onStart() {
-        store.connect(this, TodoList.class, Notifiers.DEFAULT);
+        store.connect(this, TodoList.class, Filters.DEFAULT);
         super.onStart();
     }
 
