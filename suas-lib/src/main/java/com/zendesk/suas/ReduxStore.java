@@ -16,9 +16,9 @@ public class ReduxStore implements Store {
     private State state;
     private final CombinedReducer reducer;
     private final CombinedMiddleware middleware;
-    private final Notifier<Object> defaultNotifier;
+    private final Notifier defaultNotifier;
 
-    private final Collection<Listener<State>> listeners;
+    private final Collection<Listeners.StateListener> listeners;
     private final Map<Component, Listener> componentListenerMap;
 
     private ReduxStore(State state, CombinedReducer reducer, CombinedMiddleware combinedMiddleware, Notifier<Object> defaultNotifier) {
@@ -42,15 +42,18 @@ public class ReduxStore implements Store {
             @Override
             public void next(Action<?> action) {
                 final State oldState = getState();
-                state = reducer.reduce(getState(), action);
-                notifyListener(oldState, getState());
+                final CombinedReducer.ReduceResult result = reducer.reduce(getState(), action);
+                ReduxStore.this.state = result.getNewState();
+                notifyListener(oldState, getState(), result.getUpdatedKeys());
             }
         });
     }
 
-    private void notifyListener(State oldState, State newState) {
-        for(Listener<State> listener : listeners) {
-            listener.update(oldState, newState);
+    private void notifyListener(State oldState, State newState, Collection<String> updatedKeys) {
+        for(Listeners.StateListener listener : listeners) {
+            if(listener.getKey() == null || updatedKeys.contains(listener.getKey())) {
+                listener.update(oldState, newState);
+            }
         }
     }
 
@@ -58,25 +61,7 @@ public class ReduxStore implements Store {
     public void resetFullState(State state) {
         final State oldState = getState();
         this.state = state.copy();
-        notifyListener(oldState, this.state);
-    }
-
-    @Override
-    public void reset(String key, Object state) {
-        final State oldState = getState();
-        final State newState = getState();
-        newState.updateKey(key, state);
-        this.state = newState;
-        notifyListener(oldState, this.state);
-    }
-
-    @Override
-    public void reset(Object state) {
-        final State oldState = getState();
-        final State newState = getState();
-        newState.updateKey(state.getClass(), state);
-        this.state = newState;
-        notifyListener(oldState, this.state);
+        notifyListener(oldState, this.state, reducer.getAllKeys());
     }
 
     @Override
@@ -127,15 +112,15 @@ public class ReduxStore implements Store {
     @Override
     public <E> void connect(Component<State, E> component) {
         Listener<State> listener = Listeners.create(component);
-        Listener<State> stateListener = Listeners.create(defaultNotifier, listener);
+        Listeners.StateListener stateListener = Listeners.create(defaultNotifier, listener);
 
         registerComponent(stateListener, component);
     }
 
     @Override
-    public <E> void connect(Component<State, E> component, Notifier<E> notifier) {
+    public <E> void connect(Component<State, E> component, Notifier<State> notifier) {
         Listener<State> listener = Listeners.create(component);
-        Listener<State> stateListener = Listeners.create(notifier, listener);
+        Listeners.StateListener stateListener = Listeners.create(notifier, listener);
 
         registerComponent(stateListener, component);
     }
@@ -144,7 +129,7 @@ public class ReduxStore implements Store {
     @Override
     public <E, F> void connect(Component<E, F> component, String key) {
         Listener<E> listener = Listeners.create(component);
-        Listener<State> stateListener = Listeners.create(key, defaultNotifier, listener);
+        Listeners.StateListener stateListener = Listeners.create(key, defaultNotifier, listener);
 
         registerComponent(stateListener, component);
     }
@@ -152,7 +137,7 @@ public class ReduxStore implements Store {
     @Override
     public <E, F> void connect(Component<E, F> component, String key, Notifier<E> notifier) {
         Listener<E> listener = Listeners.create(component);
-        Listener<State> stateListener = Listeners.create(key, notifier, listener);
+        Listeners.StateListener stateListener = Listeners.create(key, notifier, listener);
 
         registerComponent(stateListener, component);
     }
@@ -160,7 +145,7 @@ public class ReduxStore implements Store {
     @Override
     public <E, F> void connect(final Component<E, F> component, Class<E> clazz) {
         Listener<E> listener = Listeners.create(component);
-        Listener<State> stateListener = Listeners.create(clazz, defaultNotifier, listener);
+        Listeners.StateListener stateListener = Listeners.create(clazz, defaultNotifier, listener);
 
         registerComponent(stateListener, component);
     }
@@ -168,7 +153,7 @@ public class ReduxStore implements Store {
     @Override
     public <E, F> void connect(Component<E, F> component, Class<E> clazz, Notifier<E> notifier) {
         Listener<E> listener = Listeners.create(component);
-        Listener<State> stateListener = Listeners.create(clazz, notifier, listener);
+        Listeners.StateListener stateListener = Listeners.create(clazz, notifier, listener);
 
         registerComponent(stateListener, component);
     }
@@ -176,7 +161,7 @@ public class ReduxStore implements Store {
     @Override
     public <E, F> void connect(Component<E, F> component, String key, Class<E> clazz) {
         Listener<E> listener = Listeners.create(component);
-        Listener<State> stateListener = Listeners.create(key, clazz, defaultNotifier, listener);
+        Listeners.StateListener stateListener = Listeners.create(key, clazz, defaultNotifier, listener);
 
         registerComponent(stateListener, component);
     }
@@ -184,13 +169,13 @@ public class ReduxStore implements Store {
     @Override
     public <E, F> void connect(Component<E, F> component, String key, Class<E> clazz, Notifier<E> notifier) {
         Listener<E> listener = Listeners.create(component);
-        Listener<State> stateListener = Listeners.create(key, clazz, notifier, listener);
+        Listeners.StateListener stateListener = Listeners.create(key, clazz, notifier, listener);
 
         registerComponent(stateListener, component);
     }
 
 
-    private void registerComponent(Listener<State> listener, Component component) {
+    private void registerComponent(Listeners.StateListener listener, Component component) {
         componentListenerMap.put(component, listener);
         listeners.add(listener);
         listener.update(reducer.getEmptyState(), getState());

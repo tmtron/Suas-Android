@@ -1,6 +1,7 @@
 package com.zendesk.suas;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 /**
  * Definition of a Reducer. The implementation should be able to
@@ -14,9 +15,8 @@ public abstract class Reducer<E> {
 
     /**
      * Reduce state. Apply the provided action on the oldState.
-     * This method ALWAYS returns new a state. Even if it's doing nothing.
      */
-    @NonNull
+    @Nullable
     public abstract E reduce(@NonNull E oldState, @NonNull Action<?> action);
 
     /**

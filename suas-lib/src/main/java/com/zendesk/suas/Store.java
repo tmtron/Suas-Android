@@ -5,10 +5,6 @@ public interface Store extends GetState, Dispatcher {
 
     void resetFullState(State state);
 
-    void reset(String key, Object state);
-
-    void reset(Object state);
-
 
     void addListener(Listener<State> listener);
 
@@ -35,7 +31,7 @@ public interface Store extends GetState, Dispatcher {
 
     <E> void connect(Component<State, E> component);
 
-    <E> void connect(Component<State, E> component, Notifier<E> notifier);
+    <E> void connect(Component<State, E> component, Notifier<State> notifier);
 
 
     <E, F> void connect(Component<E, F> component, String key);

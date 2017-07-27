@@ -1,7 +1,6 @@
 package com.zendesk.suas
 
-import com.google.common.truth.Truth
-import com.google.common.truth.Truth.*
+import com.google.common.truth.Truth.assertThat
 import org.junit.Test
 
 class CombinedReducerTest {
@@ -44,9 +43,10 @@ class CombinedReducerTest {
 
         val newState = cr.reduce(cr.emptyState, Action<Unit>("bla"))
 
-        assertThat(newState.getState("1")).isEqualTo(r1.newState)
-        assertThat(newState.getState("2")).isEqualTo(r2.newState)
-        assertThat(newState.getState("3")).isEqualTo(r3.newState)
+        assertThat(newState.newState.getState("1")).isEqualTo(r1.newState)
+        assertThat(newState.newState.getState("2")).isEqualTo(r2.newState)
+        assertThat(newState.newState.getState("3")).isEqualTo(r3.newState)
+        assertThat(newState.updatedKeys).containsAllOf("1", "2", "3")
     }
 
     class TestReducer(val myKey: String, val newState : String = "new_state") : Reducer<String>() {
