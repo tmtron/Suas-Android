@@ -1,0 +1,33 @@
+apply plugin: 'java'
+apply plugin: 'kotlin'
+apply plugin: 'application'
+
+targetCompatibility = "1.8"
+sourceCompatibility = "1.8"
+
+sourceSets {
+    main.kotlin.srcDirs += 'src/main/kotlin'
+}
+
+task runJava {
+    dependsOn run
+    mainClassName = 'com.example.suas.counter.SuasCounter'
+}
+
+task runKotlin {
+    dependsOn run
+    mainClassName = 'com.example.suas.counter.SuasCounterKotlinKt'
+}
+
+dependencies {
+    if(useLocalDependency()) {
+        implementation project(':suas-lib')
+        implementation project(':suas-middleware-logger')
+    } else {
+        implementation group: 'com.zendesk.suas', name: 'suas', version: rootProject.ext.buildSettings.libVersion
+        implementation group: 'com.zendesk.suas', name: 'suas-logger', version: rootProject.ext.buildSettings.middleWareVersion
+    }
+    compile group: 'com.android.support', name: 'support-annotations', version: rootProject.ext.supportLibVersion
+    compile group: 'org.jetbrains.kotlin', name: 'kotlin-stdlib-jre8', version: rootProject.ext.kotlinVersion
+}
+
