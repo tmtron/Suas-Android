@@ -17,10 +17,13 @@ interface Helper {
 
     fun store(reducer: Reducer<*> = TestReducer(),
               filter: Filter<Any>? = null,
-              middleware: List<Middleware> = listOf()): Store {
-        return ReduxStore.Builder(reducer).apply {
+              middleware: List<Middleware> = listOf(),
+              initialState: State? = null
+              ): Store {
+        return Suas.createStore(reducer).apply {
             withMiddleware(middleware)
             if(filter != null) withDefaultFilter(filter)
+            if(initialState != null) withInitialState(initialState)
         }.build()
     }
 

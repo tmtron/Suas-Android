@@ -59,7 +59,7 @@ class WeatherApplication : Application() {
                 Reducers.LoadedObservationsReducer()
         )
 
-        val store = ReduxStore.Builder(reducers)
+        val store = Suas.createStore(reducers)
                 .withMiddleware(AsyncMiddleware(), monitor, logger)
                 .withDefaultFilter(Filters.EQUALS)
                 .build()

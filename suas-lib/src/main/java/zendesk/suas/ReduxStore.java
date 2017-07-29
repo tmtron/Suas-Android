@@ -8,7 +8,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ReduxStore implements Store {
+class ReduxStore implements Store {
 
     private State state;
     private final CombinedReducer reducer;

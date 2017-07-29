@@ -2,13 +2,12 @@ package zendesk.suas
 
 import com.google.common.truth.Truth.assertThat
 import org.junit.Test
-import zendesk.suas.Helper.TestReducer
 
 class ReduxStoreStateTest : Helper {
 
     @Test
     fun `store state - test default state`() {
-        val store = ReduxStore.Builder(TestReducer()).build()
+        val store = store()
 
         assertThat(store.state.getState(String::class.java))
                 .isEqualTo("empty_state")
@@ -20,9 +19,7 @@ class ReduxStoreStateTest : Helper {
             updateKey(String::class.java, "custom_state")
         }
 
-        val store = ReduxStore.Builder(TestReducer())
-                .withInitialState(state)
-                .build()
+        val store = store(initialState = state)
 
         assertThat(store.state.getState(String::class.java))
                 .isEqualTo("custom_state")
@@ -31,8 +28,7 @@ class ReduxStoreStateTest : Helper {
 
     @Test
     fun `store state - dispatch action`() {
-        val store = ReduxStore.Builder(TestReducer())
-                .build()
+        val store = store()
 
         assertThat(store.state.getState(String::class.java))
                 .isEqualTo("empty_state")
@@ -45,8 +41,7 @@ class ReduxStoreStateTest : Helper {
 
     @Test
     fun `store state - reset`() {
-        val store = ReduxStore.Builder(TestReducer())
-                .build()
+        val store = store()
 
         assertThat(store.state.getState(String::class.java))
                 .isEqualTo("empty_state")
