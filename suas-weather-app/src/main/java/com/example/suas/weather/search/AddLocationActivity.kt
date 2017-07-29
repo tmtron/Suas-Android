@@ -6,8 +6,8 @@ import com.example.suas.weather.R
 import com.example.suas.weather.Subscription
 import com.example.suas.weather.WeatherApplication
 import com.example.suas.weather.network.WeatherService
-import com.zendesk.suas.Store
 import kotlinx.android.synthetic.main.activity_add_location.*
+import zendesk.suas.Store
 
 class AddLocationActivity : Activity() {
 

@@ -7,9 +7,9 @@ import com.example.suas.weather.network.WeatherService
 import com.example.suas.weather.network.WundergroundService
 import com.example.suas.weather.storage.Storage
 import com.example.suas.weather.suas.Reducers
-import com.zendesk.suas.*
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import zendesk.suas.*
 import java.lang.RuntimeException
 
 class WeatherApplication : Application() {

@@ -1,6 +1,6 @@
-package com.example.suas.weather;
+package com.example.suas.weather
 
-import com.zendesk.suas.Store;
+import zendesk.suas.Store
 
 interface Subscription {
     fun connect(store: Store)

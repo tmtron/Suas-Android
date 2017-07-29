@@ -1,6 +1,6 @@
 package com.example.suas.todo;
 
-import com.zendesk.suas.Action;
+import zendesk.suas.Action;
 
 public class ActionFactory {
 

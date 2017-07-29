@@ -4,9 +4,9 @@ import android.view.View
 import android.widget.ProgressBar
 import com.example.suas.weather.Subscription
 import com.example.suas.weather.suas.StateModels
-import com.zendesk.suas.Component
-import com.zendesk.suas.Selector
-import com.zendesk.suas.Store
+import zendesk.suas.Component
+import zendesk.suas.Selector
+import zendesk.suas.Store
 
 class ProgressComponent(val progressBar: ProgressBar) : Component<StateModels.Progress, Boolean>, Subscription {
 

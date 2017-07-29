@@ -4,7 +4,7 @@ import com.example.suas.weather.network.NetworkModels
 import com.example.suas.weather.network.NetworkModels.AutocompleteItem
 import com.example.suas.weather.suas.StateModels.Location
 import com.example.suas.weather.suas.StateModels.Locations
-import com.zendesk.suas.Action
+import zendesk.suas.Action
 
 
 object ActionTypes {

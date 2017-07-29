@@ -2,11 +2,11 @@ package com.example.suas.todo;
 
 import android.support.annotation.NonNull;
 
-import com.zendesk.suas.Action;
-import com.zendesk.suas.Reducer;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import zendesk.suas.Action;
+import zendesk.suas.Reducer;
 
 
 public class TodoReducer extends Reducer<TodoList> {

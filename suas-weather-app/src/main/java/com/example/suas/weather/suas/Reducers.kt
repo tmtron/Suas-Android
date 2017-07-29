@@ -1,7 +1,7 @@
 package com.example.suas.weather.suas
 
-import com.zendesk.suas.Action
-import com.zendesk.suas.Reducer
+import zendesk.suas.Action
+import zendesk.suas.Reducer
 
 interface Reducers {
 
