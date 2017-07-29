@@ -21,10 +21,9 @@ class StateTest {
 
     @Test
     fun `get state for class`() {
-        val state = State()
+        val state = State(mapOf(State.keyForClass(List::class.java) to 1L))
         state.updateKey(Date::class.java, Date(0))
         state.updateKey(String::class.java, "test")
-        state.updateKey(List::class.java, 1L)
 
         val string: String? = state.getState(String::class.java)
         assertThat(string).isEqualTo("test")
