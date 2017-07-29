@@ -50,7 +50,7 @@ class ReduxStoreStateTest : Helper {
             updateKey(String::class.java, "custom_state")
         }
 
-        store.resetFullState(state)
+        store.reset(state)
 
         assertThat(store.state.getState(String::class.java))
                 .isEqualTo("custom_state")

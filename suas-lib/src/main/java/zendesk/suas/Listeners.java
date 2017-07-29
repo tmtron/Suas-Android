@@ -6,6 +6,10 @@ import android.support.annotation.NonNull;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * Helper class for registering {@link Listener} or {@link Component} to a
+ * certain part of the {@link State}
+ */
 class Listeners {
 
     private static final Logger L = Logger.getLogger("Suas");

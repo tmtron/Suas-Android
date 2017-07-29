@@ -2,12 +2,11 @@ package zendesk.suas;
 
 import android.support.annotation.NonNull;
 
-import zendesk.suas.Selector;
-
 /**
- * Component definition. Usually implemented by UI elements.
+ * Component definition. Component represents a main UI view
  *
- * @param <E> type of the view model
+ * @param <E> type of the state passed into {@link Selector#selectData(Object)}
+ * @param <F> type of the view model, passed into {@link #update(Object)}
  */
 public interface Component<E, F> {
 
@@ -17,7 +16,7 @@ public interface Component<E, F> {
     void update(@NonNull F e);
 
     /**
-     * Implementation of a {@link Selector} used to transform {@link State} to {@code E}
+     * Implementation of a {@link Selector} used to transform {@code <E>} to {@code <F>}
      */
     @NonNull
     Selector<E, F> getSelector();

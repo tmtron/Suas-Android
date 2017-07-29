@@ -15,6 +15,8 @@ public abstract class Reducer<E> {
 
     /**
      * Reduce state. Apply the provided action on the oldState.
+     *
+     * @return the new state, or {@code null} if nothing has changed
      */
     @Nullable
     public abstract E reduce(@NonNull E oldState, @NonNull Action<?> action);

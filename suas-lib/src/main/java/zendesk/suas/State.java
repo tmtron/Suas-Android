@@ -4,11 +4,12 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- * An implementation of state that's used in a {@link ReduxStore}.
+ * An implementation of state that's used in a {@link DefaultStore}.
  */
 public class State implements Serializable {
 
@@ -67,6 +68,10 @@ public class State implements Serializable {
 
     <E> void updateKey(Class<E> key, E newState) {
         state.put(keyForClass(key), newState);
+    }
+
+    Collection<String> getKeys() {
+        return state.keySet();
     }
 
     @Override

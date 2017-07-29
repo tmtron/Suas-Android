@@ -8,6 +8,9 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * Helper class for handling all passed in {@link Reducer}.
+ */
 class CombinedReducer {
 
     private final Collection<Reducer> reducers;
@@ -29,7 +32,7 @@ class CombinedReducer {
             keys.add(r.getKey());
         }
         if(keys.size() != reducers.size()) {
-            throw new IllegalArgumentException("Reducers must not have the same key");
+            throw new IllegalArgumentException("Two or more reducers are tied to the same key");
         }
     }
 
@@ -60,7 +63,6 @@ class CombinedReducer {
         return new ReduceResult(updatedKeys, state);
     }
 
-    @NonNull
     public State getEmptyState() {
         final Map<String, Object> stateMap = new HashMap<>(reducers.size());
 
