@@ -16,12 +16,8 @@ public class State implements Serializable {
         return clazz.getSimpleName();
     }
 
-
     private final Map<String, Object> state;
 
-    /**
-     * Used for testing and creating a copy.
-     */
     public State(@NonNull Map<String, Object> state) {
         this.state = new HashMap<>(state);
     }
@@ -69,7 +65,7 @@ public class State implements Serializable {
         state.put(key, newState);
     }
 
-    void updateKey(Class key, Object newState) {
+    <E> void updateKey(Class<E> key, E newState) {
         state.put(keyForClass(key), newState);
     }
 

@@ -7,6 +7,10 @@ public class Filters {
     public static final Filter DEFAULT = new DefaultFilter();
     public static final Filter EQUALS = new EqualsFilter();
 
+    private Filters() {
+        // intentionally empty
+    }
+
     private static class DefaultFilter implements Filter {
 
         @Override

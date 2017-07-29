@@ -9,6 +9,12 @@ import java.util.logging.Logger;
 class Listeners {
 
     private static final Logger L = Logger.getLogger("Suas");
+    private static final String WRONG_TYPE = "Either new value or old value cannot be converted to type expected type.";
+    private static final String KEY_NOT_FOUND = "Requested key not found in store";
+
+    private Listeners() {
+        // intentionally empty
+    }
 
     static <E> StateListener create(String key, Filter<E> notifier, Listener<E> listener) {
         return new StringKeyedListener<>(key, listener, notifier);
@@ -73,7 +79,7 @@ class Listeners {
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
 
-            ClassKeyedListener<?> that = (ClassKeyedListener<?>) o;
+            Default that = (Default) o;
 
             return listener != null ? listener.equals(that.listener) : that.listener == null;
         }
@@ -105,12 +111,14 @@ class Listeners {
         public void update(@NonNull State oldState, @NonNull State newState) {
             try {
                 @SuppressWarnings("unchecked") final E oldStateTyped = (E) oldState.getState(key);
-                @SuppressWarnings("unchecked") final E newStateTyped = (E) oldState.getState(key);
-                if(filter.filter(oldStateTyped, newStateTyped)) {
+                @SuppressWarnings("unchecked") final E newStateTyped = (E) newState.getState(key);
+                if(oldStateTyped != null && newStateTyped != null && filter.filter(oldStateTyped, newStateTyped)) {
                     listener.update(oldStateTyped, newStateTyped);
+                } else {
+                    L.log(Level.WARNING, KEY_NOT_FOUND);
                 }
             } catch (ClassCastException ignored) {
-                L.log(Level.WARNING, "Either new value or old value cannot be converted to type expected type.");
+                L.log(Level.WARNING, WRONG_TYPE);
             }
         }
 
@@ -124,7 +132,7 @@ class Listeners {
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
 
-            ClassKeyedListener<?> that = (ClassKeyedListener<?>) o;
+            StringKeyedListener<?> that = (StringKeyedListener<?>) o;
 
             return listener != null ? listener.equals(that.listener) : that.listener == null;
         }
@@ -149,15 +157,15 @@ class Listeners {
 
         @Override
         public void update(@NonNull State oldState, @NonNull State newState) {
-            E oldStateTyped = oldState.getState(clazz);
-            E newStateTyped = newState.getState(clazz);
+            final E oldStateTyped = oldState.getState(clazz);
+            final E newStateTyped = newState.getState(clazz);
 
             if(oldStateTyped != null && newStateTyped != null) {
                 if(filter.filter(oldStateTyped, newStateTyped)) {
                     listener.update(oldStateTyped, newStateTyped);
                 }
             } else {
-                L.log(Level.WARNING, "Either new value or old value cannot be converted to type expected type.");
+                L.log(Level.WARNING, WRONG_TYPE + " or " + KEY_NOT_FOUND);
             }
         }
 
@@ -199,15 +207,13 @@ class Listeners {
 
         @Override
         public void update(@NonNull State oldState, @NonNull State newState) {
-            E oldStateTyped = oldState.getState(key, clazz);
-            E newStateTyped = newState.getState(key, clazz);
+            final E oldStateTyped = oldState.getState(key, clazz);
+            final E newStateTyped = newState.getState(key, clazz);
 
-            if(oldStateTyped != null && newStateTyped != null) {
-                if(filter.filter(oldStateTyped, newStateTyped)) {
-                    listener.update(oldStateTyped, newStateTyped);
-                }
+            if(oldStateTyped != null && newStateTyped != null && filter.filter(oldStateTyped, newStateTyped)) {
+                listener.update(oldStateTyped, newStateTyped);
             } else {
-                L.log(Level.WARNING, "Either new value or old value cannot be converted to type expected type.");
+                L.log(Level.WARNING, WRONG_TYPE + " or " + KEY_NOT_FOUND);
             }
         }
 
@@ -221,7 +227,7 @@ class Listeners {
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
 
-            ClassKeyedListener<?> that = (ClassKeyedListener<?>) o;
+            ClassStringKeyedListener<?> that = (ClassStringKeyedListener<?>) o;
 
             return listener != null ? listener.equals(that.listener) : that.listener == null;
         }

@@ -49,6 +49,16 @@ class CombinedReducerTest {
         assertThat(newState.updatedKeys).containsAllOf("1", "2", "3")
     }
 
+    @Test
+    fun `get all keys`() {
+        val r1 = TestReducer("1")
+        val r2 = TestReducer("2")
+        val r3 = TestReducer("3")
+        val cr = CombinedReducer(listOf(r1, r2, r3))
+
+        assertThat(cr.allKeys).containsExactly("1", "2", "3")
+    }
+
     class TestReducer(val myKey: String, val newState : String = "new_state") : Reducer<String>() {
         override fun reduce(oldState: String, action: Action<*>): String {
             return newState
