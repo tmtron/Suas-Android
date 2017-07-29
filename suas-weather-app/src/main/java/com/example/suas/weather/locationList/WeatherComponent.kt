@@ -6,10 +6,10 @@ import android.widget.TextView
 import com.example.suas.weather.Subscription
 import com.example.suas.weather.suas.StateModels
 import com.squareup.picasso.Picasso
-import com.zendesk.suas.Component
-import com.zendesk.suas.Selector
-import com.zendesk.suas.State
-import com.zendesk.suas.Store
+import zendesk.suas.Component
+import zendesk.suas.Selector
+import zendesk.suas.State
+import zendesk.suas.Store
 
 class WeatherComponent(val imageView: ImageView,
                        val location: TextView,

@@ -7,9 +7,9 @@ import android.os.Looper
 import com.example.suas.weather.suas.LocationsLoaded
 import com.example.suas.weather.suas.StateModels
 import com.google.gson.Gson
-import com.zendesk.suas.Action
-import com.zendesk.suas.AsyncMiddleware
-import com.zendesk.suas.Store
+import zendesk.suas.Action
+import zendesk.suas.AsyncMiddleware
+import zendesk.suas.Store
 
 class Storage(context: Context) {
 

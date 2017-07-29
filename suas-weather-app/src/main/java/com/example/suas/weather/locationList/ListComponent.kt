@@ -10,10 +10,10 @@ import com.example.suas.weather.R
 import com.example.suas.weather.Subscription
 import com.example.suas.weather.network.WeatherService
 import com.example.suas.weather.suas.StateModels
-import com.zendesk.suas.Component
-import com.zendesk.suas.Dispatcher
-import com.zendesk.suas.Selector
-import com.zendesk.suas.Store
+import zendesk.suas.Component
+import zendesk.suas.Dispatcher
+import zendesk.suas.Selector
+import zendesk.suas.Store
 
 typealias LocationSelected = (location: StateModels.Location) -> Unit
 

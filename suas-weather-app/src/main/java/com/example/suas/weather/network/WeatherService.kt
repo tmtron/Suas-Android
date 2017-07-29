@@ -1,8 +1,8 @@
 package com.example.suas.weather.network
 
 import com.example.suas.weather.suas.*
-import com.zendesk.suas.Action
-import com.zendesk.suas.AsyncMiddleware
+import zendesk.suas.Action
+import zendesk.suas.AsyncMiddleware
 import retrofit2.Call
 import retrofit2.Response
 

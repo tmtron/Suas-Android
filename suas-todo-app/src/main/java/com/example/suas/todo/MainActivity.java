@@ -12,19 +12,19 @@ import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.zendesk.suas.Action;
-import com.zendesk.suas.Component;
-import com.zendesk.suas.Listener;
-import com.zendesk.suas.LoggerMiddleware;
-import com.zendesk.suas.Middleware;
-import com.zendesk.suas.Filters;
-import com.zendesk.suas.ReduxStore;
-import com.zendesk.suas.Selector;
-import com.zendesk.suas.Store;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+
+import zendesk.suas.Action;
+import zendesk.suas.Component;
+import zendesk.suas.Filters;
+import zendesk.suas.Listener;
+import zendesk.suas.LoggerMiddleware;
+import zendesk.suas.Middleware;
+import zendesk.suas.ReduxStore;
+import zendesk.suas.Selector;
+import zendesk.suas.Store;
 
 public class MainActivity extends AppCompatActivity implements Component<TodoList, String> {
 

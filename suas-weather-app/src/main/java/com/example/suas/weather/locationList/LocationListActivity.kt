@@ -8,7 +8,7 @@ import com.example.suas.weather.Subscription
 import com.example.suas.weather.WeatherApplication
 import com.example.suas.weather.network.WeatherService
 import com.example.suas.weather.search.AddLocationActivity
-import com.zendesk.suas.Store
+import zendesk.suas.Store
 import kotlinx.android.synthetic.main.activity_location_list.*
 
 class LocationListActivity : AppCompatActivity() {
