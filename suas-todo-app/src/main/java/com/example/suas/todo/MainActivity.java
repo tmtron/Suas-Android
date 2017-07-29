@@ -45,7 +45,7 @@ public class MainActivity extends AppCompatActivity implements Component<TodoLis
 
         store = new ReduxStore.Builder(new TodoReducer())
                 .withMiddleware(build)
-                .withDefaultNotifier(Filters.EQUALS)
+                .withDefaultFilter(Filters.EQUALS)
                 .build();
 
         findViewById(R.id.add_item).setOnClickListener(new View.OnClickListener() {
