@@ -8,23 +8,23 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.Collection;
 
-public class ReduxStoreBuilderNullTest {
+public class SuasTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testBuilder_reducers_null() {
         final Collection<Reducer> r = null;
-        new ReduxStore.Builder(r).build();
+        Suas.createStore(r).build();
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testBuilder_reducers_emptyList() {
         final Collection<Reducer> r = new ArrayList<>();
-        new ReduxStore.Builder(r).build();
+        Suas.createStore(r).build();
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testBuilder_state_null() {
-        new ReduxStore.Builder(new TestReducer())
+        Suas.createStore(new TestReducer())
                 .withInitialState(null)
                 .build();
     }
@@ -32,14 +32,14 @@ public class ReduxStoreBuilderNullTest {
     @Test(expected = IllegalArgumentException.class)
     public void testBuilder_middleware_nullList() {
         Collection<Middleware> middleware = null;
-        new ReduxStore.Builder(new TestReducer())
+        Suas.createStore(new TestReducer())
                 .withMiddleware(middleware)
                 .build();
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testBuilder_filter_null() {
-        new ReduxStore.Builder(new TestReducer())
+        Suas.createStore(new TestReducer())
                 .withDefaultFilter(null)
                 .build();
     }

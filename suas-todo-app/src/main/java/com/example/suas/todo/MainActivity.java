@@ -22,9 +22,9 @@ import zendesk.suas.Filters;
 import zendesk.suas.Listener;
 import zendesk.suas.LoggerMiddleware;
 import zendesk.suas.Middleware;
-import zendesk.suas.ReduxStore;
 import zendesk.suas.Selector;
 import zendesk.suas.Store;
+import zendesk.suas.Suas;
 
 public class MainActivity extends AppCompatActivity implements Component<TodoList, String> {
 
@@ -43,7 +43,7 @@ public class MainActivity extends AppCompatActivity implements Component<TodoLis
                 .setLineLength(120)
                 .build();
 
-        store = new ReduxStore.Builder(new TodoReducer())
+        store = Suas.createStore(new TodoReducer())
                 .withMiddleware(build)
                 .withDefaultFilter(Filters.EQUALS)
                 .build();
