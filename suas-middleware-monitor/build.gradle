@@ -1,7 +1,7 @@
 ext {
     artifactId = 'suas-monitor'
     packaging = 'jar'
-    javadocTitle = 'Monitor'
+    javadocTitle = 'Suas Middleware Monitor'
 }
 
 apply plugin: 'java'

@@ -15,6 +15,35 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+/**
+ * Middleware for logging {@link State} changes to <a href="">Suas Monitor</a>
+ * <br>
+ * <p>
+ * Create an instance using the default constructor:
+ * <br>
+ * <pre>
+ * Middleware monitor = new MonitorMiddleware(context);
+ * </pre>
+ *
+ * or using the builder for more configuration options:
+ * <br>
+ * <pre>
+ * Middleware logger = new MonitorMiddleware.Builder(context)
+ *      .withEnableBonjour(true)
+ *      .withEnableAdb(false)
+ *      .build()
+ * </pre>
+ *
+ * Make sure the the monitor is the last middleware in the list:
+ * <br>
+ * <pre>
+ * Middleware monitor = new MonitorMiddleware(context)
+ *
+ * Store store = Suas.createStore(...)
+ *       .widthMiddleware(middleware1, middleware2, ... middlewareN, monitor)
+ *       .builder().
+ * </pre>
+ */
 public class MonitorMiddleware implements Middleware, ConnectionHandler {
 
     private NetworkSocketServer network;
@@ -25,7 +54,16 @@ public class MonitorMiddleware implements Middleware, ConnectionHandler {
     private final BlockingQueue<StateUpdate> data;
     private StateUpdate lastItem = null;
 
-    public MonitorMiddleware(final Context context) {
+    /**
+     * * Create a LoggerMiddleware with default parameters.
+     *
+     * <p>
+     *     ADB and Bonjour are enabled in the default configuration.
+     * </p>
+     *
+     * @param context a context
+     */
+    public MonitorMiddleware(@NonNull Context context) {
         this(new Builder(context));
     }
 
@@ -108,28 +146,44 @@ public class MonitorMiddleware implements Middleware, ConnectionHandler {
         }
     }
 
+    /**
+     * A fluent API for configuring a {@link MonitorMiddleware}
+     */
     public static class Builder {
 
         private final Context context;
         private boolean enableAdb;
         private boolean enableBonjour;
 
-        public Builder(Context context) {
+        public Builder(@NonNull Context context) {
             this.context = context;
             this.enableAdb = true;
             this.enableBonjour = true;
         }
 
-        public Builder setEnableAdb(boolean enableAdb) {
+        /**
+         * Enable/disable debugging over ADB.
+         */
+        @NonNull
+        public Builder withEnableAdb(boolean enableAdb) {
             this.enableAdb = enableAdb;
             return this;
         }
 
-        public Builder setEnableBonjour(boolean enableBonjour) {
+        /**
+         * Enable/disable debugging over the network/bonjour.
+         */
+        @NonNull
+        public Builder withEnableBonjour(boolean enableBonjour) {
             this.enableBonjour = enableBonjour;
             return this;
         }
 
+        /**
+         * Create an instance of {@link MonitorMiddleware} with all the provided
+         * config options.
+         */
+        @NonNull
         public Middleware build() {
             return new MonitorMiddleware(this);
         }
