@@ -8,7 +8,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-class ReduxStore implements Store {
+class DefaultStore implements Store {
 
     private State state;
     private final CombinedReducer reducer;
@@ -18,7 +18,7 @@ class ReduxStore implements Store {
     private final Map<Listener, Listeners.StateListener> listenerStateListenerMap;
     private final Map<Component, Listeners.StateListener> componentListenerMap;
 
-    ReduxStore(State state, CombinedReducer reducer, CombinedMiddleware combinedMiddleware, Filter<Object> defaultFilter) {
+    DefaultStore(State state, CombinedReducer reducer, CombinedMiddleware combinedMiddleware, Filter<Object> defaultFilter) {
         this.state = state;
         this.reducer = reducer;
         this.middleware = combinedMiddleware;
@@ -40,7 +40,7 @@ class ReduxStore implements Store {
             public void next(@NonNull Action<?> action) {
                 final State oldState = getState();
                 final CombinedReducer.ReduceResult result = reducer.reduce(getState(), action);
-                ReduxStore.this.state = result.getNewState();
+                DefaultStore.this.state = result.getNewState();
                 notifyListener(oldState, getState(), result.getUpdatedKeys());
             }
         });
@@ -59,7 +59,7 @@ class ReduxStore implements Store {
     }
 
     @Override
-    public void resetFullState(@NonNull State state) {
+    public void reset(@NonNull State state) {
         final State oldState = getState();
         this.state = state.copy();
         notifyListener(oldState, this.state, reducer.getAllKeys());

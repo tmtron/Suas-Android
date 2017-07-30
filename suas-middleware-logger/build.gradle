@@ -1,6 +1,7 @@
 ext {
     artifactId = 'suas-logger'
     packaging = 'jar'
+    javadocTitle = 'Logger'
 }
 
 apply plugin: 'java'

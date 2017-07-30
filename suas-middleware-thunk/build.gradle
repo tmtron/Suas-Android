@@ -1,6 +1,7 @@
 ext {
     artifactId = 'suas-thunk'
     packaging = 'jar'
+    javadocTitle = 'thunk'
 }
 
 apply plugin: 'java'

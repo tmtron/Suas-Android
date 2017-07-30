@@ -4,7 +4,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 /**
- * Synchronous action that can be dispatched in a {@link ReduxStore} to
+ * Synchronous action that can be dispatched in a {@link Store} to
  * kick of state changes.
  */
 public class Action<E> {

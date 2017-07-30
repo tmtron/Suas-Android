@@ -6,9 +6,33 @@ ext {
     sdkVersionName = rootProject.ext.versionName
     sdkArtifactId = project.ext.artifactId
     sdkPackaging = project.ext.packaging
+    javadocTitle = project.ext.javadocTitle
 
     repoUsername = getConfigurationParameter("zdRepoUsername")
     repoPassword = getConfigurationParameter("zdRepoPassword")
+}
+
+
+task sourcesJar(type: Jar, dependsOn:classes) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+tasks.withType(Javadoc) {
+    source = sourceSets.main.allJava
+    options.addStringOption('Xdoclint:none', '-quiet')
+    title = javadocTitle
+    options.links("http://docs.oracle.com/javase/8/docs/api/")
+}
+
+task javadocJar(type: Jar, dependsOn:javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+artifacts {
+    archives sourcesJar
+    archives javadocJar
 }
 
 afterEvaluate { project ->

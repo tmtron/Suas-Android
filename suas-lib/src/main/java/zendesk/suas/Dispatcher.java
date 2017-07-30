@@ -3,12 +3,12 @@ package zendesk.suas;
 import android.support.annotation.NonNull;
 
 /**
- * Interface for dispatching {@link Action}.
+ * Function for dispatching an {@link Action} to the {@link Store}.
  */
 public interface Dispatcher {
 
     /**
-     * Dispatch a synchronous {@link Action}.
+     * Dispatches an {@link Action} to the {@link Store}.
      */
     void dispatchAction(@NonNull Action action);
 

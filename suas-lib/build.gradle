@@ -1,6 +1,7 @@
 
 ext {
     artifactId = 'suas'
+    javadocTitle = 'Suas'
     packaging = 'jar'
 }
 

@@ -5,6 +5,9 @@ import android.support.annotation.NonNull;
 import java.util.Collection;
 import java.util.Iterator;
 
+/**
+ * Helper class for combing all provided {@link Middleware}
+ */
 class CombinedMiddleware implements Middleware {
 
     private final Collection<Middleware> middleware;
