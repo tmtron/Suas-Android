@@ -47,8 +47,8 @@ class WeatherApplication : Application() {
                 .build()
 
         val monitor = MonitorMiddleware.Builder(this)
-                .setEnableAdb(true)
-                .setEnableBonjour(true)
+                .withEnableAdb(true)
+                .withEnableBonjour(true)
                 .build()
 
         val reducers = listOf(

@@ -23,7 +23,7 @@ import java.util.logging.StreamHandler;
  * Create an instance using the default constructor:
  * <br>
  * <pre>
- * Middleware logger new LoggerMiddleware();
+ * Middleware logger = new LoggerMiddleware();
  * </pre>
  *
  * or using the builder for more configuration options:
