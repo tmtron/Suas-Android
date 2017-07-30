@@ -9,10 +9,12 @@ sourceSets {
     main.kotlin.srcDirs += 'src/main/kotlin'
 }
 
-if (project.hasProperty("mainClass")) {
-    task execute(type:JavaExec) {
+task execute(type:JavaExec) {
+    classpath = sourceSets.main.runtimeClasspath
+    if (project.hasProperty("mainClass")) {
         main = mainClass
-        classpath = sourceSets.main.runtimeClasspath
+    } else {
+        mainClassName = 'com.exaple.suas.counter.SuasCounter'
     }
 }
 
@@ -27,4 +29,3 @@ dependencies {
     compile group: 'com.android.support', name: 'support-annotations', version: rootProject.ext.supportLibVersion
     compile group: 'org.jetbrains.kotlin', name: 'kotlin-stdlib-jre8', version: rootProject.ext.kotlinVersion
 }
-

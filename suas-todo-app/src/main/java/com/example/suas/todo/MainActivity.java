@@ -39,8 +39,8 @@ public class MainActivity extends AppCompatActivity implements Component<TodoLis
         listView.setAdapter(todoListAdapter);
 
         final Middleware build = new LoggerMiddleware.Builder()
-                .setSerialization(LoggerMiddleware.Serialization.TO_STRING)
-                .setLineLength(120)
+                .withSerialization(LoggerMiddleware.Serialization.TO_STRING)
+                .withLineLength(120)
                 .build();
 
         store = Suas.createStore(new TodoReducer())

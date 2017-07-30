@@ -42,8 +42,8 @@ class WeatherApplication : Application() {
     val store : Store by lazy {
 
         val logger = LoggerMiddleware.Builder()
-                .setSerialization(LoggerMiddleware.Serialization.GSON)
-                .setLineLength(-1)
+                .withSerialization(LoggerMiddleware.Serialization.GSON)
+                .withLineLength(-1)
                 .build()
 
         val monitor = MonitorMiddleware.Builder(this)
