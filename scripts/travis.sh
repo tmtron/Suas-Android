@@ -36,6 +36,14 @@ buildSampleAppWeather() {
     exitOnFailedBuild "suas-weather-app"
 }
 
+buildSampleAppCounter() {
+    ./gradlew -PmainClass=com.exaple.suas.counter.SuasCounter execute
+    exitOnFailedBuild "suas-counter-java"
+
+    ./gradlew -PmainClass=com.example.suas.counter.SuasCounterKotlinKt execute
+    exitOnFailedBuild "suas-counter-kotlin"
+}
+
 deployArtifacts() {
     boxOut "Deploying suas-lib artefact"
     ./gradlew :suas-lib:assemble :suas-lib:uploadArchives
@@ -59,6 +67,10 @@ prBuild() {
         boxOut "Building Sample App: Weather"
         buildSampleAppWeather
 
+    elif [ "$COMPONENT" == "sample_counter" ]; then
+        boxOut "Building Sample App: Counter"
+        buildSampleAppCounter
+
     else
         boxOut "Module doesn't exist: $COMPONENT"
     fi
@@ -75,6 +87,7 @@ branchBuild() {
         deployArtifacts
         buildSampleAppTodo
         buildSampleAppWeather
+        buildSampleAppCounter
     else
         boxOut "Module doesn't exist: $COMPONENT"
     fi

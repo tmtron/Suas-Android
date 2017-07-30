@@ -6,7 +6,7 @@ import zendesk.suas.*
 fun main(args: Array<String>) {
     val store = store()
     store.addListener(Counter::class.java) { _, (value) ->
-        println("State changed to $value")
+        println("Kotlin - State changed to $value")
     }
 
     store.dispatchAction(IncrementAction(10))

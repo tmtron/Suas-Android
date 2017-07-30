@@ -1,9 +1,9 @@
 # Suas Counter
 
 ```
-./gradlew :suas-counter:runJava
+./gradlew -PmainClass=com.exaple.suas.counter.SuasCounter execute
 ```
 
 ```
-./gradlew :suas-counter:runKotlin
+./gradlew -PmainClass=com.example.suas.counter.SuasCounterKotlinKt execute
 ```

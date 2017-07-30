@@ -9,14 +9,11 @@ sourceSets {
     main.kotlin.srcDirs += 'src/main/kotlin'
 }
 
-task runJava {
-    dependsOn run
-    mainClassName = 'com.example.suas.counter.SuasCounter'
-}
-
-task runKotlin {
-    dependsOn run
-    mainClassName = 'com.example.suas.counter.SuasCounterKotlinKt'
+if (project.hasProperty("mainClass")) {
+    task execute(type:JavaExec) {
+        main = mainClass
+        classpath = sourceSets.main.runtimeClasspath
+    }
 }
 
 dependencies {

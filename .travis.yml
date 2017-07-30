@@ -28,6 +28,7 @@ env:
   - COMPONENT=unit
   - COMPONENT=sample_todo
   - COMPONENT=sample_weather
+  - COMPONENT=sample_counter
   - COMPONENT=build
   global:
     # zdRepoUsername
