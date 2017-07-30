@@ -1,22 +1,57 @@
 package zendesk.suas;
 
-import android.os.Build;
 import android.support.annotation.NonNull;
-import android.util.Log;
 
 import com.google.gson.Gson;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.logging.Formatter;
+import java.util.logging.Handler;
+import java.util.logging.Level;
+import java.util.logging.LogRecord;
+import java.util.logging.Logger;
+import java.util.logging.StreamHandler;
 
+/**
+ * Middleware for logging {@link State} changes.
+ * <br>
+ * <p>
+ * Create an instance using the default constructor:
+ * <br>
+ * <pre>
+ * Middleware logger new LoggerMiddleware();
+ * </pre>
+ *
+ * or using the builder for more configuration options:
+ * <br>
+ * <pre>
+ * Middleware logger = new LoggerMiddleware.Builder()
+ *      .withTitleFormatter(...)
+ *      .withSerialization(...)
+ *      ...
+ *      .build()
+ * </pre>
+ *
+ * Make sure the the logger is the last middleware in the list:
+ * <br>
+ * <pre>
+ * Middleware logger = new LoggerMiddleware()
+ *
+ * Store store = Suas.createStore(...)
+ *       .widthMiddleware(middleware1, middleware2, ... middlewareN, logger)
+ *       .builder().
+ * </pre>
+ *
+ */
 public class LoggerMiddleware implements Middleware {
 
     private static final String LOG_TAG = "Suas-Logger";
 
     private final LogAppender logger;
-    private final Priority logLevel;
     private final Predicate predicate;
     private final TitleFormatter titleFormatter;
     private final Transformer<Action<?>> actionTransformer;
@@ -25,7 +60,6 @@ public class LoggerMiddleware implements Middleware {
 
     private LoggerMiddleware(Builder builder) {
         this.logger = builder.logAppender;
-        this.logLevel = builder.logLevel;
         this.predicate = builder.predicate;
         this.titleFormatter = builder.titleFormatter;
         this.actionTransformer = builder.actionTransformer;
@@ -33,6 +67,9 @@ public class LoggerMiddleware implements Middleware {
         this.lineLength = builder.lineLength;
     }
 
+    /**
+     * Create a LoggerMiddleware with sane default parameters.
+     */
     public LoggerMiddleware() {
         this(new Builder());
     }
@@ -54,23 +91,23 @@ public class LoggerMiddleware implements Middleware {
             final String newStateString = getSection("┠─ next state\t► ", "┃\t", stateTransformer.transform(newState), lineLength);
             final String lastLine = String.format(Locale.US, "┖─%s", new String(new char[title.length() - 2]).replace("\0", "─"));
 
-            logger.log(logLevel, LOG_TAG, title, null);
-            logger.log(logLevel, LOG_TAG, oldStateString, null);
-            logger.log(logLevel, LOG_TAG, actionString, null);
-            logger.log(logLevel, LOG_TAG, newStateString, null);
-            logger.log(logLevel, LOG_TAG, lastLine, null);
+            logger.log("", title);
+            logger.log(LOG_TAG, oldStateString);
+            logger.log(LOG_TAG, actionString);
+            logger.log(LOG_TAG, newStateString);
+            logger.log(LOG_TAG, lastLine);
         }
     }
 
 
-    private String getSection(String firstLineStart, String subsequentLineStart, String content, int maxLineLength) {
+    private static String getSection(String firstLineStart, String subsequentLineStart, String content, int maxLineLength) {
         final String section;
 
         if(maxLineLength > 0 && (firstLineStart.length() + content.length()) > maxLineLength) {
 
             final String firstLine = firstLineStart + content.substring(0, maxLineLength - firstLineStart.length());
             final String restContent = content.substring(maxLineLength - firstLineStart.length());
-            final List<String> remainingLines = LoggerHelper.splitLogMessage(restContent, maxLineLength - firstLineStart.length());
+            final List<String> remainingLines = splitLogMessage(restContent, maxLineLength - firstLineStart.length());
             final StringBuilder stringBuilder = new StringBuilder(firstLine);
 
             for(String s : remainingLines) {
@@ -88,26 +125,130 @@ public class LoggerMiddleware implements Middleware {
         return section;
     }
 
+    private static List<String> splitLogMessage(String message, int maxLength){
+        final List<String> messages = new ArrayList<>();
+
+        if(maxLength < 1){
+
+            if(!(message != null && message.length() > 0)){
+                messages.add("");
+                return messages;
+            }
+
+            messages.add(message);
+            return messages;
+        }
+
+        if(message == null || message.trim().length() == 0){
+            messages.add("");
+            return messages;
+        }
+
+        if(message.length() < maxLength){
+            messages.add(message);
+            return messages;
+        }
+
+        for(int i = 0, len = message.length(); i < len; i++){
+
+            final int indexOfSeparator = message.indexOf("\n", i);
+            final int newLine = (indexOfSeparator != -1) ? indexOfSeparator : len;
+
+            do {
+                final int end = Math.min(newLine, i + maxLength);
+                messages.add(message.substring(i, end));
+                i = end;
+            } while(i < newLine);
+        }
+
+        return messages;
+    }
+
+    /**
+     * Callback that decides if the logger should print or not.
+     */
     public interface Predicate {
-        boolean predicate(GetState getState, Action<?> action);
+        /**
+         * Callback that decides if the logger should print or not.
+         *
+         * @param getState the current state
+         * @param action the current action
+         * @return {@code true} print, {@code false} don't print
+         */
+        boolean predicate(@NonNull GetState getState, @NonNull Action<?> action);
     }
 
+    /**
+     * Callback that allows converting an object of type {@code <E>} to a {@link String} before printing
+     */
     public interface Transformer<E> {
-        String transform(E e);
+        /**
+         * Callback that allows converting an object of type {@code <E>} to a {@link String} before printing
+         *
+         * @param e date to transform into a string
+         */
+        @NonNull
+        String transform(@NonNull E e);
     }
 
+    /**
+     * Callback for creating the title line
+     */
     public interface TitleFormatter {
-        String getTitle(Action<?> action, Date timestamp, float duration);
+
+        /**
+         * Generate a title string for the logger
+         *
+         * @param action the current action
+         * @param timestamp the current timestamp
+         * @param duration the duration the action needed to process
+         * @return the title string
+         */
+        @NonNull
+        String getTitle(@NonNull Action<?> action, @NonNull Date timestamp, @NonNull float duration);
     }
 
+    /**
+     * Callback for printing logs
+     */
+    public interface LogAppender {
+        /**
+         * Callback for printing a single log message
+         *
+         * @param tag a log tag
+         * @param message a log message
+         */
+        void log(@NonNull String tag, @NonNull String message);
+    }
+
+    /**
+     * Serialization Type
+     * <p>
+     *     Only works in combination with the {@code DefaultTransformer}
+     * </p>
+     */
+    public enum Serialization {
+        /**
+         * Use {@link Gson} to transform an object to a {@link String}
+         */
+        GSON,
+
+        /**
+         * Use {@link Object#toString()} to transform an object to a {@link String}
+         */
+        TO_STRING
+    }
+
+    /**
+     * Fluent API for configuring a logger
+     */
     public static class Builder {
 
-        private LogAppender logAppender = getPlatformLogger();
+        private LogAppender logAppender = new SuasLogAppender();
         private Predicate predicate = new DefaultPredicate(true);
         private boolean showDuration = true;
         private boolean showTimestamp = true;
         private TitleFormatter titleFormatter = new DefaultTitleFormatter(showTimestamp, showDuration);
-        private Priority logLevel = Priority.DEBUG;
 
         private Serialization serialization = Serialization.GSON;
         private Transformer<Action<?>> actionTransformer = new DefaultTransformer<>(serialization);
@@ -115,80 +256,130 @@ public class LoggerMiddleware implements Middleware {
 
         private int lineLength = -1;
 
-        public Builder setLogAppender(LogAppender logAppender) {
+        /**
+         *
+         */
+        public Builder() {
+            // intentionally empty
+        }
+
+        /**
+         * Define a custom {@link LogAppender}
+         * <p>
+         *     Default: When running on Android it will use {@code Log} and on java {@code System.out}
+         * </p>
+         */
+        @NonNull
+        public Builder withLogAppender(@NonNull LogAppender logAppender) {
             this.logAppender = logAppender;
             return this;
         }
 
-        public Builder setPredicate(Predicate predicate) {
+        /**
+         * Provide a custom {@link Predicate}
+         * <p>
+         *     Default: Always print
+         * </p>
+         */
+        @NonNull
+        public Builder withPredicate(@NonNull Predicate predicate) {
             this.predicate = predicate;
             return this;
         }
 
-        public Builder setShowDuration(boolean showDuration) {
+        /**
+         * Enable/disable the duration in the title line.
+         * <p>
+         *     Default: {@code true}
+         *     <br>
+         *     Only working with the default {@link TitleFormatter}
+         * </p>
+         */
+        @NonNull
+        public Builder withShowDuration(boolean showDuration) {
             this.showDuration = showDuration;
             this.titleFormatter = new DefaultTitleFormatter(showTimestamp, showDuration);
             return this;
         }
 
-        public Builder setShowTimestamp(boolean showTimestamp) {
+        /**
+         * Enable/disable the timestamp in the title line.
+         * <p>
+         *     Default: {@code true}
+         *     <br>
+         *     Only working with the default {@link TitleFormatter}
+         * </p>
+         */
+        @NonNull
+        public Builder withShowTimestamp(boolean showTimestamp) {
             this.showTimestamp = showTimestamp;
             this.titleFormatter = new DefaultTitleFormatter(showTimestamp, showDuration);
             return this;
         }
 
-        public Builder setSerialization(Serialization serialization) {
+        /**
+         * Choose your preferred serialization method.
+         * <p>
+         *     Default: {@link Serialization#GSON}
+         *     <br>
+         *     Only work in combination with the the default transformer
+         * </p>
+         */
+        @NonNull
+        public Builder withSerialization(@NonNull Serialization serialization) {
             this.serialization = serialization;
             this.actionTransformer = new DefaultTransformer<>(serialization);
             this.stateTransformer = new DefaultTransformer<>(serialization);
             return this;
         }
 
-        public Builder setActionTransformer(Transformer<Action<?>> actionTransformer) {
+        /**
+         * Provide a custom {@link Transformer} for {@link Action}.
+         */
+        @NonNull
+        public Builder withActionTransformer(@NonNull Transformer<Action<?>> actionTransformer) {
             this.actionTransformer = actionTransformer;
             return this;
         }
 
-        public Builder setStateTransformer(Transformer<State> stateTransformer) {
+        /**
+         * Provide a custom {@link Transformer} for {@link State}.
+         */
+        @NonNull
+        public Builder withStateTransformer(@NonNull Transformer<State> stateTransformer) {
             this.stateTransformer = stateTransformer;
             return this;
         }
 
-        public Builder setTitleFormatter(TitleFormatter titleFormatter) {
+        /**
+         * Provide a custom {@link TitleFormatter}.
+         */
+        @NonNull
+        public Builder withTitleFormatter(@NonNull TitleFormatter titleFormatter) {
             this.titleFormatter = titleFormatter;
             return this;
         }
 
-        public Builder setLogLevel(Priority logLevel) {
-            this.logLevel = logLevel;
-            return this;
-        }
-
-        public Builder setLineLength(int lineLength) {
+        /**
+         * Limit the line length.
+         * <p>
+         *     Default: {@code -1}
+         *     <br>
+         *     {@code -1} ... no max line length
+         * </p>
+         */
+        @NonNull
+        public Builder withLineLength(int lineLength) {
             this.lineLength = lineLength;
             return this;
         }
 
+        /**
+         * Create an instance with all provided options.
+         */
+        @NonNull
         public Middleware build() {
             return new LoggerMiddleware(this);
-        }
-
-        private static LogAppender getPlatformLogger() {
-            LogAppender logger = null;
-            try {
-                Class.forName("android.os.Build");
-                if (Build.VERSION.SDK_INT != 0) {
-                    logger = new Android();
-                }
-
-            } catch (Exception ignored) {
-                // Intentionally empty
-            } finally {
-                if (logger == null) {
-                    logger = new Java();
-                }
-            }
-            return logger;
         }
 
     }
@@ -202,8 +393,9 @@ public class LoggerMiddleware implements Middleware {
             this.serialization = serialization;
         }
 
+        @NonNull
         @Override
-        public String transform(E data) {
+        public String transform(@NonNull E data) {
             String actionString;
             try {
                 if(serialization == Serialization.GSON) {
@@ -227,7 +419,7 @@ public class LoggerMiddleware implements Middleware {
         }
 
         @Override
-        public boolean predicate(GetState getState, Action<?> action) {
+        public boolean predicate(@NonNull GetState getState, @NonNull Action<?> action) {
             return predicate;
         }
     }
@@ -245,8 +437,9 @@ public class LoggerMiddleware implements Middleware {
             this.showDuration = showDuration;
         }
 
+        @NonNull
         @Override
-        public String getTitle(Action<?> action, Date timestamp, float duration) {
+        public String getTitle(@NonNull Action<?> action, @NonNull Date timestamp, @NonNull float duration) {
             StringBuilder stringBuilder = new StringBuilder();
             stringBuilder.append("Action: '");
             stringBuilder.append(action.getActionType());
@@ -269,81 +462,35 @@ public class LoggerMiddleware implements Middleware {
     }
 
 
-    public interface LogAppender {
-        void log(Priority priority, String tag, String message, Throwable throwable);
-    }
-
-    public enum Serialization {
-        GSON,
-        TO_STRING
-    }
-
-    public enum Priority {
-        VERBOSE(2),
-        DEBUG(3),
-        INFO(4),
-        WARN(5),
-        ERROR(6);
-
-        private final int priority;
-
-        Priority(int priority) {
-            this.priority = priority;
-        }
-    }
-
-    private static class Android implements LogAppender {
+    private static class SuasLogAppender implements LogAppender {
 
         private static final int MAX_LINE_LENGTH = 4000;
+        private static final String LOG_TAG = "Suas-Logger";
+        private static final Logger LOGGER = Logger.getLogger(LOG_TAG);
 
-        @Override
-        public void log(Priority priority, String tag, String message, Throwable throwable) {
-            String androidTag = LoggerHelper.getAndroidTag(tag);
-
-            if (throwable != null) {
-                message = message + "\n" + Log.getStackTraceString(throwable);
-            }
-
-            final List<String> buffer = LoggerHelper.splitLogMessage(message, MAX_LINE_LENGTH);
-
-            for(String line : buffer){
-                Log.println(
-                        priority == null ? Priority.INFO.priority : priority.priority,
-                        androidTag, line
-                );
+        static {
+            try {
+                Class.forName("android.os.Build");
+            } catch (Exception ignored) {
+                final Handler consoleHandler = new StreamHandler(System.out, new Formatter() {
+                    @Override
+                    public String format(LogRecord logRecord) {
+                        return String.format(Locale.US, "[%s] %s\n", logRecord.getLoggerName(), logRecord.getMessage());
+                    }
+                });
+                consoleHandler.setLevel(Level.INFO);
+                LOGGER.setUseParentHandlers(false);
+                LOGGER.addHandler(consoleHandler);
             }
         }
-    }
-
-    private static class Java implements LogAppender {
-
-        private static final String ISO_8601_FORMAT = "yyyy-MM-dd'T'HH:mm:ss'Z'";
 
         @Override
-        public void log(Priority priority, String tag, String message, Throwable throwable) {
-            /**
-             * Suppressing this warning because it looks unreadable when it is a single string.
-             */
-            @SuppressWarnings("StringBufferReplaceableByString")
-            StringBuilder logBuilder = new StringBuilder(100);
+        public void log(@NonNull String tag, @NonNull String message) {
 
-            logBuilder
-                    .append("[")
-                    .append(new SimpleDateFormat(ISO_8601_FORMAT, Locale.US).format(new Date()))
-                    .append("]")
-                    .append(" ")
-                    .append(priority == null
-                            ? LoggerHelper.getLevelFromPriority(Priority.INFO.priority)
-                            : LoggerHelper.getLevelFromPriority(priority.priority))
-                    .append("/")
-                    .append(tag != null && tag.trim().length() > 0 ? tag : "UNKNOWN")
-                    .append(": ")
-                    .append(message);
+            final List<String> buffer = splitLogMessage(message, MAX_LINE_LENGTH);
 
-            System.out.println(logBuilder.toString());
-
-            if (throwable != null) {
-                throwable.printStackTrace(System.out);
+            for(String line : buffer){
+                LOGGER.log(Level.INFO, line);
             }
         }
     }
