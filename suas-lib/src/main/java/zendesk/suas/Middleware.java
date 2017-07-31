@@ -46,10 +46,8 @@ public interface Middleware {
      * </p>
      *
      * @param action a dispatched action
-     * @param state access to the current state
-     * @param dispatcher access to the dispatcher for dispatching a new action
+     * @param store access to the current state and a dispatcher
      * @param continuation callback for passing the action to the next middleware
      */
-    void onAction(@NonNull Action<?> action, @NonNull GetState state,
-                  @NonNull Dispatcher dispatcher, @NonNull Continuation continuation);
+    void onAction(@NonNull Action<?> action, @NonNull StoreApi store, @NonNull Continuation continuation);
 }

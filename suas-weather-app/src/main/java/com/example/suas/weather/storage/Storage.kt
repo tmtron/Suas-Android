@@ -33,11 +33,11 @@ class Storage(context: Context) {
     }
 
     fun loadAction(): Action<*> {
-        return AsyncMiddleware.forBlockingAction{ dispatcher, _ ->
+        return AsyncMiddleware.forBlockingAction{ store ->
             val data = load()
             data?.let {
                 Handler(Looper.getMainLooper()).post({
-                    dispatcher.dispatchAction(LocationsLoaded(it))
+                    store.dispatchAction(LocationsLoaded(it))
                 })
             }
         }

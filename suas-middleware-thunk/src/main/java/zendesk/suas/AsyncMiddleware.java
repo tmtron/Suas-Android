@@ -6,13 +6,13 @@ import android.support.annotation.NonNull;
 /**
  * Async Middleware - {@link Action}s carrying an {@link AsyncAction} get intercepted
  * by this {@link Middleware} and not dispatched to the reducer.
- * Instead the {@link AsyncMiddleware} executes {@link AsyncAction#execute(Dispatcher, GetState)}
+ * Instead the {@link AsyncMiddleware} executes {@link AsyncAction#execute(StoreApi)}
  * <br>
  * <p>
  * How to use this middleware:
  * <ol>
  *     <li>Create an {@link AsyncAction}</li>
- *     <li>In {@link AsyncAction#execute(Dispatcher, GetState)} perform any operation. {@link AsyncAction#execute(Dispatcher, GetState)} <i>isn't</i> executed on a background thread.</li>
+ *     <li>In {@link AsyncAction#execute(StoreApi)} perform any operation. {@link AsyncAction#execute(StoreApi)} <i>isn't</i> executed on a background thread.</li>
  *     <li>When the result is ready use the {@link Dispatcher} to dispatch a new {@link Action}</li>
  *     <li>Create {@link Action} by calling {@link AsyncMiddleware#create(AsyncAction)}</li>
  * </ol>
@@ -46,7 +46,7 @@ public class AsyncMiddleware implements Middleware {
      * will be executed.
      *
      * <p>
-     *      <b>Important:</b> {@link AsyncAction#execute(Dispatcher, GetState)} will be run on the
+     *      <b>Important:</b> {@link AsyncAction#execute(StoreApi)} will be run on the
      *      main thread.
      * </p>
      *
@@ -63,7 +63,7 @@ public class AsyncMiddleware implements Middleware {
      * will be executed.
      *
      * <p>
-     *     <b>Important:</b> {@link AsyncAction#execute(Dispatcher, GetState)} will be run on a background
+     *     <b>Important:</b> {@link AsyncAction#execute(StoreApi)} will be run on a background
      *     thread. For doing so {@link AsyncMiddleware} uses Android's {@link AsyncTask}.
      *     <br>
      *     If you wish more control over the threading behavior consider using {@link AsyncMiddleware#create(AsyncAction)}
@@ -78,11 +78,11 @@ public class AsyncMiddleware implements Middleware {
     }
 
     @Override
-    public void onAction(@NonNull Action<?> action, @NonNull GetState state, @NonNull Dispatcher dispatcher, @NonNull Continuation continuation) {
+    public void onAction(@NonNull Action<?> action, @NonNull StoreApi store, @NonNull Continuation continuation) {
         if(ACTION_TYPE.equals(action.getActionType()) && action.getData() instanceof AsyncAction) {
             final AsyncAction asyncAction = action.getData();
             if(asyncAction != null) {
-                asyncAction.execute(dispatcher, state);
+                asyncAction.execute(store);
             }
         } else {
             continuation.next(action);
@@ -98,26 +98,24 @@ public class AsyncMiddleware implements Middleware {
         }
 
         @Override
-        public void execute(Dispatcher dispatcher, GetState getState) {
-            new AsyncActionTask(dispatcher, getState, asyncAction).execute();
+        public void execute(@NonNull StoreApi store) {
+            new AsyncActionTask(store, asyncAction).execute();
         }
     }
 
     private static class AsyncActionTask extends AsyncTask<Void, Void, Void> {
 
-        private final Dispatcher dispatcher;
-        private final GetState getState;
+        private final StoreApi store;
         private final AsyncAction asyncAction;
 
-        private AsyncActionTask(Dispatcher dispatcher, GetState getState, AsyncAction asyncAction) {
-            this.dispatcher = dispatcher;
-            this.getState = getState;
+        private AsyncActionTask(StoreApi store, AsyncAction asyncAction) {
+            this.store = store;
             this.asyncAction = asyncAction;
         }
 
         @Override
         protected Void doInBackground(Void... voids) {
-            asyncAction.execute(dispatcher, getState);
+            asyncAction.execute(store);
             return null;
         }
     }

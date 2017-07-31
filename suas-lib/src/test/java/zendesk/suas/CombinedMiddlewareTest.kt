@@ -6,15 +6,14 @@ import org.mockito.Mockito.*
 
 class CombinedMiddlewareTest {
 
-    private val getState = GetState { State() }
-    private val dispatcher = Dispatcher {  }
+    private val storeApi = mock(StoreApi::class.java)
 
     @Test
     fun `no middleware provided`() {
         val cm = CombinedMiddleware(null)
         val action = Action<Unit>("wurst")
 
-        cm.onAction(action, { State() }, {}) {
+        cm.onAction(action, storeApi) {
             assertThat(it).isEqualTo(action)
         }
     }
@@ -29,7 +28,7 @@ class CombinedMiddlewareTest {
 
         val continuation: Continuation = mock(Continuation::class.java)
         val action = Action<Unit>("wurst")
-        cm.onAction(action, getState, dispatcher, continuation)
+        cm.onAction(action, storeApi, continuation)
 
         verify(continuation, times(1)).next(eq(action))
         assertThat(m1.wasCalled).isTrue()
@@ -48,7 +47,7 @@ class CombinedMiddlewareTest {
         val action = Action<Unit>("wurst")
         val continuation: Continuation = mock(Continuation::class.java)
 
-        cm.onAction(action, getState, dispatcher, continuation)
+        cm.onAction(action, storeApi, continuation)
 
         assertThat(m1.wasCalled).isTrue()
         assertThat(m2.wasCalled).isTrue()
@@ -61,7 +60,7 @@ class CombinedMiddlewareTest {
 
         var wasCalled = false
 
-        override fun onAction(action: Action<*>, state: GetState, dispatcher: Dispatcher, continuation: Continuation) {
+        override fun onAction(action: Action<*>, store: StoreApi, continuation: Continuation) {
             wasCalled = true
             if (!eatAction) {
                 continuation.next(action)

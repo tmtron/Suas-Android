@@ -12,11 +12,11 @@ import com.example.suas.weather.Subscription
 import com.example.suas.weather.suas.AddLocation
 import com.example.suas.weather.suas.StateModels
 import zendesk.suas.Component
-import zendesk.suas.Dispatcher
 import zendesk.suas.Selector
 import zendesk.suas.Store
+import zendesk.suas.StoreApi
 
-class ListComponent(recyclerView: RecyclerView, dispatcher: Dispatcher) : Component<StateModels.FoundLocations, List<ListComponent.ListItem>>, Subscription {
+class ListComponent(recyclerView: RecyclerView, dispatcher: StoreApi) : Component<StateModels.FoundLocations, List<ListComponent.ListItem>>, Subscription {
 
     private val adapter: LocationAdapter = LocationAdapter(this, dispatcher)
     private var list: List<ListItem> = listOf()
@@ -47,7 +47,7 @@ class ListComponent(recyclerView: RecyclerView, dispatcher: Dispatcher) : Compon
         store.connect(this, StateModels.FoundLocations::class.java)
     }
 
-    class LocationAdapter(val listComponent: ListComponent, val dispatcher: Dispatcher) : RecyclerView.Adapter<LocationViewHolder>() {
+    class LocationAdapter(val listComponent: ListComponent, val dispatcher: StoreApi) : RecyclerView.Adapter<LocationViewHolder>() {
 
         init {
             setHasStableIds(true)
@@ -73,7 +73,7 @@ class ListComponent(recyclerView: RecyclerView, dispatcher: Dispatcher) : Compon
 
     class LocationViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
 
-        fun bind(item: ListItem, dispatcher: Dispatcher) {
+        fun bind(item: ListItem, dispatcher: StoreApi) {
             view.findViewById<TextView>(R.id.searchItemLabel).text = item.location.name
             view.setOnClickListener {
                 dispatcher.dispatchAction(AddLocation(item.location))

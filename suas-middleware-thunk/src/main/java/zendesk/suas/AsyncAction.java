@@ -1,5 +1,7 @@
 package zendesk.suas;
 
+import android.support.annotation.NonNull;
+
 /**
  * Definition of an asynchronous action. Used by {@link AsyncMiddleware}
  */
@@ -16,6 +18,6 @@ public interface AsyncAction {
      * @param dispatcher dispatcher
      * @param getState state
      */
-    void execute(Dispatcher dispatcher, GetState getState);
+    void execute(@NonNull StoreApi store);
 
 }

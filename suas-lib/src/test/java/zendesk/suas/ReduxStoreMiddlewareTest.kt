@@ -35,7 +35,7 @@ class ReduxStoreMiddlewareTest : Helper {
 
     class TestMiddleware(val latch: CountDownLatch, val eatAction: Boolean = false): Middleware, Helper {
 
-        override fun onAction(action: Action<*>, state: GetState, dispatcher: Dispatcher, continuation: Continuation) {
+        override fun onAction(action: Action<*>, store: StoreApi, continuation: Continuation) {
             latch.countDown("Middleware must not be called")
             if(!eatAction) continuation.next(action)
         }

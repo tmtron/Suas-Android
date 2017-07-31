@@ -1,12 +1,9 @@
 package zendesk.suas;
 
-
 import android.support.annotation.NonNull;
 
-/**
- * Interface for getting the current {@link State}
- */
-public interface GetState {
+
+public interface StoreApi {
 
     /**
      * Gets a copy of the current {@link State} from {@link Store}.
@@ -15,4 +12,10 @@ public interface GetState {
      */
     @NonNull
     State getState();
+
+    /**
+     * Dispatches an {@link Action} to the {@link Store}.
+     */
+    void dispatchAction(@NonNull Action action);
+
 }

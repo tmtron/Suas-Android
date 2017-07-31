@@ -75,14 +75,14 @@ public class LoggerMiddleware implements Middleware {
     }
 
     @Override
-    public void onAction(@NonNull Action<?> action, @NonNull GetState state, @NonNull Dispatcher dispatcher, @NonNull Continuation continuation) {
-        if(predicate.predicate(state, action)) {
+    public void onAction(@NonNull Action<?> action, @NonNull StoreApi store, @NonNull Continuation continuation) {
+        if(predicate.predicate(store.getState(), action)) {
             final Date timestamp = new Date();
             final long start = System.nanoTime();
 
-            final State oldState = state.getState();
+            final State oldState = store.getState();
             continuation.next(action);
-            final State newState = state.getState();
+            final State newState = store.getState();
 
             final float durationInMs = (System.nanoTime() - start) / 1000000f;
             final String title = String.format(Locale.US, "┎───→ %s", titleFormatter.getTitle(action, timestamp, durationInMs));
@@ -164,6 +164,7 @@ public class LoggerMiddleware implements Middleware {
         return messages;
     }
 
+
     /**
      * Callback that decides if the logger should print or not.
      */
@@ -171,11 +172,11 @@ public class LoggerMiddleware implements Middleware {
         /**
          * Callback that decides if the logger should print or not.
          *
-         * @param getState the current state
+         * @param state the current state
          * @param action the current action
          * @return {@code true} print, {@code false} don't print
          */
-        boolean predicate(@NonNull GetState getState, @NonNull Action<?> action);
+        boolean predicate(@NonNull State state, @NonNull Action<?> action);
     }
 
     /**
@@ -205,7 +206,7 @@ public class LoggerMiddleware implements Middleware {
          * @return the title string
          */
         @NonNull
-        String getTitle(@NonNull Action<?> action, @NonNull Date timestamp, @NonNull float duration);
+        String getTitle(@NonNull Action<?> action, @NonNull Date timestamp, float duration);
     }
 
     /**
@@ -419,7 +420,7 @@ public class LoggerMiddleware implements Middleware {
         }
 
         @Override
-        public boolean predicate(@NonNull GetState getState, @NonNull Action<?> action) {
+        public boolean predicate(@NonNull State getState, @NonNull Action<?> action) {
             return predicate;
         }
     }

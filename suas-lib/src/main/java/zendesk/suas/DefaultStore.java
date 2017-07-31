@@ -35,7 +35,7 @@ class DefaultStore implements Store {
 
     @Override
     public synchronized void dispatchAction(@NonNull Action action) {
-        middleware.onAction(action, this, this, new Continuation() {
+        middleware.onAction(action, this, new Continuation() {
             @Override
             public void next(@NonNull Action<?> action) {
                 final State oldState = getState();

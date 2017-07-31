@@ -14,7 +14,7 @@ import android.support.annotation.NonNull;
  *     <li>{@link Component} similar to a {@link Listener} with an additional function called {@link Selector}.</li>
  * </ul>
  */
-public interface Store extends GetState, Dispatcher {
+public interface Store extends StoreApi {
 
     /**
      * Resets the full internal state with a new state and notifies all registered {@link Listener}
