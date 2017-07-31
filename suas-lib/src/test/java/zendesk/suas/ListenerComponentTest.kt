@@ -13,7 +13,7 @@ class ListenerComponentTest {
         val component = spy(TestComponent())
         val componentListener: Listener<List<String>> = Listeners.create(component)
 
-        componentListener.update(oldState, newState)
+        componentListener.update(newState)
 
         verify(component, times(1)).update("a, b, c")
     }
@@ -26,7 +26,7 @@ class ListenerComponentTest {
         val component = spy(TestComponent(nullSelector =  true))
         val componentListener: Listener<List<String>> = Listeners.create(component)
 
-        componentListener.update(oldState, newState)
+        componentListener.update(newState)
 
         verify(component, never()).update(anyString())
     }
@@ -36,8 +36,8 @@ class ListenerComponentTest {
 
         }
 
-        override fun getSelector(): Selector<List<String>, String>  = Selector { state ->
-            if(nullSelector) null
+        override fun getSelector(): StateSelector<List<String>, String> = StateSelector { state ->
+            if (nullSelector) null
             else state.reduce { a, b -> "$a, $b" }
         }
     }

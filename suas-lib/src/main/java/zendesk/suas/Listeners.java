@@ -1,8 +1,6 @@
 package zendesk.suas;
 
 
-import android.support.annotation.NonNull;
-
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -36,27 +34,39 @@ class Listeners {
         return new Default(listener, notifier);
     }
 
-    static <E, F> Listener<E> create(Component<E, F> component) {
-        return new ComponentListener<>(component);
+    static <E> StateListener create(StateSelector<E> stateSelector, Filter<State> filter, Listener<E> listener) {
+        return new StateSelectorListener<>(listener, stateSelector, filter);
     }
 
-    interface StateListener extends Listener<State> {
+    interface StateListener {
         String getKey();
+        void update(State oldState, State newState);
     }
 
-    private static class ComponentListener<E, F> implements Listener<E> {
+    private static class StateSelectorListener<E> implements StateListener {
 
-        private final Component<E, F> component;
+        private final Listener<E> listener;
+        private final StateSelector<E> stateSelector;
+        private final Filter<State> filter;
 
-        private ComponentListener(Component<E, F> component) {
-            this.component = component;
+        private StateSelectorListener(Listener<E> listener, StateSelector<E> stateSelector, Filter<State> filter) {
+            this.listener = listener;
+            this.stateSelector = stateSelector;
+            this.filter = filter;
         }
 
         @Override
-        public void update(@NonNull E oldState, @NonNull E newState) {
-            final F selectedData = component.getSelector().selectData(newState);
-            if(selectedData != null) {
-                component.update(selectedData);
+        public String getKey() {
+            return null;
+        }
+
+        @Override
+        public void update(State oldState, State newState) {
+            if(filter.filter(oldState, newState)) {
+                final E data = stateSelector.selectData(newState);
+                if(data != null) {
+                    listener.update(data);
+                }
             }
         }
     }
@@ -72,9 +82,9 @@ class Listeners {
         }
 
         @Override
-        public void update(@NonNull State oldState, @NonNull State newState) {
+        public void update(State oldState, State newState) {
             if(filter.filter(oldState, newState)) {
-                listener.update(oldState, newState);
+                listener.update(newState);
             }
         }
 
@@ -97,6 +107,7 @@ class Listeners {
         public String getKey() {
             return null;
         }
+
     }
 
     private static class StringKeyedListener<E> implements StateListener {
@@ -112,12 +123,12 @@ class Listeners {
         }
 
         @Override
-        public void update(@NonNull State oldState, @NonNull State newState) {
+        public void update(State oldState, State newState) {
             try {
                 @SuppressWarnings("unchecked") final E oldStateTyped = (E) oldState.getState(key);
                 @SuppressWarnings("unchecked") final E newStateTyped = (E) newState.getState(key);
-                if(oldStateTyped != null && newStateTyped != null && filter.filter(oldStateTyped, newStateTyped)) {
-                    listener.update(oldStateTyped, newStateTyped);
+                if(newStateTyped != null && oldStateTyped != null&& filter.filter(oldStateTyped, newStateTyped)) {
+                    listener.update(newStateTyped);
                 } else {
                     L.log(Level.WARNING, KEY_NOT_FOUND);
                 }
@@ -160,13 +171,13 @@ class Listeners {
         }
 
         @Override
-        public void update(@NonNull State oldState, @NonNull State newState) {
+        public void update(State oldState, State newState) {
             final E oldStateTyped = oldState.getState(clazz);
             final E newStateTyped = newState.getState(clazz);
 
             if(oldStateTyped != null && newStateTyped != null) {
                 if(filter.filter(oldStateTyped, newStateTyped)) {
-                    listener.update(oldStateTyped, newStateTyped);
+                    listener.update(newStateTyped);
                 }
             } else {
                 L.log(Level.WARNING, WRONG_TYPE + " or " + KEY_NOT_FOUND);
@@ -210,12 +221,12 @@ class Listeners {
         }
 
         @Override
-        public void update(@NonNull State oldState, @NonNull State newState) {
+        public void update(State oldState, State newState) {
             final E oldStateTyped = oldState.getState(key, clazz);
             final E newStateTyped = newState.getState(key, clazz);
 
             if(oldStateTyped != null && newStateTyped != null && filter.filter(oldStateTyped, newStateTyped)) {
-                listener.update(oldStateTyped, newStateTyped);
+                listener.update(newStateTyped);
             } else {
                 L.log(Level.WARNING, WRONG_TYPE + " or " + KEY_NOT_FOUND);
             }

@@ -18,8 +18,8 @@ public class SuasCounter {
 
         Store store = createStore();
 
-        store.addListener(Counter.class, (oldState, newState) -> {
-            System.out.println("Java - State changed to " + newState.count);
+        store.addListener(Counter.class, (state) -> {
+            System.out.println("Java - State changed to " + state.count);
         });
 
         store.dispatchAction(getIncrementAction(10));

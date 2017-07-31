@@ -73,5 +73,4 @@ class WeatherService(val autocomplete: AutocompleteService, val weather: Wunderg
         })
     }
 
-
 }

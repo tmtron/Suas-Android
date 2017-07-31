@@ -3,7 +3,6 @@ package zendesk.suas;
 
 import android.support.annotation.NonNull;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -16,15 +15,14 @@ class DefaultStore implements Store {
     private final Filter defaultFilter;
 
     private final Map<Listener, Listeners.StateListener> listenerStateListenerMap;
-    private final Map<Component, Listeners.StateListener> componentListenerMap;
 
-    DefaultStore(State state, CombinedReducer reducer, CombinedMiddleware combinedMiddleware, Filter<Object> defaultFilter) {
+    DefaultStore(State state, CombinedReducer reducer, CombinedMiddleware combinedMiddleware,
+                 Filter<Object> defaultFilter) {
         this.state = state;
         this.reducer = reducer;
         this.middleware = combinedMiddleware;
         this.defaultFilter = defaultFilter;
         this.listenerStateListenerMap = new HashMap<>();
-        this.componentListenerMap = new HashMap<>();
     }
 
     @NonNull
@@ -47,11 +45,7 @@ class DefaultStore implements Store {
     }
 
     private void notifyListener(State oldState, State newState, Collection<String> updatedKeys) {
-        final Collection<Listeners.StateListener> listeners = new ArrayList<>();
-        listeners.addAll(componentListenerMap.values());
-        listeners.addAll(listenerStateListenerMap.values());
-
-        for(Listeners.StateListener listener : listeners) {
+        for(Listeners.StateListener listener : listenerStateListenerMap.values()) {
             if(listener.getKey() == null || updatedKeys.contains(listener.getKey())) {
                 listener.update(oldState, newState);
             }
@@ -66,43 +60,53 @@ class DefaultStore implements Store {
     }
 
     @Override
-    public <E> void addListener(@NonNull String key, @NonNull Listener<E> listener) {
-        registerListener(listener, Listeners.create(key, defaultFilter, listener));
+    public <E> Subscription addListener(@NonNull String key, @NonNull Listener<E> listener) {
+        return registerListener(listener, Listeners.create(key, defaultFilter, listener));
     }
 
     @Override
-    public <E> void addListener(@NonNull String key, @NonNull Filter<E> filter, @NonNull Listener<E> listener) {
-        registerListener(listener, Listeners.create(key, filter, listener));
+    public <E> Subscription addListener(@NonNull String key, @NonNull Filter<E> filter, @NonNull Listener<E> listener) {
+        return registerListener(listener, Listeners.create(key, filter, listener));
     }
 
     @Override
-    public <E> void addListener(@NonNull Class<E> clazz, @NonNull Listener<E> listener) {
-        registerListener(listener, Listeners.create(clazz, defaultFilter, listener));
+    public <E> Subscription addListener(@NonNull StateSelector<E> stateSelector, @NonNull Listener<E> listener) {
+        return registerListener(listener, Listeners.create(stateSelector, defaultFilter, listener));
     }
 
     @Override
-    public <E> void addListener(@NonNull Class<E> clazz, @NonNull Filter<E> filter, @NonNull Listener<E> listener) {
-        registerListener(listener, Listeners.create(clazz, filter, listener));
+    public <E> Subscription addListener(@NonNull Filter<State> filter, @NonNull StateSelector<E> stateSelector, @NonNull Listener<E> listener) {
+        return registerListener(listener, Listeners.create(stateSelector, filter, listener));
     }
 
     @Override
-    public <E> void addListener(@NonNull String key, @NonNull Class<E> clazz, @NonNull Listener<E> listener) {
-        registerListener(listener, Listeners.create(key, clazz, defaultFilter, listener));
+    public <E> Subscription addListener(@NonNull Class<E> clazz, @NonNull Listener<E> listener) {
+        return registerListener(listener, Listeners.create(clazz, defaultFilter, listener));
     }
 
     @Override
-    public <E> void addListener(@NonNull String key, @NonNull Class<E> clazz, @NonNull Filter<E> filter, @NonNull Listener<E> listener) {
-        registerListener(listener, Listeners.create(key, clazz, filter, listener));
+    public <E> Subscription addListener(@NonNull Class<E> clazz, @NonNull Filter<E> filter, @NonNull Listener<E> listener) {
+        return registerListener(listener, Listeners.create(clazz, filter, listener));
     }
 
     @Override
-    public void addListener(@NonNull Listener<State> listener) {
-        registerListener(listener, Listeners.create(defaultFilter, listener));
+    public <E> Subscription addListener(@NonNull String key, @NonNull Class<E> clazz, @NonNull Listener<E> listener) {
+        return registerListener(listener, Listeners.create(key, clazz, defaultFilter, listener));
     }
 
     @Override
-    public void addListener(@NonNull Filter<State> filter, @NonNull Listener<State> listener) {
-        registerListener(listener, Listeners.create(filter, listener));
+    public <E> Subscription addListener(@NonNull String key, @NonNull Class<E> clazz, @NonNull Filter<E> filter, @NonNull Listener<E> listener) {
+        return registerListener(listener, Listeners.create(key, clazz, filter, listener));
+    }
+
+    @Override
+    public Subscription addListener(@NonNull Listener<State> listener) {
+        return registerListener(listener, Listeners.create(defaultFilter, listener));
+    }
+
+    @Override
+    public Subscription addListener(@NonNull Filter<State> filter, @NonNull Listener<State> listener) {
+        return registerListener(listener, Listeners.create(filter, listener));
     }
 
     @Override
@@ -110,85 +114,35 @@ class DefaultStore implements Store {
         listenerStateListenerMap.remove(listener);
     }
 
-    private void registerListener(Listener listener, Listeners.StateListener stateListener) {
-        listenerStateListenerMap.put(listener, stateListener);
+    private Subscription registerListener(Listener listener, Listeners.StateListener stateListener) {
+        final Subscription suasSubscription = new DefaultSuasSubscription(stateListener, listener);
+        suasSubscription.subscribe();
+        return suasSubscription;
     }
 
-    @Override
-    public <E> void connect(@NonNull Component<State, E> component) {
-        Listener<State> listener = Listeners.create(component);
-        Listeners.StateListener stateListener = Listeners.create(defaultFilter, listener);
+    private class DefaultSuasSubscription implements Subscription {
 
-        registerComponent(stateListener, component);
+        private final Listeners.StateListener stateListener;
+        private final Listener listener;
+
+        DefaultSuasSubscription(Listeners.StateListener stateListener, Listener listener) {
+            this.stateListener = stateListener;
+            this.listener = listener;
+        }
+
+        @Override
+        public void unsubscribe() {
+            removeListener(listener);
+        }
+
+        @Override
+        public void subscribe() {
+            listenerStateListenerMap.put(listener, stateListener);
+        }
+
+        @Override
+        public void update() {
+            stateListener.update(reducer.getEmptyState(), getState());
+        }
     }
-
-    @Override
-    public <E> void connect(@NonNull Component<State, E> component, @NonNull Filter<State> filter) {
-        Listener<State> listener = Listeners.create(component);
-        Listeners.StateListener stateListener = Listeners.create(filter, listener);
-
-        registerComponent(stateListener, component);
-    }
-
-
-    @Override
-    public <E, F> void connect(@NonNull Component<E, F> component, @NonNull String key) {
-        Listener<E> listener = Listeners.create(component);
-        Listeners.StateListener stateListener = Listeners.create(key, defaultFilter, listener);
-
-        registerComponent(stateListener, component);
-    }
-
-    @Override
-    public <E, F> void connect(@NonNull Component<E, F> component, @NonNull String key, @NonNull Filter<E> filter) {
-        Listener<E> listener = Listeners.create(component);
-        Listeners.StateListener stateListener = Listeners.create(key, filter, listener);
-
-        registerComponent(stateListener, component);
-    }
-
-    @Override
-    public <E, F> void connect(@NonNull final Component<E, F> component, @NonNull Class<E> clazz) {
-        Listener<E> listener = Listeners.create(component);
-        Listeners.StateListener stateListener = Listeners.create(clazz, defaultFilter, listener);
-
-        registerComponent(stateListener, component);
-    }
-
-    @Override
-    public <E, F> void connect(@NonNull Component<E, F> component, @NonNull Class<E> clazz, @NonNull Filter<E> filter) {
-        Listener<E> listener = Listeners.create(component);
-        Listeners.StateListener stateListener = Listeners.create(clazz, filter, listener);
-
-        registerComponent(stateListener, component);
-    }
-
-    @Override
-    public <E, F> void connect(@NonNull Component<E, F> component, @NonNull String key, @NonNull Class<E> clazz) {
-        Listener<E> listener = Listeners.create(component);
-        Listeners.StateListener stateListener = Listeners.create(key, clazz, defaultFilter, listener);
-
-        registerComponent(stateListener, component);
-    }
-
-    @Override
-    public <E, F> void connect(@NonNull Component<E, F> component, @NonNull String key, @NonNull Class<E> clazz, @NonNull Filter<E> filter) {
-        Listener<E> listener = Listeners.create(component);
-        Listeners.StateListener stateListener = Listeners.create(key, clazz, filter, listener);
-
-        registerComponent(stateListener, component);
-    }
-
-
-    private void registerComponent(Listeners.StateListener listener, Component component) {
-        componentListenerMap.put(component, listener);
-        listener.update(reducer.getEmptyState(), getState());
-    }
-
-    @Override
-    public void disconnect(@NonNull Component component) {
-        componentListenerMap.remove(component);
-        System.out.println();
-    }
-
 }

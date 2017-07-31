@@ -12,7 +12,7 @@ public interface Continuation {
      * Pass an {@link Action} to the next {@link Middleware}
      *
      * <p>
-     *     This function must be called in {@link Middleware#onAction(Action, GetState, Dispatcher, Continuation)}
+     *     This function must be called in {@link Middleware#onAction(Action, StoreApi, Continuation)}
      *     to pass an {@link Action} down the chain of {@link Middleware}.
      *     <br>
      *     A {@link Middleware} can choose to consume an {@link Action} by

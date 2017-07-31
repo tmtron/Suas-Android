@@ -9,8 +9,6 @@ public interface Listener<E> {
     /**
      * Called if there's an update to the {@link State}
      *
-     * @param oldState previous state
-     * @param newState new state
      */
-    void update(@NonNull E oldState, @NonNull E newState);
+    void update(@NonNull E state);
 }

@@ -25,14 +25,14 @@ class ListenerStateTest {
             true
         }
 
-        val listener = Listener<State> { o, n ->
+        val listener = Listener<State> { n ->
             assertThat(o).isEqualTo(oldState)
             assertThat(n).isEqualTo(newState)
             latch.countDown()
         }
 
         val stateListener = Listeners.create(filter, listener)
-        stateListener.update(oldState, newState)
+        stateListener.update(newState)
 
         latch.await()
     }
@@ -55,12 +55,12 @@ class ListenerStateTest {
             false
         }
 
-        val listener = Listener<State> { _, _ ->
+        val listener = Listener<State> { `<anonymous parameter 1>` ->
             fail("Listener must not be called")
         }
 
         val stateListener = Listeners.create(filter, listener)
-        stateListener.update(oldState, newState)
+        stateListener.update(newState)
 
         latch.await()
     }
@@ -72,7 +72,7 @@ class ListenerStateTest {
             true
         }
 
-        val listener = Listener<State> { _, _ ->
+        val listener = Listener<State> { `<anonymous parameter 1>` ->
             fail("Listener must not be called")
         }
 
@@ -86,7 +86,7 @@ class ListenerStateTest {
         val filter1 = Filter<State> { _, _ -> true }
         val filter2 = Filter<State> { _, _ -> false }
 
-        val listener = Listener<State> { _, _ -> }
+        val listener = Listener<State> { `<anonymous parameter 1>` -> }
 
         val stateListener1 = Listeners.create(filter1, listener)
         val stateListener2 = Listeners.create(filter2, listener)
@@ -100,7 +100,7 @@ class ListenerStateTest {
             true
         }
 
-        val listener = Listener<State> { _, _ ->
+        val listener = Listener<State> { `<anonymous parameter 1>` ->
         }
 
         val stateListener = Listeners.create(filter, listener)

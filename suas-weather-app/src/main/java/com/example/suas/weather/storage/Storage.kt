@@ -47,7 +47,7 @@ class Storage(context: Context) {
         store.addListener(
                 StateModels.Locations::class.java,
                 { oldState, newState -> newState != oldState },
-                { _, newState -> store(newState) }
+                { store(it) }
         )
     }
 }

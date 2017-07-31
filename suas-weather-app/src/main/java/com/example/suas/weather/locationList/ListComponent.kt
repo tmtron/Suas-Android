@@ -7,18 +7,15 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import com.example.suas.weather.R
-import com.example.suas.weather.Subscription
 import com.example.suas.weather.network.WeatherService
 import com.example.suas.weather.suas.StateModels
-import zendesk.suas.Component
-import zendesk.suas.Selector
-import zendesk.suas.Store
+import zendesk.suas.Listener
 import zendesk.suas.StoreApi
 
 typealias LocationSelected = (location: StateModels.Location) -> Unit
 
 class ListComponent(recyclerView: RecyclerView, weatherService: WeatherService, dispatcher: StoreApi)
-    : Component<StateModels.Locations, List<StateModels.Location>>, Subscription {
+    : Listener<StateModels.Locations> {
 
     private var list: List<StateModels.Location> = listOf()
     private val adapter = LocationAdapter(this, { location ->
@@ -31,26 +28,15 @@ class ListComponent(recyclerView: RecyclerView, weatherService: WeatherService, 
         recyclerView.adapter = adapter
     }
 
-    override fun update(e: List<StateModels.Location>) {
-        list = e
+    override fun update(e: StateModels.Locations) {
+        list = e.locations
         adapter.notifyDataSetChanged()
     }
 
-    override fun getSelector(): Selector<StateModels.Locations, List<StateModels.Location>> = Selector {
-        it.locations
-    }
 
     fun forPosition(position: Int): StateModels.Location = list[position]
 
     fun listSize(): Int = list.size
-
-    override fun disconnect(store: Store) {
-        store.disconnect(this)
-    }
-
-    override fun connect(store: Store) {
-        store.connect(this, StateModels.Locations::class.java)
-    }
 
     class LocationAdapter(val listComponent: ListComponent, val listener: LocationSelected) : RecyclerView.Adapter<LocationViewHolder>() {
 

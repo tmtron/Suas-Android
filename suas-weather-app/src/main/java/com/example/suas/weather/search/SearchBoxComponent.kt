@@ -2,13 +2,12 @@ package com.example.suas.weather.search;
 
 import android.view.inputmethod.EditorInfo
 import android.widget.EditText
-import com.example.suas.weather.Subscription
 import com.example.suas.weather.network.WeatherService
 import com.example.suas.weather.suas.StateModels
-import zendesk.suas.*
+import zendesk.suas.Listener
+import zendesk.suas.StoreApi
 
-class SearchBoxComponent(val inputBox: EditText, store: StoreApi, service: WeatherService) :
-        Component<StateModels.Progress, Boolean>, Subscription {
+class SearchBoxComponent(val inputBox: EditText, store: StoreApi, service: WeatherService) : Listener<StateModels.Progress> {
 
     init {
         inputBox.setOnEditorActionListener{ _, keyCode, _ ->
@@ -21,17 +20,8 @@ class SearchBoxComponent(val inputBox: EditText, store: StoreApi, service: Weath
         }
     }
 
-    override fun update(e: Boolean) {
-        inputBox.isEnabled = !e
+    override fun update(e: StateModels.Progress) {
+        inputBox.isEnabled = e.count == 0
     }
 
-    override fun getSelector(): Selector<StateModels.Progress, Boolean> = Selector { (count) -> count > 0 }
-
-    override fun disconnect(store: Store) {
-        store.disconnect(this)
-    }
-
-    override fun connect(store: Store) {
-        store.connect(this, StateModels.Progress::class.java)
-    }
 }

@@ -28,14 +28,14 @@ class ListenerClassStringKeyedTest {
             true
         }
 
-        val listener = Listener<Date> { o, n ->
+        val listener = Listener<Date> { n ->
             assertThat(o).isEqualTo(Date(1))
             assertThat(n).isEqualTo(Date(2))
             latch.countDown()
         }
 
         val stateListener = Listeners.create("key", Date::class.java, filter, listener)
-        stateListener.update(oldState, newState)
+        stateListener.update(newState)
 
         latch.await()
     }
@@ -58,12 +58,12 @@ class ListenerClassStringKeyedTest {
             false
         }
 
-        val listener = Listener<Date> { _, _ ->
+        val listener = Listener<Date> { `<anonymous parameter 1>` ->
             fail("Listener must not be called")
         }
 
         val stateListener = Listeners.create("key", Date::class.java, filter, listener)
-        stateListener.update(oldState, newState)
+        stateListener.update(newState)
 
         latch.await()
     }
@@ -82,12 +82,12 @@ class ListenerClassStringKeyedTest {
             true
         }
 
-        val listener = Listener<Date> { _, _ ->
+        val listener = Listener<Date> { `<anonymous parameter 1>` ->
             fail("Listener must not be called")
         }
 
         val stateListener = Listeners.create("wrong_key", Date::class.java, filter, listener)
-        stateListener.update(oldState, newState)
+        stateListener.update(newState)
     }
 
     @Test
@@ -104,12 +104,12 @@ class ListenerClassStringKeyedTest {
             true
         }
 
-        val listener = Listener<Date> { _, _ ->
+        val listener = Listener<Date> { `<anonymous parameter 1>` ->
             fail("Listener must not be called")
         }
 
         val stateListener = Listeners.create("wrong_key", Date::class.java, filter, listener)
-        stateListener.update(oldState, newState)
+        stateListener.update(newState)
     }
 
     @Test
@@ -119,7 +119,7 @@ class ListenerClassStringKeyedTest {
             true
         }
 
-        val listener = Listener<Date> { _, _ ->
+        val listener = Listener<Date> { `<anonymous parameter 1>` ->
             fail("Listener must not be called")
         }
 
@@ -133,7 +133,7 @@ class ListenerClassStringKeyedTest {
         val filter1 = Filter<String> { _, _ -> true }
         val filter2 = Filter<String> { _, _ -> false }
 
-        val listener = Listener<String> { _, _ -> }
+        val listener = Listener<String> { `<anonymous parameter 1>` -> }
 
         val stateListener1 = Listeners.create("key1", String::class.java, filter1, listener)
         val stateListener2 = Listeners.create("key2", String::class.java, filter2, listener)
@@ -147,7 +147,7 @@ class ListenerClassStringKeyedTest {
             true
         }
 
-        val listener = Listener<Date> { _, _ ->
+        val listener = Listener<Date> { `<anonymous parameter 1>` ->
 
         }
 

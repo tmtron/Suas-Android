@@ -322,7 +322,7 @@ class ReduxStoreComponentTest : Helper {
             latch?.countDown("Update must not be called")
         }
 
-        override fun getSelector(): Selector<E, F> = Selector { _ ->
+        override fun getSelector(): StateSelector<E, F> = StateSelector { _ ->
             latch?.countDown("Selector must not be called")
             select
         }
