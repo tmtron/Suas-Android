@@ -19,7 +19,7 @@ public class State implements Serializable {
 
     private final Map<String, Object> state;
 
-    public State(@NonNull Map<String, Object> state) {
+    State(@NonNull Map<String, Object> state) {
         this.state = new HashMap<>(state);
     }
 
