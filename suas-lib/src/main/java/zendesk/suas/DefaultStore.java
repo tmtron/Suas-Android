@@ -1,6 +1,8 @@
 package zendesk.suas;
 
 
+import android.os.Handler;
+import android.os.Looper;
 import android.support.annotation.NonNull;
 
 import java.util.Collection;
@@ -8,6 +10,17 @@ import java.util.HashMap;
 import java.util.Map;
 
 class DefaultStore implements Store {
+
+    private static boolean isAndroid;
+
+    static {
+        try {
+            Class.forName("android.os.Build");
+            isAndroid = true;
+        } catch (Exception ignored) {
+            isAndroid = false;
+        }
+    }
 
     private State state;
     private final CombinedReducer reducer;
@@ -32,7 +45,24 @@ class DefaultStore implements Store {
     }
 
     @Override
-    public synchronized void dispatchAction(@NonNull Action action) {
+    public void dispatchAction(@NonNull final Action action) {
+        if(isAndroid) {
+            if(Looper.myLooper() == Looper.getMainLooper()) {
+                dispatchActionInternal(action);
+            } else {
+                new Handler(Looper.getMainLooper()).post(new Runnable() {
+                    @Override
+                    public void run() {
+                        dispatchActionInternal(action);
+                    }
+                });
+            }
+        } else {
+            dispatchActionInternal(action);
+        }
+    }
+
+    private void dispatchActionInternal(Action action) {
         middleware.onAction(action, this, new Continuation() {
             @Override
             public void next(@NonNull Action<?> action) {
@@ -47,7 +77,7 @@ class DefaultStore implements Store {
     private void notifyListener(State oldState, State newState, Collection<String> updatedKeys) {
         for(Listeners.StateListener listener : listenerStateListenerMap.values()) {
             if(listener.getKey() == null || updatedKeys.contains(listener.getKey())) {
-                listener.update(oldState, newState);
+                listener.update(oldState, newState, false);
             }
         }
     }
@@ -142,7 +172,7 @@ class DefaultStore implements Store {
 
         @Override
         public void update() {
-            stateListener.update(reducer.getEmptyState(), getState());
+            stateListener.update(null, getState(), true);
         }
     }
 }
