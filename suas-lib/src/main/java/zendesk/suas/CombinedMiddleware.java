@@ -21,26 +21,28 @@ class CombinedMiddleware implements Middleware {
     }
 
     @Override
-    public void onAction(@NonNull Action<?> action, @NonNull StoreApi store, @NonNull Continuation continuation) {
+    public void onAction(@NonNull Action<?> action, @NonNull GetState state,
+                         @NonNull Dispatcher dispatcher, @NonNull Continuation continuation) {
         if(middleware != null) {
-            loopThroughMiddleware(action, store, continuation, middleware.iterator());
+            loopThroughMiddleware(action, state, dispatcher, continuation, middleware.iterator());
         } else {
             continuation.next(action);
         }
     }
 
-    private void loopThroughMiddleware(final Action<?> action, final StoreApi store, final Continuation continuation,
-                                       final Iterator<Middleware> middleware) {
+    private void loopThroughMiddleware(final Action<?> action, final GetState state, final Dispatcher dispatcher,
+                                       final Continuation continuation, final Iterator<Middleware> middleware) {
         if (middleware.hasNext()) {
             final Middleware next = middleware.next();
-            next.onAction(action, store, new Continuation() {
+            next.onAction(action, state, dispatcher, new Continuation() {
                 @Override
                 public void next(@NonNull Action<?> action) {
-                    loopThroughMiddleware(action, store, continuation, middleware);
+                    loopThroughMiddleware(action, state, dispatcher, continuation, middleware);
                 }
             });
         } else {
             continuation.next(action);
         }
     }
+
 }

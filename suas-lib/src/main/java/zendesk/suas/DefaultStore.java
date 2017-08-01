@@ -63,7 +63,7 @@ class DefaultStore implements Store {
     }
 
     private void dispatchActionInternal(Action action) {
-        middleware.onAction(action, this, new Continuation() {
+        middleware.onAction(action, this, this, new Continuation() {
             @Override
             public void next(@NonNull Action<?> action) {
                 final State oldState = getState();

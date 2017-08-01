@@ -5,15 +5,16 @@ import android.widget.EditText
 import com.example.suas.weather.network.WeatherService
 import com.example.suas.weather.suas.StateModels
 import zendesk.suas.Listener
-import zendesk.suas.StoreApi
+import zendesk.suas.Dispatcher
 
-class SearchBoxComponent(val inputBox: EditText, store: StoreApi, service: WeatherService) : Listener<StateModels.Progress> {
+
+class SearchBoxComponent(val inputBox: EditText, dispatcher: Dispatcher, service: WeatherService) : Listener<StateModels.Progress> {
 
     init {
         inputBox.setOnEditorActionListener{ _, keyCode, _ ->
             if(keyCode == EditorInfo.IME_ACTION_DONE) {
                 if(inputBox.text.isNotBlank()) {
-                    store.dispatchAction(service.findCities(inputBox.text.toString()))
+                    dispatcher.dispatchAction(service.findCities(inputBox.text.toString()))
                 }
             }
             false

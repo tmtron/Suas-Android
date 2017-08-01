@@ -13,7 +13,7 @@ import android.support.annotation.NonNull;
  *     <li>{@link Listener} a function that gets called on state changes</li>
  * </ul>
  */
-public interface Store extends StoreApi {
+public interface Store extends GetState, Dispatcher {
 
     /**
      * Resets the full internal state with a new state and notifies all registered {@link Listener}

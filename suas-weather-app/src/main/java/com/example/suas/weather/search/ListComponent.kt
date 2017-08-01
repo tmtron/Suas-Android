@@ -10,10 +10,10 @@ import android.widget.TextView
 import com.example.suas.weather.R
 import com.example.suas.weather.suas.AddLocation
 import com.example.suas.weather.suas.StateModels
+import zendesk.suas.Dispatcher
 import zendesk.suas.Listener
-import zendesk.suas.StoreApi
 
-class ListComponent(recyclerView: RecyclerView, dispatcher: StoreApi) : Listener<StateModels.FoundLocations> {
+class ListComponent(recyclerView: RecyclerView, dispatcher: Dispatcher) : Listener<StateModels.FoundLocations> {
 
     private val adapter: LocationAdapter = LocationAdapter(this, dispatcher)
     private var list: List<ListItem> = listOf()
@@ -32,7 +32,7 @@ class ListComponent(recyclerView: RecyclerView, dispatcher: StoreApi) : Listener
 
     fun listSize(): Int = list.size
 
-    class LocationAdapter(val listComponent: ListComponent, val dispatcher: StoreApi) : RecyclerView.Adapter<LocationViewHolder>() {
+    class LocationAdapter(val listComponent: ListComponent, val dispatcher: Dispatcher) : RecyclerView.Adapter<LocationViewHolder>() {
 
         init {
             setHasStableIds(true)
@@ -58,7 +58,7 @@ class ListComponent(recyclerView: RecyclerView, dispatcher: StoreApi) : Listener
 
     class LocationViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
 
-        fun bind(item: ListItem, dispatcher: StoreApi) {
+        fun bind(item: ListItem, dispatcher: Dispatcher) {
             view.findViewById<TextView>(R.id.searchItemLabel).text = item.location.name
             view.setOnClickListener {
                 dispatcher.dispatchAction(AddLocation(item.location))

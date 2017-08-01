@@ -9,32 +9,32 @@ import retrofit2.Response
 class WeatherService(val autocomplete: AutocompleteService, val weather: WundergroundService) {
 
     fun findCities(query: String): Action<*> {
-        return AsyncMiddleware.create { store ->
-            store.dispatchAction(LoadSuggestedCities(query))
+        return AsyncMiddleware.create { dispatcher, _ ->
+            dispatcher.dispatchAction(LoadSuggestedCities(query))
             loadCitiesFromNetwork(query){
                 when(it) {
-                    is NetworkError -> store.dispatchAction(SuggestedCitiesError())
-                    is SuggestionResult -> store.dispatchAction(SuggestedCitiesLoaded(it.result))
+                    is NetworkError -> dispatcher.dispatchAction(SuggestedCitiesError())
+                    is SuggestionResult -> dispatcher.dispatchAction(SuggestedCitiesLoaded(it.result))
                 }
             }
         }
     }
 
     fun loadWeather(location: StateModels.Location): Action<*> {
-        return AsyncMiddleware.create { store ->
-            store.dispatchAction(LoadWeather(location))
+        return AsyncMiddleware.create { dispatcher, getState ->
+            dispatcher.dispatchAction(LoadWeather(location))
 
-            val observations = store.state.getState(StateModels.LoadedObservations::class.java)
+            val observations = getState.state.getState(StateModels.LoadedObservations::class.java)
             val o = observations?.data?.get(location)
 
             if(o != null) {
-                store.dispatchAction(LoadWeatherSuccess(o, location))
+                dispatcher.dispatchAction(LoadWeatherSuccess(o, location))
 
             } else {
                 loadWeatherFromNetwork(location) {
                     when (it) {
-                        is NetworkError -> store.dispatchAction(LoadWeatherError())
-                        is ConditionResult -> store.dispatchAction(LoadWeatherSuccess(it.result, location))
+                        is NetworkError -> dispatcher.dispatchAction(LoadWeatherError())
+                        is ConditionResult -> dispatcher.dispatchAction(LoadWeatherSuccess(it.result, location))
                     }
                 }
             }

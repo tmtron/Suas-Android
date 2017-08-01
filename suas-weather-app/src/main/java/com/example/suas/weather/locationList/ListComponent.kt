@@ -10,11 +10,11 @@ import com.example.suas.weather.R
 import com.example.suas.weather.network.WeatherService
 import com.example.suas.weather.suas.StateModels
 import zendesk.suas.Listener
-import zendesk.suas.StoreApi
+import zendesk.suas.Dispatcher
 
 typealias LocationSelected = (location: StateModels.Location) -> Unit
 
-class ListComponent(recyclerView: RecyclerView, weatherService: WeatherService, dispatcher: StoreApi)
+class ListComponent(recyclerView: RecyclerView, weatherService: WeatherService, dispatcher: Dispatcher)
     : Listener<StateModels.Locations> {
 
     private var list: List<StateModels.Location> = listOf()

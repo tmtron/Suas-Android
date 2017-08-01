@@ -99,9 +99,9 @@ public class MonitorMiddleware implements Middleware, ConnectionHandler {
     }
 
     @Override
-    public void onAction(@NonNull Action<?> action, @NonNull StoreApi store, @NonNull Continuation continuation) {
+    public void onAction(@NonNull Action<?> action, @NonNull GetState state, @NonNull Dispatcher dispatcher, @NonNull Continuation continuation) {
         continuation.next(action);
-        final State newState = store.getState();
+        final State newState = state.getState();
 
         lastItem = new StateUpdate(action.getActionType(), action.getData(), newState);
         if(started.get()) {

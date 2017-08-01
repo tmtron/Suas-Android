@@ -31,10 +31,10 @@ class Storage(context: Context) {
     }
 
     fun loadAction(): Action<*> {
-        return AsyncMiddleware.forBlockingAction{ store ->
+        return AsyncMiddleware.forBlockingAction{ dispatcher, _ ->
             val data = load()
             data?.let {
-                store.dispatchAction(LocationsLoaded(it))
+                dispatcher.dispatchAction(LocationsLoaded(it))
             }
         }
     }
