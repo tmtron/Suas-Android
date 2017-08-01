@@ -26,13 +26,12 @@ class ListenerStateTest {
         }
 
         val listener = Listener<State> { n ->
-            assertThat(o).isEqualTo(oldState)
             assertThat(n).isEqualTo(newState)
             latch.countDown()
         }
 
         val stateListener = Listeners.create(filter, listener)
-        stateListener.update(newState)
+        stateListener.update(oldState, newState, false)
 
         latch.await()
     }
@@ -55,12 +54,12 @@ class ListenerStateTest {
             false
         }
 
-        val listener = Listener<State> { `<anonymous parameter 1>` ->
+        val listener = Listener<State> {
             fail("Listener must not be called")
         }
 
         val stateListener = Listeners.create(filter, listener)
-        stateListener.update(newState)
+        stateListener.update(oldState, newState, false)
 
         latch.await()
     }
@@ -72,40 +71,13 @@ class ListenerStateTest {
             true
         }
 
-        val listener = Listener<State> { `<anonymous parameter 1>` ->
+        val listener = Listener<State> {
             fail("Listener must not be called")
         }
 
         val stateListener = Listeners.create(filter, listener)
 
         assertThat(stateListener.stateKey).isNull()
-    }
-
-    @Test
-    fun `listener for state - equals`() {
-        val filter1 = Filter<State> { _, _ -> true }
-        val filter2 = Filter<State> { _, _ -> false }
-
-        val listener = Listener<State> { `<anonymous parameter 1>` -> }
-
-        val stateListener1 = Listeners.create(filter1, listener)
-        val stateListener2 = Listeners.create(filter2, listener)
-
-        assertThat(stateListener1 == stateListener2).isTrue()
-    }
-
-    @Test
-    fun `listener for state - hashcode`() {
-        val filter = Filter<State> { _, _ ->
-            true
-        }
-
-        val listener = Listener<State> { `<anonymous parameter 1>` ->
-        }
-
-        val stateListener = Listeners.create(filter, listener)
-
-        assertThat(stateListener.hashCode()).isEqualTo(listener.hashCode())
     }
 
 }

@@ -18,7 +18,6 @@ class ReduxStoreListenerTest : Helper {
         val latch = CountDownLatch(1)
 
         val listener = Listener { n: State ->
-            assertThat(o.getState(String::class.java)).isEqualTo(initialState)
             assertThat(n.getState(String::class.java)).isEqualTo(newState)
             latch.countDown()
         }
@@ -32,7 +31,7 @@ class ReduxStoreListenerTest : Helper {
 
     @Test
     fun `store listener - unregister state listener`() {
-        val listener = Listener<State> { `<anonymous parameter 1>` ->
+        val listener = Listener<State> {
             fail("Listener must not be called")
         }
 
@@ -51,7 +50,6 @@ class ReduxStoreListenerTest : Helper {
         val latch = CountDownLatch(2)
 
         val listener = Listener { n: State ->
-            assertThat(o.getState(String::class.java)).isEqualTo(initialState)
             assertThat(n.getState(String::class.java)).isEqualTo(newState)
             latch.countDown()
         }
@@ -73,7 +71,7 @@ class ReduxStoreListenerTest : Helper {
     @Test
     fun `store listener - unregister state listener with filter`() {
 
-        val listener = Listener<State> { `<anonymous parameter 1>` ->
+        val listener = Listener<State> {
             fail("Listener must not be called")
         }
 
@@ -93,7 +91,7 @@ class ReduxStoreListenerTest : Helper {
     fun `store listener - register state listener with filter, filter filters`() {
         val latch = CountDownLatch(1)
 
-        val listener = Listener { `<anonymous parameter 1>`: State ->
+        val listener = Listener<State> {
             fail("Listener must not be called")
         }
 
@@ -118,7 +116,6 @@ class ReduxStoreListenerTest : Helper {
         val latch = CountDownLatch(1)
 
         val listener = Listener { n: String ->
-            assertThat(o).isEqualTo(initialState)
             assertThat(n).isEqualTo(newState)
             latch.countDown()
         }
@@ -132,7 +129,7 @@ class ReduxStoreListenerTest : Helper {
 
     @Test
     fun `store listener - unregister string key listener`() {
-        val listener = Listener<String> { `<anonymous parameter 1>` ->
+        val listener = Listener<String> {
             fail("Listener must not be called")
         }
 
@@ -150,7 +147,6 @@ class ReduxStoreListenerTest : Helper {
         val latch = CountDownLatch(2)
 
         val listener = Listener { n: String ->
-            assertThat(o).isEqualTo(initialState)
             assertThat(n).isEqualTo(newState)
             latch.countDown()
         }
@@ -172,7 +168,7 @@ class ReduxStoreListenerTest : Helper {
     @Test
     fun `store listener - unregister string key listener with filter`() {
 
-        val listener = Listener<String> { `<anonymous parameter 1>` ->
+        val listener = Listener<String> {
             fail("Listener must not be called")
         }
 
@@ -193,7 +189,7 @@ class ReduxStoreListenerTest : Helper {
     fun `store listener - register string key listener with filter, filter filters`() {
         val latch = CountDownLatch(1)
 
-        val listener = Listener { `<anonymous parameter 1>`: String ->
+        val listener = Listener<String> {
             fail("Listener must not be called")
         }
 
@@ -217,7 +213,6 @@ class ReduxStoreListenerTest : Helper {
         val latch = CountDownLatch(1)
 
         val listener = Listener { n: String ->
-            assertThat(o).isEqualTo(initialState)
             assertThat(n).isEqualTo(newState)
             latch.countDown()
         }
@@ -231,7 +226,7 @@ class ReduxStoreListenerTest : Helper {
 
     @Test
     fun `store listener - unregister class key listener`() {
-        val listener = Listener<String> { `<anonymous parameter 1>` ->
+        val listener = Listener<String> {
             fail("Listener must not be called")
         }
 
@@ -249,7 +244,6 @@ class ReduxStoreListenerTest : Helper {
         val latch = CountDownLatch(2)
 
         val listener = Listener { n: String ->
-            assertThat(o).isEqualTo(initialState)
             assertThat(n).isEqualTo(newState)
             latch.countDown()
         }
@@ -271,7 +265,7 @@ class ReduxStoreListenerTest : Helper {
     @Test
     fun `store listener - unregister class key listener with filter`() {
 
-        val listener = Listener<String> { `<anonymous parameter 1>` ->
+        val listener = Listener<String> {
             fail("Listener must not be called")
         }
 
@@ -292,7 +286,7 @@ class ReduxStoreListenerTest : Helper {
     fun `store listener - register class key listener with filter, filter filters`() {
         val latch = CountDownLatch(1)
 
-        val listener = Listener { `<anonymous parameter 1>`: String ->
+        val listener = Listener<String> {
             fail("Listener must not be called")
         }
 
@@ -319,7 +313,6 @@ class ReduxStoreListenerTest : Helper {
         val latch = CountDownLatch(1)
 
         val listener = Listener { n: String ->
-            assertThat(o).isEqualTo(initialState)
             assertThat(n).isEqualTo(newState)
             latch.countDown()
         }
@@ -333,7 +326,7 @@ class ReduxStoreListenerTest : Helper {
 
     @Test
     fun `store listener - unregister class and string listener`() {
-        val listener = Listener<String> { `<anonymous parameter 1>` ->
+        val listener = Listener<String> {
             fail("Listener must not be called")
         }
 
@@ -350,7 +343,6 @@ class ReduxStoreListenerTest : Helper {
         val latch = CountDownLatch(2)
 
         val listener = Listener { n: String ->
-            assertThat(o).isEqualTo(initialState)
             assertThat(n).isEqualTo(newState)
             latch.countDown()
         }
@@ -372,7 +364,7 @@ class ReduxStoreListenerTest : Helper {
     @Test
     fun `store listener - unregister class and string listener with filter`() {
 
-        val listener = Listener<String> { `<anonymous parameter 1>` ->
+        val listener = Listener<String> {
             fail("Listener must not be called")
         }
 
@@ -392,7 +384,7 @@ class ReduxStoreListenerTest : Helper {
     fun `store listener - register class and string listener with filter, filter filters`() {
         val latch = CountDownLatch(1)
 
-        val listener = Listener { `<anonymous parameter 1>`: String ->
+        val listener = Listener<String> {
             fail("Listener must not be called")
         }
 

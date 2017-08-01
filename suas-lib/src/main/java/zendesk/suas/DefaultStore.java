@@ -11,7 +11,7 @@ import java.util.Map;
 
 class DefaultStore implements Store {
 
-    private static boolean isAndroid;
+    static boolean isAndroid = false;
 
     static {
         try {

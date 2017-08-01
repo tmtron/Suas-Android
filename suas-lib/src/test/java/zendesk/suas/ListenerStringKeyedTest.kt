@@ -24,13 +24,12 @@ class ListenerStringKeyedTest {
         }
 
         val listener = Listener<String> { n ->
-            assertThat(o).isEqualTo("bla1")
             assertThat(n).isEqualTo("bla2")
             latch.countDown()
         }
 
         val stateListener = Listeners.create("key", filter, listener)
-        stateListener.update(newState)
+        stateListener.update(oldState, newState, false)
 
         latch.await()
     }
@@ -50,12 +49,12 @@ class ListenerStringKeyedTest {
             false
         }
 
-        val listener = Listener<String> { `<anonymous parameter 1>` ->
+        val listener = Listener<String> {
             Assert.fail("Listener must not be called")
         }
 
         val stateListener = Listeners.create("key", filter, listener)
-        stateListener.update(newState)
+        stateListener.update(newState, oldState, false)
 
         latch.await()
     }
@@ -71,12 +70,12 @@ class ListenerStringKeyedTest {
             true
         }
 
-        val listener = Listener<String> { `<anonymous parameter 1>` ->
+        val listener = Listener<String> {
             Assert.fail("Listener must not be called")
         }
 
         val stateListener: Listeners.StateListener = Listeners.create<String>("key", filter, listener)
-        stateListener.update(newState)
+        stateListener.update(newState, oldState, false)
     }
 
     @Test
@@ -90,48 +89,20 @@ class ListenerStringKeyedTest {
             true
         }
 
-        val listener = Listener<String> { `<anonymous parameter 1>` ->
+        val listener = Listener<String> {
             Assert.fail("Listener must not be called")
         }
 
         val stateListener = Listeners.create<String>("key1", filter, listener)
-        stateListener.update(newState)
+        stateListener.update(newState, oldState, false)
     }
 
 
     @Test
     fun `listener for string key - get key`() {
-        val stateListener = Listeners.create<String>("key1", { _, _ -> true }, { _, _ -> })
+        val stateListener = Listeners.create<String>("key1", { _, _ -> true }, { })
 
-        assertThat(stateListener.key).isEqualTo("key1")
-    }
-
-    @Test
-    fun `listener for string key - equals`() {
-        val filter1 = Filter<State> { _, _ -> true }
-        val filter2 = Filter<State> { _, _ -> false }
-
-        val listener = Listener<State> { `<anonymous parameter 1>` -> }
-
-        val stateListener1 = Listeners.create("key1", filter1, listener)
-        val stateListener2 = Listeners.create("key2", filter2, listener)
-
-        assertThat(stateListener1 == stateListener2).isTrue()
-    }
-
-    @Test
-    fun `listener for string key - hashcode`() {
-
-        val filter = Filter<String> { _, _ ->
-            true
-        }
-
-        val listener = Listener<String> { `<anonymous parameter 1>` ->
-        }
-
-        val stateListener = Listeners.create("key1", filter, listener)
-
-        assertThat(stateListener.hashCode()).isEqualTo(listener.hashCode())
+        assertThat(stateListener.stateKey).isEqualTo("key1")
     }
 
 }

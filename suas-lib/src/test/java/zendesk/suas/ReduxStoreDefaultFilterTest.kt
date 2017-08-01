@@ -16,7 +16,7 @@ class ReduxStoreDefaultFilterTest : Helper {
             false
         }
 
-        val listener = Listener { `<anonymous parameter 1>`: State ->
+        val listener = Listener { _: State ->
             fail("Listener must not be called")
         }
 
@@ -37,7 +37,7 @@ class ReduxStoreDefaultFilterTest : Helper {
             true
         }
 
-        val listener = Listener { `<anonymous parameter 1>`: State ->
+        val listener = Listener { _: State ->
             latch.countDown("Listener must not be called")
         }
 
