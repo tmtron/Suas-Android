@@ -29,9 +29,9 @@ class CombinedReducerTest {
 
         val state = cr.emptyState
 
-        assertThat(state.getState("1")).isEqualTo(r1.emptyState)
-        assertThat(state.getState("2")).isEqualTo(r2.emptyState)
-        assertThat(state.getState("3")).isEqualTo(r3.emptyState)
+        assertThat(state.getState("1")).isEqualTo(r1.initialState)
+        assertThat(state.getState("2")).isEqualTo(r2.initialState)
+        assertThat(state.getState("3")).isEqualTo(r3.initialState)
     }
 
     @Test
@@ -64,10 +64,10 @@ class CombinedReducerTest {
             return newState
         }
 
-        override fun getEmptyState(): String {
+        override fun getInitialState(): String {
             return ""
         }
 
-        override fun getKey(): String = myKey
+        override fun getStateKey(): String = myKey
     }
 }

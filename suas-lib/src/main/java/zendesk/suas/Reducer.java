@@ -25,14 +25,14 @@ public abstract class Reducer<E> {
      * Returns an empty or default instance of {@code E}.
      */
     @NonNull
-    public abstract E getEmptyState();
+    public abstract E getInitialState();
 
     /**
-     * Gets a key that's unique among all {@link Reducer}.
+     * Gets a state key that's unique among all {@link Reducer}.
      */
     @NonNull
-    public String getKey() {
-        return State.keyForClass(getEmptyState().getClass());
+    public String getStateKey() {
+        return State.keyForClass(getInitialState().getClass());
     }
 
 }

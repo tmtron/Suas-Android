@@ -78,7 +78,7 @@ class ListenerStateTest {
 
         val stateListener = Listeners.create(filter, listener)
 
-        assertThat(stateListener.key).isNull()
+        assertThat(stateListener.stateKey).isNull()
     }
 
     @Test

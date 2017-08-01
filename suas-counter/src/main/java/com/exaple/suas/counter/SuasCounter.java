@@ -69,7 +69,7 @@ public class SuasCounter {
 
         @NonNull
         @Override
-        public Counter getEmptyState() {
+        public Counter getInitialState() {
             // Provide a default value
             return new Counter(0);
         }

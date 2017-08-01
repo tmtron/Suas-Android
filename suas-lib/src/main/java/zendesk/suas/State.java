@@ -44,8 +44,8 @@ public class State implements Serializable {
     }
 
     @Nullable
-    public <E> E getState(@NonNull String key, @NonNull Class<E> clazz) {
-        final Object data = state.get(key);
+    public <E> E getState(@NonNull String stateKey, @NonNull Class<E> clazz) {
+        final Object data = state.get(stateKey);
         if(clazz.isInstance(data)) {
             //noinspection unchecked
             return (E) data;
@@ -66,11 +66,11 @@ public class State implements Serializable {
         state.put(key, newState);
     }
 
-    <E> void updateKey(Class<E> key, E newState) {
-        state.put(keyForClass(key), newState);
+    <E> void updateKey(Class<E> stateKey, E newState) {
+        state.put(keyForClass(stateKey), newState);
     }
 
-    Collection<String> getKeys() {
+    Collection<String> getStateKeys() {
         return state.keySet();
     }
 

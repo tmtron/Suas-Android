@@ -125,7 +125,7 @@ class ListenerClassStringKeyedTest {
 
         val stateListener = Listeners.create("key", Date::class.java, filter, listener)
 
-        assertThat(stateListener.key).isEqualTo("key")
+        assertThat(stateListener.stateKey).isEqualTo("key")
     }
 
     @Test

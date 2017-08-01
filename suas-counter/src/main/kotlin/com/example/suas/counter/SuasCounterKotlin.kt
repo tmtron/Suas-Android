@@ -35,7 +35,7 @@ class CounterReducer : Reducer<Counter>() {
         }
     }
 
-    override fun getEmptyState(): Counter = Counter()
+    override fun getInitialState(): Counter = Counter()
 
 }
 

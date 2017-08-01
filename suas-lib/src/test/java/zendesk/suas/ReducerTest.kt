@@ -12,10 +12,10 @@ class ReducerTest {
                 return "new_string"
             }
 
-            override fun getEmptyState(): String = "empty"
+            override fun getInitialState(): String = "empty"
         }
 
-        assertThat(reducer.key).isEqualTo(State.keyForClass(String::class.java))
+        assertThat(reducer.stateKey).isEqualTo(State.keyForClass(String::class.java))
     }
 
 }

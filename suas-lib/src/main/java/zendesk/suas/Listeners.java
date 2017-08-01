@@ -12,22 +12,22 @@ class Listeners {
 
     private static final Logger L = Logger.getLogger("Suas");
     private static final String WRONG_TYPE = "Either new value or old value cannot be converted to type expected type.";
-    private static final String KEY_NOT_FOUND = "Requested key not found in store";
+    private static final String KEY_NOT_FOUND = "Requested state stateKey not found in store";
 
     private Listeners() {
         // intentionally empty
     }
 
-    static <E> StateListener create(String key, Filter<E> notifier, Listener<E> listener) {
-        return new StringKeyedListener<>(key, listener, notifier);
+    static <E> StateListener create(String stateKey, Filter<E> notifier, Listener<E> listener) {
+        return new StringKeyedListener<>(stateKey, listener, notifier);
     }
 
     static <E> StateListener create(Class<E> clazz, Filter<E> notifier, Listener<E> listener) {
         return new ClassKeyedListener<>(clazz, listener, notifier);
     }
 
-    static <E> StateListener create(String key, Class<E> clazz, Filter<E> notifier, Listener<E> listener) {
-        return new ClassStringKeyedListener<>(key, clazz, listener, notifier);
+    static <E> StateListener create(String stateKey, Class<E> clazz, Filter<E> notifier, Listener<E> listener) {
+        return new ClassStringKeyedListener<>(stateKey, clazz, listener, notifier);
     }
 
     static StateListener create(Filter<State> notifier, Listener<State> listener) {
@@ -39,7 +39,7 @@ class Listeners {
     }
 
     interface StateListener {
-        String getKey();
+        String getStateKey();
         void update(State oldState, State newState, boolean skipFilter);
     }
 
@@ -56,7 +56,7 @@ class Listeners {
         }
 
         @Override
-        public String getKey() {
+        public String getStateKey() {
             return null;
         }
 
@@ -89,7 +89,7 @@ class Listeners {
         }
 
         @Override
-        public String getKey() {
+        public String getStateKey() {
             return null;
         }
 
@@ -97,12 +97,12 @@ class Listeners {
 
     private static class StringKeyedListener<E> implements StateListener {
 
-        private final String key;
+        private final String stateKey;
         private final Listener<E> listener;
         private final Filter<E> filter;
 
-        private StringKeyedListener(String key, Listener<E> listener, Filter<E> filter) {
-            this.key = key;
+        private StringKeyedListener(String stateKey, Listener<E> listener, Filter<E> filter) {
+            this.stateKey = stateKey;
             this.listener = listener;
             this.filter = filter;
         }
@@ -115,11 +115,11 @@ class Listeners {
 
                 if(oldState != null) {
                     //noinspection unchecked
-                    oldStateTyped = (E) oldState.getState(key);
+                    oldStateTyped = (E) oldState.getState(stateKey);
                 }
                 if(newState != null) {
                     //noinspection unchecked
-                    newStateTyped = (E) newState.getState(key);
+                    newStateTyped = (E) newState.getState(stateKey);
                 }
 
                 Listeners.update(newStateTyped, oldStateTyped, filter, listener, skipFilter);
@@ -130,8 +130,8 @@ class Listeners {
         }
 
         @Override
-        public String getKey() {
-            return key;
+        public String getStateKey() {
+            return stateKey;
         }
 
     }
@@ -165,7 +165,7 @@ class Listeners {
         }
 
         @Override
-        public String getKey() {
+        public String getStateKey() {
             return State.keyForClass(clazz);
         }
 
@@ -174,14 +174,14 @@ class Listeners {
     private static class ClassStringKeyedListener<E> implements StateListener {
 
         private final Class<E> clazz;
-        private final String key;
+        private final String stateKey;
         private final Listener<E> listener;
         private final Filter<E> filter;
 
-        private ClassStringKeyedListener(String key, Class<E> clazz, Listener<E> listener, Filter<E> filter) {
+        private ClassStringKeyedListener(String stateKey, Class<E> clazz, Listener<E> listener, Filter<E> filter) {
             this.clazz = clazz;
             this.listener = listener;
-            this.key = key;
+            this.stateKey = stateKey;
             this.filter = filter;
         }
 
@@ -192,18 +192,18 @@ class Listeners {
             E oldStateTyped = null;
 
             if(oldState != null) {
-                oldStateTyped = oldState.getState(key, clazz);
+                oldStateTyped = oldState.getState(stateKey, clazz);
             }
             if(newState != null) {
-                newStateTyped = newState.getState(key, clazz);
+                newStateTyped = newState.getState(stateKey, clazz);
             }
 
             Listeners.update(newStateTyped, oldStateTyped, filter, listener, skipFilter);
         }
 
         @Override
-        public String getKey() {
-            return key;
+        public String getStateKey() {
+            return stateKey;
         }
 
     }

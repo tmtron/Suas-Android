@@ -54,7 +54,7 @@ public class SuasTest {
 
         @NonNull
         @Override
-        public String getEmptyState() {
+        public String getInitialState() {
             return "empty";
         }
     }

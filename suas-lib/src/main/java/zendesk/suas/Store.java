@@ -69,11 +69,11 @@ public interface Store extends StoreApi {
      *     notify or not.
      * </p>
      *
-     * @param key the state key to listen for changes
+     * @param stateKey the state key to listen for changes
      * @param listener callback to be notified on state changes
      * @param <E> type of the state that's registered on the provided {@code key}
      */
-    <E> Subscription addListener(@NonNull String key, @NonNull Listener<E> listener);
+    <E> Subscription addListener(@NonNull String stateKey, @NonNull Listener<E> listener);
 
     /**
      * Adds a new {@link Listener} to the store.
@@ -87,12 +87,12 @@ public interface Store extends StoreApi {
      *     The provided {@link Filter} is used to decide whether to notify or not.
      * </p>
      *
-     * @param key the state key to listen for changes
+     * @param stateKey the state key to listen for changes
      * @param filter function used to decide whether to notify or not
      * @param listener callback to be notified on state changes
      * @param <E> type of the state that's registered on the provided {@code key}
      */
-    <E> Subscription addListener(@NonNull String key, @NonNull Filter<E> filter, @NonNull Listener<E> listener);
+    <E> Subscription addListener(@NonNull String stateKey, @NonNull Filter<E> filter, @NonNull Listener<E> listener);
 
 
     /**
@@ -147,12 +147,12 @@ public interface Store extends StoreApi {
      *     notify or not.
      * </p>
      *
-     * @param key the state key to listen for changes
+     * @param stateKey the state key to listen for changes
      * @param clazz the state type to listen for changes
      * @param listener callback to be notified on state changes
      * @param <E> type of the state that's registered on the provided {@code key}
      */
-    <E> Subscription addListener(@NonNull String key, @NonNull Class<E> clazz, @NonNull Listener<E> listener);
+    <E> Subscription addListener(@NonNull String stateKey, @NonNull Class<E> clazz, @NonNull Listener<E> listener);
 
     /**
      * Adds a new {@link Listener} to the store.
@@ -166,13 +166,13 @@ public interface Store extends StoreApi {
      *     The provided {@link Filter} is used to decide whether to notify or not.
      * </p>
      *
-     * @param key the state key to listen for changes
+     * @param stateKey the state key to listen for changes
      * @param clazz the state type to listen for changes
      * @param filter function used to decide whether to notify or not
      * @param listener callback to be notified on state changes
      * @param <E> type of the state that's registered on the provided {@code key}
      */
-    <E> Subscription addListener(@NonNull String key, @NonNull Class<E> clazz, @NonNull Filter<E> filter, @NonNull Listener<E> listener);
+    <E> Subscription addListener(@NonNull String stateKey, @NonNull Class<E> clazz, @NonNull Filter<E> filter, @NonNull Listener<E> listener);
 
     /**
      * Remove a listener from the store.

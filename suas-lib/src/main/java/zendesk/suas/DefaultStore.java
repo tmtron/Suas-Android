@@ -76,7 +76,7 @@ class DefaultStore implements Store {
 
     private void notifyListener(State oldState, State newState, Collection<String> updatedKeys) {
         for(Listeners.StateListener listener : listenerStateListenerMap.values()) {
-            if(listener.getKey() == null || updatedKeys.contains(listener.getKey())) {
+            if(listener.getStateKey() == null || updatedKeys.contains(listener.getStateKey())) {
                 listener.update(oldState, newState, false);
             }
         }
@@ -90,13 +90,13 @@ class DefaultStore implements Store {
     }
 
     @Override
-    public <E> Subscription addListener(@NonNull String key, @NonNull Listener<E> listener) {
-        return registerListener(listener, Listeners.create(key, defaultFilter, listener));
+    public <E> Subscription addListener(@NonNull String stateKey, @NonNull Listener<E> listener) {
+        return registerListener(listener, Listeners.create(stateKey, defaultFilter, listener));
     }
 
     @Override
-    public <E> Subscription addListener(@NonNull String key, @NonNull Filter<E> filter, @NonNull Listener<E> listener) {
-        return registerListener(listener, Listeners.create(key, filter, listener));
+    public <E> Subscription addListener(@NonNull String stateKey, @NonNull Filter<E> filter, @NonNull Listener<E> listener) {
+        return registerListener(listener, Listeners.create(stateKey, filter, listener));
     }
 
     @Override
@@ -120,13 +120,13 @@ class DefaultStore implements Store {
     }
 
     @Override
-    public <E> Subscription addListener(@NonNull String key, @NonNull Class<E> clazz, @NonNull Listener<E> listener) {
-        return registerListener(listener, Listeners.create(key, clazz, defaultFilter, listener));
+    public <E> Subscription addListener(@NonNull String stateKey, @NonNull Class<E> clazz, @NonNull Listener<E> listener) {
+        return registerListener(listener, Listeners.create(stateKey, clazz, defaultFilter, listener));
     }
 
     @Override
-    public <E> Subscription addListener(@NonNull String key, @NonNull Class<E> clazz, @NonNull Filter<E> filter, @NonNull Listener<E> listener) {
-        return registerListener(listener, Listeners.create(key, clazz, filter, listener));
+    public <E> Subscription addListener(@NonNull String stateKey, @NonNull Class<E> clazz, @NonNull Filter<E> filter, @NonNull Listener<E> listener) {
+        return registerListener(listener, Listeners.create(stateKey, clazz, filter, listener));
     }
 
     @Override

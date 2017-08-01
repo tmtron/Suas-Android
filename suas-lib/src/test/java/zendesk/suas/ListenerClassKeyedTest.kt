@@ -99,7 +99,7 @@ class ListenerClassKeyedTest {
 
         val stateListener = Listeners.create(String::class.java, filter, listener)
 
-        assertThat(stateListener.key).isEqualTo(State.keyForClass(String::class.java))
+        assertThat(stateListener.stateKey).isEqualTo(State.keyForClass(String::class.java))
     }
 
     @Test

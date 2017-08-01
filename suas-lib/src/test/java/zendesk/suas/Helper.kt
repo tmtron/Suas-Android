@@ -28,7 +28,7 @@ interface Helper {
     }
 
     class TestReducer(val customKey: String? = null) : Reducer<String>() {
-        override fun getEmptyState(): String {
+        override fun getInitialState(): String {
             return ReduxStoreListenerTest.initialState
         }
 
@@ -36,8 +36,8 @@ interface Helper {
             return ReduxStoreListenerTest.newState
         }
 
-        override fun getKey(): String {
-            return customKey ?: super.getKey()
+        override fun getStateKey(): String {
+            return customKey ?: super.getStateKey()
         }
     }
 

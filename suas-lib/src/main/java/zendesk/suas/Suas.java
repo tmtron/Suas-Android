@@ -135,9 +135,9 @@ public class Suas {
             final State initialState;
             if(state != null) {
                 final State passedInState = state.copy();
-                for(String key : emptyState.getKeys()) {
-                    if(passedInState.getState(key) == null) {
-                        passedInState.updateKey(key, emptyState.getState(key));
+                for(String stateKey : emptyState.getStateKeys()) {
+                    if(passedInState.getState(stateKey) == null) {
+                        passedInState.updateKey(stateKey, emptyState.getState(stateKey));
                     }
                 }
                 initialState = passedInState;
