@@ -70,7 +70,7 @@ class DefaultStore implements Store {
     @Override
     public void reset(@NonNull State state) {
         final State oldState = getState();
-        this.state = state.copy();
+        this.state = State.mergeStates(reducer.getEmptyState(), state);
         notifyListener(oldState, this.state, reducer.getAllKeys());
     }
 
@@ -130,17 +130,17 @@ class DefaultStore implements Store {
     }
 
     private Subscription registerListener(Listener listener, Listeners.StateListener stateListener) {
-        final Subscription suasSubscription = new DefaultSuasSubscription(stateListener, listener);
+        final Subscription suasSubscription = new DefaultSubscription(stateListener, listener);
         suasSubscription.subscribe();
         return suasSubscription;
     }
 
-    private class DefaultSuasSubscription implements Subscription {
+    private class DefaultSubscription implements Subscription {
 
         private final Listeners.StateListener stateListener;
         private final Listener listener;
 
-        DefaultSuasSubscription(Listeners.StateListener stateListener, Listener listener) {
+        DefaultSubscription(Listeners.StateListener stateListener, Listener listener) {
             this.stateListener = stateListener;
             this.listener = listener;
         }

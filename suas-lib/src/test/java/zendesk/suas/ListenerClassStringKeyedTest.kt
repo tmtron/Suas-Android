@@ -7,7 +7,7 @@ import java.math.BigDecimal
 import java.util.*
 import java.util.concurrent.CountDownLatch
 
-class ListenerClassStringKeyedTest {
+class ListenerClassStringKeyedTest : Helper {
 
     @Test
     fun `listener for class and string key`() {
@@ -24,13 +24,13 @@ class ListenerClassStringKeyedTest {
         val filter = Filter<Date> { o, n ->
             assertThat(o).isEqualTo(Date(1))
             assertThat(n).isEqualTo(Date(2))
-            latch.countDown()
+            latch.countDown("Filter must not be called")
             true
         }
 
         val listener = Listener<Date> { n ->
             assertThat(n).isEqualTo(Date(2))
-            latch.countDown()
+            latch.countDown("Listener must not be called")
         }
 
         val stateListener = Listeners.create("key", Date::class.java, filter, listener)
@@ -53,7 +53,7 @@ class ListenerClassStringKeyedTest {
         val filter = Filter<Date> { o, n ->
             assertThat(o).isEqualTo(Date(1))
             assertThat(n).isEqualTo(Date(2))
-            latch.countDown()
+            latch.countDown("Filter must not be called")
             false
         }
 
@@ -127,4 +127,49 @@ class ListenerClassStringKeyedTest {
         assertThat(stateListener.stateKey).isEqualTo("key")
     }
 
+    @Test
+    fun `listener for class and string key - skip filter`() {
+
+        val latch = CountDownLatch(1)
+
+        val oldState = State().apply {
+            updateKey("key", Date(1))
+        }
+        val newState = State().apply {
+            updateKey("key", Date(2))
+        }
+
+        val filter = Filter<Date> { _, _ ->
+            fail("Filter must not be called")
+            false
+        }
+
+        val listener = Listener<Date> {
+            assertThat(it).isEqualTo(Date(2))
+            latch.countDown("Listener must not be called")
+        }
+
+
+        val stateListener = Listeners.create("key", Date::class.java, filter, listener)
+        stateListener.update(oldState, newState, true)
+
+        latch.awaitOrFail()
+    }
+
+    @Test
+    fun `listener for class and string key - null state`() {
+        val filter = Filter<Date> { _, _ ->
+            fail("Filter must not be called")
+            false
+        }
+
+        val listener = Listener<Date> { _ ->
+            fail("Listener must not be called")
+        }
+
+        val stateListener = Listeners.create("key", Date::class.java, filter, listener)
+        stateListener.update(State(), null, false)
+        stateListener.update(null, State(), false)
+        stateListener.update(null, null, false)
+    }
 }

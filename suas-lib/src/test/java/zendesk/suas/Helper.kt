@@ -5,6 +5,12 @@ import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 
 interface Helper {
+
+    companion object {
+        const val emptyState = "empty_state"
+        const val newState = "new_state"
+    }
+
     fun CountDownLatch.countDown(message: String) {
         if (count == 0L) fail(message)
         else countDown()
@@ -30,11 +36,11 @@ interface Helper {
 
     class TestReducer(val customKey: String? = null) : Reducer<String>() {
         override fun getInitialState(): String {
-            return ReduxStoreListenerTest.initialState
+            return emptyState
         }
 
         override fun reduce(oldState: String, action: Action<*>): String? {
-            return ReduxStoreListenerTest.newState
+            return newState
         }
 
         override fun getStateKey(): String {

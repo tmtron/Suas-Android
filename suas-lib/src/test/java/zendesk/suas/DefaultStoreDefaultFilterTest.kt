@@ -4,7 +4,7 @@ import org.junit.Assert.fail
 import org.junit.Test
 import java.util.concurrent.CountDownLatch
 
-class ReduxStoreDefaultFilterTest : Helper {
+class DefaultStoreDefaultFilterTest : Helper {
 
     @Test
     fun `redux store - custom default filter - filter filters`() {

@@ -142,29 +142,10 @@ public class Suas {
         public Store build() {
             final CombinedReducer combinedReducer = new CombinedReducer(reducers);
             final CombinedMiddleware combinedMiddleware = new CombinedMiddleware(middleware);
-            final State initialState = buildState(combinedReducer, state);
+            final State initialState = State.mergeStates(combinedReducer.getEmptyState(), state);
             final Executor executor = getExecutor();
 
             return new DefaultStore(initialState, combinedReducer, combinedMiddleware, notifier, executor);
-        }
-
-        private State buildState(CombinedReducer combinedReducer, State state) {
-            final State emptyState = combinedReducer.getEmptyState();
-
-            final State initialState;
-            if(state != null) {
-                final State passedInState = state.copy();
-                for(String stateKey : emptyState.getStateKeys()) {
-                    if(passedInState.getState(stateKey) == null) {
-                        passedInState.updateKey(stateKey, emptyState.getState(stateKey));
-                    }
-                }
-                initialState = passedInState;
-            } else {
-                initialState = emptyState;
-            }
-
-            return initialState;
         }
 
         private Executor getExecutor() {

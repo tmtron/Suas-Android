@@ -17,6 +17,24 @@ public class State implements Serializable {
         return clazz.getSimpleName();
     }
 
+    static State mergeStates(State emptyState, State state) {
+        final State initialState;
+
+        if(state != null) {
+            final State passedInState = state.copy();
+            for(String stateKey : emptyState.getStateKeys()) {
+                if(passedInState.getState(stateKey) == null) {
+                    passedInState.updateKey(stateKey, emptyState.getState(stateKey));
+                }
+            }
+            initialState = passedInState;
+        } else {
+            initialState = emptyState;
+        }
+
+        return initialState;
+    }
+
     private final Map<String, Object> state;
 
     State(@NonNull Map<String, Object> state) {

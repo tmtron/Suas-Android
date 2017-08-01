@@ -5,14 +5,13 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * Helper class for registering {@link Listener} or {@link Component} to a
- * certain part of the {@link State}
+ * Helper class for registering {@link Listener} to a certain part of the {@link State}
  */
 class Listeners {
 
     private static final Logger L = Logger.getLogger("Suas");
     private static final String WRONG_TYPE = "Either new value or old value cannot be converted to type expected type.";
-    private static final String KEY_NOT_FOUND = "Requested state stateKey not found in store";
+    private static final String KEY_NOT_FOUND = "Requested stateKey not found in store";
 
     private Listeners() {
         // intentionally empty
@@ -62,7 +61,8 @@ class Listeners {
 
         @Override
         public void update(State oldState, State newState, boolean skipFilter) {
-            if(skipFilter || filter.filter(oldState, newState)) {
+            if((skipFilter && newState != null) ||
+                    (oldState != null && newState != null && filter.filter(oldState, newState))) {
                 final E data = stateSelector.selectData(newState);
                 if(data != null) {
                     listener.update(data);
@@ -83,7 +83,8 @@ class Listeners {
 
         @Override
         public void update(State oldState, State newState, boolean skipFilter) {
-            if(filter.filter(oldState, newState) || skipFilter) {
+            if((skipFilter && newState != null) ||
+                    (oldState != null && newState != null && filter.filter(oldState, newState))) {
                 listener.update(newState);
             }
         }
