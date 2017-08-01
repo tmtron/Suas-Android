@@ -9,7 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * An implementation of state that's used in a {@link DefaultStore}.
+ * An implementation of state that's used in a {@link SuasStore}.
  */
 public class State implements Serializable {
 
@@ -41,15 +41,35 @@ public class State implements Serializable {
         this.state = new HashMap<>(state);
     }
 
+    /**
+     * Create a new and <i>empty</i> state.
+     */
     public State() {
         this.state = new HashMap<>();
     }
 
+    /**
+     * Get a state for a state key
+     *
+     * @param stateKey state key
+     * @return not typed state
+     */
     @Nullable
-    public Object getState(@NonNull String key) {
-        return state.get(key);
+    public Object getState(@NonNull String stateKey) {
+        return state.get(stateKey);
     }
 
+    /**
+     * Get a state for a {@link Class}
+     *
+     * <p>
+     *     If available in the state returns a the state
+     *     with type {@code <E>}
+     * </p>
+     *
+     * @param clazz type of the state
+     * @return the state with the correct type or {@code null}
+     */
     @Nullable
     public <E> E getState(@NonNull Class<E> clazz) {
         final Object data = state.get(keyForClass(clazz));
@@ -61,6 +81,18 @@ public class State implements Serializable {
         }
     }
 
+    /**
+     * Get a state for the a state key of the type {@code <E>}
+     *
+     * <p>
+     *     If available in the state returns a the state
+     *     with type {@code <E>}
+     * </p>
+     *
+     * @param stateKey key for the state
+     * @param clazz type of the state
+     * @return the state with the correct type or {@code null}
+     */
     @Nullable
     public <E> E getState(@NonNull String stateKey, @NonNull Class<E> clazz) {
         final Object data = state.get(stateKey);
@@ -88,15 +120,17 @@ public class State implements Serializable {
         state.put(keyForClass(stateKey), newState);
     }
 
-    Collection<String> getStateKeys() {
+    private Collection<String> getStateKeys() {
         return state.keySet();
+    }
+
+    Map<String, Object> getState() {
+        return state;
     }
 
     @Override
     public String toString() {
-        return "State{" +
-                "state=" + state +
-                '}';
+        return state.toString();
     }
 
     @Override

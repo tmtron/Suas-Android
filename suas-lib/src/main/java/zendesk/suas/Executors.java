@@ -5,6 +5,9 @@ import android.os.Looper;
 
 import java.util.concurrent.Executor;
 
+/**
+ * Set of {@link Executor}.
+ */
 class Executors {
 
     static Executor getDefaultExecutor() {

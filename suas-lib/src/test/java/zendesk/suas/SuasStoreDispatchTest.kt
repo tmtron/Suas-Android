@@ -2,7 +2,7 @@ package zendesk.suas
 
 import org.junit.Test
 
-class DefaultStoreDispatchTest : Helper {
+class SuasStoreDispatchTest : Helper {
 
     @Test(expected = RuntimeException::class)
     fun `dispatch from reducer should crash`() {

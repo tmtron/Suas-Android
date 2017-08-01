@@ -3,7 +3,7 @@ package zendesk.suas
 import com.google.common.truth.Truth.assertThat
 import org.junit.Test
 
-class DefaultStoreStateTest : Helper {
+class SuasStoreStateTest : Helper {
 
     @Test
     fun `store state - test default state`() {

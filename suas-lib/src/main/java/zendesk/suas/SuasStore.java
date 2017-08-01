@@ -9,8 +9,10 @@ import java.util.Map;
 import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-class DefaultStore implements Store {
-
+/**
+ * Default implementation of {@link Store}
+ */
+class SuasStore implements Store {
 
     private State state;
     private final CombinedReducer reducer;
@@ -20,8 +22,8 @@ class DefaultStore implements Store {
     private final Map<Listener, Listeners.StateListener> listenerStateListenerMap;
     private final AtomicBoolean isReducing = new AtomicBoolean(false);
 
-    DefaultStore(State state, CombinedReducer reducer, CombinedMiddleware combinedMiddleware,
-                 Filter<Object> defaultFilter, Executor executor) {
+    SuasStore(State state, CombinedReducer reducer, CombinedMiddleware combinedMiddleware,
+              Filter<Object> defaultFilter, Executor executor) {
         this.state = state;
         this.reducer = reducer;
         this.middleware = combinedMiddleware;
@@ -41,13 +43,13 @@ class DefaultStore implements Store {
         executor.execute(new Runnable() {
             @Override
             public void run() {
-                middleware.onAction(action, DefaultStore.this, DefaultStore.this, new Continuation() {
+                middleware.onAction(action, SuasStore.this, SuasStore.this, new Continuation() {
                     @Override
                     public void next(@NonNull Action<?> action) {
                         if(isReducing.compareAndSet(false,true)) {
                             final State oldState = getState();
                             final CombinedReducer.ReduceResult result = reducer.reduce(getState(), action);
-                            DefaultStore.this.state = result.getNewState();
+                            SuasStore.this.state = result.getNewState();
                             notifyListener(oldState, getState(), result.getUpdatedKeys());
                             isReducing.set(false);
                         } else {

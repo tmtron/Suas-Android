@@ -145,7 +145,7 @@ public class Suas {
             final State initialState = State.mergeStates(combinedReducer.getEmptyState(), state);
             final Executor executor = getExecutor();
 
-            return new DefaultStore(initialState, combinedReducer, combinedMiddleware, notifier, executor);
+            return new SuasStore(initialState, combinedReducer, combinedMiddleware, notifier, executor);
         }
 
         private Executor getExecutor() {

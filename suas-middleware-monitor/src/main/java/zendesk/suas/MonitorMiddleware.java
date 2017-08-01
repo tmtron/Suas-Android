@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Locale;
+import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -101,7 +102,7 @@ public class MonitorMiddleware implements Middleware, ConnectionHandler {
     @Override
     public void onAction(@NonNull Action<?> action, @NonNull GetState state, @NonNull Dispatcher dispatcher, @NonNull Continuation continuation) {
         continuation.next(action);
-        final State newState = state.getState();
+        final Map<String, Object> newState = state.getState().getState();
 
         lastItem = new StateUpdate(action.getActionType(), action.getData(), newState);
         if(started.get()) {
@@ -137,9 +138,9 @@ public class MonitorMiddleware implements Middleware, ConnectionHandler {
 
         private final String action;
         private final Object actionData;
-        private final State state;
+        private final Map<String, Object> state;
 
-        private StateUpdate(String action, Object actionData, State state) {
+        private StateUpdate(String action, Object actionData, Map<String, Object> state) {
             this.action = action;
             this.actionData = actionData;
             this.state = state;

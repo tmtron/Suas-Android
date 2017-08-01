@@ -3,7 +3,7 @@ package zendesk.suas
 import org.junit.Test
 import java.util.concurrent.CountDownLatch
 
-class DefaultStoreMiddlewareTest : Helper {
+class SuasStoreMiddlewareTest : Helper {
 
     @Test
     fun `redux store - middleware`() {

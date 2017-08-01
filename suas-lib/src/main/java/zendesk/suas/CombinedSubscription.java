@@ -3,12 +3,27 @@ package zendesk.suas;
 import java.util.Arrays;
 import java.util.Collection;
 
+/**
+ * Helper class for joining multiple {@link Subscription}s.
+ */
 public class CombinedSubscription implements Subscription {
 
+    /**
+     * Combine multiple {@link Subscription}s into one.
+     *
+     * @param subscriptions a list of subscriptions
+     * @return a new subscription
+     */
     public static Subscription from(Subscription... subscriptions) {
         return new CombinedSubscription(Arrays.asList(subscriptions));
     }
 
+    /**
+     * Combine multiple {@link Subscription}s into one.
+     *
+     * @param subscriptions a collection of subscriptions
+     * @return a new subscription
+     */
     public static Subscription from(Collection<Subscription> subscriptions) {
         return new CombinedSubscription(subscriptions);
     }

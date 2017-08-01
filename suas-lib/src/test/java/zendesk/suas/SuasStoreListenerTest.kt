@@ -6,7 +6,7 @@ import org.junit.Test
 import zendesk.suas.Helper.TestReducer
 import java.util.concurrent.CountDownLatch
 
-class DefaultStoreListenerTest : Helper {
+class SuasStoreListenerTest : Helper {
 
     @Test
     fun `store listener - register state listener`() {

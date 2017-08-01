@@ -5,7 +5,7 @@ import org.junit.Assert.fail
 import org.junit.Test
 import java.util.concurrent.CountDownLatch
 
-class DefaultStoreSubscriptionTest : Helper {
+class SuasStoreSubscriptionTest : Helper {
 
     @Test
     fun `store subscription - trigger update`() {
