@@ -33,7 +33,7 @@ class SuasStoreStateTest : Helper {
         assertThat(store.state.getState(String::class.java))
                 .isEqualTo("empty_state")
 
-        store.dispatchAction(Action<Unit>("something"))
+        store.dispatch(Action<Unit>("something"))
 
         assertThat(store.state.getState(String::class.java))
                 .isEqualTo("new_state")

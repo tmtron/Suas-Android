@@ -14,7 +14,7 @@ class SearchBoxComponent(val inputBox: EditText, dispatcher: Dispatcher, service
         inputBox.setOnEditorActionListener{ _, keyCode, _ ->
             if(keyCode == EditorInfo.IME_ACTION_DONE) {
                 if(inputBox.text.isNotBlank()) {
-                    dispatcher.dispatchAction(service.findCities(inputBox.text.toString()))
+                    dispatcher.dispatch(service.findCities(inputBox.text.toString()))
                 }
             }
             false

@@ -48,14 +48,14 @@ public class MainActivity extends AppCompatActivity implements Listener<TodoList
         findViewById(R.id.add_item).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                store.dispatchAction(ActionFactory.addAction(UUID.randomUUID().toString()));
+                store.dispatch(ActionFactory.addAction(UUID.randomUUID().toString()));
             }
         });
 
         findViewById(R.id.nothing).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                store.dispatchAction(new Action("bla bla"));
+                store.dispatch(new Action("bla bla"));
             }
         });
 
@@ -63,7 +63,7 @@ public class MainActivity extends AppCompatActivity implements Listener<TodoList
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 String item = todoListAdapter.getItem(i);
-                store.dispatchAction(ActionFactory.deleteAction(item));
+                store.dispatch(ActionFactory.deleteAction(item));
             }
         });
 

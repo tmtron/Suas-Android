@@ -39,7 +39,7 @@ class SuasStore implements Store {
     }
 
     @Override
-    public synchronized void dispatchAction(@NonNull final Action action) {
+    public synchronized void dispatch(@NonNull final Action action) {
         executor.execute(new Runnable() {
             @Override
             public void run() {
@@ -133,7 +133,7 @@ class SuasStore implements Store {
 
     private Subscription registerListener(Listener listener, Listeners.StateListener stateListener) {
         final Subscription suasSubscription = new DefaultSubscription(stateListener, listener);
-        suasSubscription.subscribe();
+        suasSubscription.addListener();
         return suasSubscription;
     }
 
@@ -148,17 +148,17 @@ class SuasStore implements Store {
         }
 
         @Override
-        public void unsubscribe() {
-            removeListener(listener);
+        public void removeListener() {
+            SuasStore.this.removeListener(listener);
         }
 
         @Override
-        public void subscribe() {
+        public void addListener() {
             listenerStateListenerMap.put(listener, stateListener);
         }
 
         @Override
-        public void update() {
+        public void informWithCurrentState() {
             stateListener.update(null, getState(), true);
         }
     }

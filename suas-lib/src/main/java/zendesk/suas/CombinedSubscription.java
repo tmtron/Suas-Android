@@ -35,23 +35,23 @@ public class CombinedSubscription implements Subscription {
     }
 
     @Override
-    public void unsubscribe() {
+    public void removeListener() {
         for(Subscription subscription : subscriptions) {
-            subscription.unsubscribe();
+            subscription.removeListener();
         }
     }
 
     @Override
-    public void subscribe() {
+    public void addListener() {
         for(Subscription subscription : subscriptions) {
-            subscription.subscribe();
+            subscription.addListener();
         }
     }
 
     @Override
-    public void update() {
+    public void informWithCurrentState() {
         for(Subscription subscription : subscriptions) {
-            subscription.update();
+            subscription.informWithCurrentState();
         }
     }
 }

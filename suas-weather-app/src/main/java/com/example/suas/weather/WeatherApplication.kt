@@ -64,7 +64,7 @@ class WeatherApplication : Application() {
                 .withDefaultFilter(Filters.EQUALS)
                 .build()
 
-        store.dispatchAction(storage.loadAction())
+        store.dispatch(storage.loadAction())
         storage.register(store)
 
         store

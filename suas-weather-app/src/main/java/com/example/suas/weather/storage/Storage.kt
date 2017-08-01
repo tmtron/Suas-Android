@@ -34,7 +34,7 @@ class Storage(context: Context) {
         return AsyncMiddleware.forBlockingAction{ dispatcher, _ ->
             val data = load()
             data?.let {
-                dispatcher.dispatchAction(LocationsLoaded(it))
+                dispatcher.dispatch(LocationsLoaded(it))
             }
         }
     }

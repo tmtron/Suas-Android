@@ -22,9 +22,9 @@ public class SuasCounter {
             System.out.println("Java - State changed to " + state.count);
         });
 
-        store.dispatchAction(getIncrementAction(10));
-        store.dispatchAction(getIncrementAction(1));
-        store.dispatchAction(getDecrementAction(5));
+        store.dispatch(getIncrementAction(10));
+        store.dispatch(getIncrementAction(1));
+        store.dispatch(getDecrementAction(5));
 
     }
 

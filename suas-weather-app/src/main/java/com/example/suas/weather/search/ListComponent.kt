@@ -61,7 +61,7 @@ class ListComponent(recyclerView: RecyclerView, dispatcher: Dispatcher) : Listen
         fun bind(item: ListItem, dispatcher: Dispatcher) {
             view.findViewById<TextView>(R.id.searchItemLabel).text = item.location.name
             view.setOnClickListener {
-                dispatcher.dispatchAction(AddLocation(item.location))
+                dispatcher.dispatch(AddLocation(item.location))
                 (it.context as? Activity)?.finish()
             }
         }

@@ -10,6 +10,6 @@ public interface Dispatcher {
     /**
      * Dispatches an {@link Action} to the {@link Store}.
      */
-    void dispatchAction(@NonNull Action action);
+    void dispatch(@NonNull Action action);
 
 }

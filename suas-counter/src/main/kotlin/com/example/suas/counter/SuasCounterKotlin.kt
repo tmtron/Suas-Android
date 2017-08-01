@@ -9,9 +9,9 @@ fun main(args: Array<String>) {
         println("Kotlin - State changed to $value")
     }
 
-    store.dispatchAction(IncrementAction(10))
-    store.dispatchAction(IncrementAction(1))
-    store.dispatchAction(DecrementAction(5))
+    store.dispatch(IncrementAction(10))
+    store.dispatch(IncrementAction(1))
+    store.dispatch(DecrementAction(5))
 }
 
 fun store(): Store {

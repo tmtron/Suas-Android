@@ -9,7 +9,7 @@ class SuasStoreMiddlewareTest : Helper {
     fun `redux store - middleware`() {
         val latch = CountDownLatch(1)
         val store = store(middleware = listOf(TestMiddleware(latch, false)))
-        store.dispatchAction(Action<Unit>("bla"))
+        store.dispatch(Action<Unit>("bla"))
 
         latch.awaitOrFail()
     }
@@ -18,7 +18,7 @@ class SuasStoreMiddlewareTest : Helper {
     fun `redux store - more than one middleware`() {
         val latch = CountDownLatch(2)
         val store = store(middleware = listOf(TestMiddleware(latch, false), TestMiddleware(latch, false)))
-        store.dispatchAction(Action<Unit>("bla"))
+        store.dispatch(Action<Unit>("bla"))
 
         latch.awaitOrFail()
     }
@@ -27,7 +27,7 @@ class SuasStoreMiddlewareTest : Helper {
     fun `redux store - more than one middleware, first one eats action`() {
         val latch = CountDownLatch(1)
         val store = store(middleware = listOf(TestMiddleware(latch, true), TestMiddleware(latch, false)))
-        store.dispatchAction(Action<Unit>("bla"))
+        store.dispatch(Action<Unit>("bla"))
 
         latch.awaitOrFail()
     }

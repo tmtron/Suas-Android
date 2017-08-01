@@ -22,7 +22,7 @@ class SuasStoreDefaultFilterTest : Helper {
 
         val store = store(filter = customDefaultFilter)
         store.addListener(listener)
-        store.dispatchAction(Action<Unit>("bla"))
+        store.dispatch(Action<Unit>("bla"))
 
         latch.awaitOrFail()
     }
@@ -43,7 +43,7 @@ class SuasStoreDefaultFilterTest : Helper {
 
         val store = store(filter = customDefaultFilter)
         store.addListener(listener)
-        store.dispatchAction(Action<Unit>("bla"))
+        store.dispatch(Action<Unit>("bla"))
 
         latch.awaitOrFail()
     }

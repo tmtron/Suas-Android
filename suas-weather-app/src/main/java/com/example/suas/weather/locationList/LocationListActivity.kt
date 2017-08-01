@@ -38,18 +38,18 @@ class LocationListActivity : AppCompatActivity() {
                 store.addListener(weatherComponent.selector, weatherComponent),
                 store.addListener(StateModels.Progress::class.java, progressComponent)
         )
-        subscriptions.update()
+        subscriptions.informWithCurrentState()
     }
 
     override fun onResume() {
         super.onResume()
-        subscriptions.subscribe()
-        subscriptions.update()
+        subscriptions.addListener()
+        subscriptions.informWithCurrentState()
     }
 
     override fun onPause() {
         super.onPause()
-        subscriptions.unsubscribe()
+        subscriptions.removeListener()
     }
 
 }

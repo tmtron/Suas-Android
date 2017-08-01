@@ -10,11 +10,11 @@ class WeatherService(val autocomplete: AutocompleteService, val weather: Wunderg
 
     fun findCities(query: String): Action<*> {
         return AsyncMiddleware.create { dispatcher, _ ->
-            dispatcher.dispatchAction(LoadSuggestedCities(query))
+            dispatcher.dispatch(LoadSuggestedCities(query))
             loadCitiesFromNetwork(query){
                 when(it) {
-                    is NetworkError -> dispatcher.dispatchAction(SuggestedCitiesError())
-                    is SuggestionResult -> dispatcher.dispatchAction(SuggestedCitiesLoaded(it.result))
+                    is NetworkError -> dispatcher.dispatch(SuggestedCitiesError())
+                    is SuggestionResult -> dispatcher.dispatch(SuggestedCitiesLoaded(it.result))
                 }
             }
         }
@@ -22,19 +22,19 @@ class WeatherService(val autocomplete: AutocompleteService, val weather: Wunderg
 
     fun loadWeather(location: StateModels.Location): Action<*> {
         return AsyncMiddleware.create { dispatcher, getState ->
-            dispatcher.dispatchAction(LoadWeather(location))
+            dispatcher.dispatch(LoadWeather(location))
 
             val observations = getState.state.getState(StateModels.LoadedObservations::class.java)
             val o = observations?.data?.get(location)
 
             if(o != null) {
-                dispatcher.dispatchAction(LoadWeatherSuccess(o, location))
+                dispatcher.dispatch(LoadWeatherSuccess(o, location))
 
             } else {
                 loadWeatherFromNetwork(location) {
                     when (it) {
-                        is NetworkError -> dispatcher.dispatchAction(LoadWeatherError())
-                        is ConditionResult -> dispatcher.dispatchAction(LoadWeatherSuccess(it.result, location))
+                        is NetworkError -> dispatcher.dispatch(LoadWeatherError())
+                        is ConditionResult -> dispatcher.dispatch(LoadWeatherSuccess(it.result, location))
                     }
                 }
             }

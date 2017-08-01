@@ -19,8 +19,8 @@ class ListComponent(recyclerView: RecyclerView, weatherService: WeatherService, 
 
     private var list: List<StateModels.Location> = listOf()
     private val adapter = LocationAdapter(this, { location ->
-        dispatcher.dispatchAction(com.example.suas.weather.suas.LocationSelected(location))
-        dispatcher.dispatchAction(weatherService.loadWeather(location))
+        dispatcher.dispatch(com.example.suas.weather.suas.LocationSelected(location))
+        dispatcher.dispatch(weatherService.loadWeather(location))
     })
 
     init {

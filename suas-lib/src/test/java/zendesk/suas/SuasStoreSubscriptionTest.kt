@@ -18,7 +18,7 @@ class SuasStoreSubscriptionTest : Helper {
 
         val store = store()
         val subscription = store.addListener(listener)
-        subscription.update()
+        subscription.informWithCurrentState()
 
         latch.await()
     }
@@ -33,10 +33,9 @@ class SuasStoreSubscriptionTest : Helper {
         val store = store()
         val subscription = store.addListener(listener)
 
-        subscription.unsubscribe()
+        subscription.removeListener()
 
-//        subscription.update() // TODO ... ?
-        store.dispatchAction(Action<Unit>("test"))
+        store.dispatch(Action<Unit>("test"))
     }
 
     @Test
@@ -52,11 +51,11 @@ class SuasStoreSubscriptionTest : Helper {
         val store = store()
         val subscription = store.addListener(listener)
 
-        subscription.unsubscribe()
-        store.dispatchAction(Action<Unit>("test"))
+        subscription.removeListener()
+        store.dispatch(Action<Unit>("test"))
 
-        subscription.subscribe()
-        store.dispatchAction(Action<Unit>("test"))
+        subscription.addListener()
+        store.dispatch(Action<Unit>("test"))
 
         latch.awaitOrFail()
     }

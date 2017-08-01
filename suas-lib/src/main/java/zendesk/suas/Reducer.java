@@ -19,7 +19,7 @@ public abstract class Reducer<E> {
      * @return the new state, or {@code null} if nothing has changed
      */
     @Nullable
-    public abstract E reduce(@NonNull E oldState, @NonNull Action<?> action);
+    public abstract E reduce(@NonNull E state, @NonNull Action<?> action);
 
     /**
      * Returns an empty or default instance of {@code E}.

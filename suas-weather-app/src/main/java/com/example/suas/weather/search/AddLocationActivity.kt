@@ -36,18 +36,18 @@ class AddLocationActivity : Activity() {
                 store.addListener(StateModels.Progress::class.java, progress),
                 store.addListener(StateModels.FoundLocations::class.java, listComponent)
         )
-        subscriptions.update()
+        subscriptions.informWithCurrentState()
     }
 
     override fun onResume() {
         super.onResume()
-        subscriptions.subscribe()
-        subscriptions.update()
+        subscriptions.addListener()
+        subscriptions.informWithCurrentState()
     }
 
     override fun onPause() {
         super.onPause()
-        subscriptions.unsubscribe()
+        subscriptions.removeListener()
     }
 
 }

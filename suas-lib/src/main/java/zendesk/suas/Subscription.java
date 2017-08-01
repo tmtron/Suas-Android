@@ -8,19 +8,19 @@ public interface Subscription {
     /**
      * Unsubscribe the associated listener from the {@link Store}
      */
-    void unsubscribe();
+    void removeListener();
 
     /**
      * Subscribe the associated listener to the {@link Store}
      *
      * <p>
-     *      Can be called after {@link #unsubscribe()}
+     *      Can be called after {@link #removeListener()}
      * </p>
      */
-    void subscribe();
+    void addListener();
 
     /**
      * Trigger an update of the associated {@link Listener} with the recent {@link State}.
      */
-    void update();
+    void informWithCurrentState();
 }

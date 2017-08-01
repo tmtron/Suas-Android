@@ -11,9 +11,9 @@ class CombinedSubscriptionTest {
         val subscriptions = listOf(mock(Subscription::class.java), mock(Subscription::class.java), mock(Subscription::class.java))
         val combined = CombinedSubscription.from(subscriptions)
 
-        combined.update()
+        combined.informWithCurrentState()
 
-        subscriptions.forEach { verify(it, times(1)).update() }
+        subscriptions.forEach { verify(it, times(1)).informWithCurrentState() }
     }
 
     @Test
@@ -21,9 +21,9 @@ class CombinedSubscriptionTest {
         val subscriptions = listOf(mock(Subscription::class.java), mock(Subscription::class.java), mock(Subscription::class.java))
         val combined = CombinedSubscription.from(subscriptions)
 
-        combined.subscribe()
+        combined.addListener()
 
-        subscriptions.forEach { verify(it, times(1)).subscribe() }
+        subscriptions.forEach { verify(it, times(1)).addListener() }
     }
 
     @Test
@@ -31,9 +31,9 @@ class CombinedSubscriptionTest {
         val subscriptions = listOf(mock(Subscription::class.java), mock(Subscription::class.java), mock(Subscription::class.java))
         val combined = CombinedSubscription.from(subscriptions)
 
-        combined.unsubscribe()
+        combined.removeListener()
 
-        subscriptions.forEach { verify(it, times(1)).unsubscribe() }
+        subscriptions.forEach { verify(it, times(1)).removeListener() }
     }
 
 }

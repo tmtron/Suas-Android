@@ -19,7 +19,7 @@ class SuasStoreListenerTest : Helper {
 
         val store = store()
         store.addListener(listener)
-        store.dispatchAction(Action<Unit>("test"))
+        store.dispatch(Action<Unit>("test"))
 
         latch.await()
     }
@@ -35,7 +35,7 @@ class SuasStoreListenerTest : Helper {
         store.addListener(listener)
         store.removeListener(listener)
 
-        store.dispatchAction(Action<Unit>("test"))
+        store.dispatch(Action<Unit>("test"))
     }
 
 
@@ -58,7 +58,7 @@ class SuasStoreListenerTest : Helper {
 
         val store = store()
         store.addListener(filter, listener)
-        store.dispatchAction(Action<Unit>("test"))
+        store.dispatch(Action<Unit>("test"))
 
         latch.await()
     }
@@ -79,7 +79,7 @@ class SuasStoreListenerTest : Helper {
         store.addListener(filter, listener)
         store.removeListener(listener)
 
-        store.dispatchAction(Action<Unit>("test"))
+        store.dispatch(Action<Unit>("test"))
     }
 
     @Test
@@ -99,7 +99,7 @@ class SuasStoreListenerTest : Helper {
 
         val store = store()
         store.addListener(filter, listener)
-        store.dispatchAction(Action<Unit>("test"))
+        store.dispatch(Action<Unit>("test"))
 
         latch.await()
     }
@@ -117,7 +117,7 @@ class SuasStoreListenerTest : Helper {
 
         val store = store(reducer = TestReducer("key"))
         store.addListener("key", listener)
-        store.dispatchAction(Action<Unit>("test"))
+        store.dispatch(Action<Unit>("test"))
 
         latch.await()
     }
@@ -133,7 +133,7 @@ class SuasStoreListenerTest : Helper {
         store.addListener("key", listener)
         store.removeListener(listener)
 
-        store.dispatchAction(Action<Unit>("test"))
+        store.dispatch(Action<Unit>("test"))
     }
 
 
@@ -155,7 +155,7 @@ class SuasStoreListenerTest : Helper {
 
         val store = store(reducer = TestReducer("key"))
         store.addListener("key", filter, listener)
-        store.dispatchAction(Action<Unit>("test"))
+        store.dispatch(Action<Unit>("test"))
 
         latch.await()
     }
@@ -177,7 +177,7 @@ class SuasStoreListenerTest : Helper {
         store.addListener("key", filter, listener)
         store.removeListener(listener)
 
-        store.dispatchAction(Action<Unit>("test"))
+        store.dispatch(Action<Unit>("test"))
     }
 
     @Test
@@ -197,7 +197,7 @@ class SuasStoreListenerTest : Helper {
 
         val store = store(reducer = TestReducer("key"))
         store.addListener("key", filter, listener)
-        store.dispatchAction(Action<Unit>("test"))
+        store.dispatch(Action<Unit>("test"))
 
         latch.await()
     }
@@ -214,7 +214,7 @@ class SuasStoreListenerTest : Helper {
 
         val store = store()
         store.addListener(String::class.java, listener)
-        store.dispatchAction(Action<Unit>("test"))
+        store.dispatch(Action<Unit>("test"))
 
         latch.await()
     }
@@ -230,7 +230,7 @@ class SuasStoreListenerTest : Helper {
         store.addListener(String::class.java, listener)
         store.removeListener(listener)
 
-        store.dispatchAction(Action<Unit>("test"))
+        store.dispatch(Action<Unit>("test"))
     }
 
 
@@ -252,7 +252,7 @@ class SuasStoreListenerTest : Helper {
 
         val store = store()
         store.addListener(String::class.java, filter, listener)
-        store.dispatchAction(Action<Unit>("test"))
+        store.dispatch(Action<Unit>("test"))
 
         latch.await()
     }
@@ -274,7 +274,7 @@ class SuasStoreListenerTest : Helper {
         store.addListener(String::class.java, filter, listener)
         store.removeListener(listener)
 
-        store.dispatchAction(Action<Unit>("test"))
+        store.dispatch(Action<Unit>("test"))
     }
 
     @Test
@@ -294,7 +294,7 @@ class SuasStoreListenerTest : Helper {
 
         val store = store()
         store.addListener(String::class.java, filter, listener)
-        store.dispatchAction(Action<Unit>("test"))
+        store.dispatch(Action<Unit>("test"))
 
         latch.await()
     }
@@ -311,7 +311,7 @@ class SuasStoreListenerTest : Helper {
 
         val store = store(reducer = TestReducer("key"))
         store.addListener("key", String::class.java, listener)
-        store.dispatchAction(Action<Unit>("test"))
+        store.dispatch(Action<Unit>("test"))
 
         latch.await()
     }
@@ -326,7 +326,7 @@ class SuasStoreListenerTest : Helper {
         store.addListener("key", String::class.java, listener)
         store.removeListener(listener)
 
-        store.dispatchAction(Action<Unit>("test"))
+        store.dispatch(Action<Unit>("test"))
     }
 
 
@@ -348,7 +348,7 @@ class SuasStoreListenerTest : Helper {
 
         val store = store(reducer = TestReducer("key"))
         store.addListener("key", String::class.java, filter, listener)
-        store.dispatchAction(Action<Unit>("test"))
+        store.dispatch(Action<Unit>("test"))
 
         latch.await()
     }
@@ -369,7 +369,7 @@ class SuasStoreListenerTest : Helper {
         store.addListener("key", String::class.java, filter, listener)
         store.removeListener(listener)
 
-        store.dispatchAction(Action<Unit>("test"))
+        store.dispatch(Action<Unit>("test"))
     }
 
     @Test
@@ -389,7 +389,7 @@ class SuasStoreListenerTest : Helper {
 
         val store = store(reducer = TestReducer("key"))
         store.addListener("key", String::class.java, filter, listener)
-        store.dispatchAction(Action<Unit>("test"))
+        store.dispatch(Action<Unit>("test"))
 
         latch.await()
     }
@@ -414,7 +414,7 @@ class SuasStoreListenerTest : Helper {
 
         val store = store()
         store.addListener(selector, listener)
-        store.dispatchAction(Action<Unit>("test"))
+        store.dispatch(Action<Unit>("test"))
 
         latch.awaitOrFail()
     }
@@ -434,7 +434,7 @@ class SuasStoreListenerTest : Helper {
         store.addListener(selector, listener)
         store.removeListener(listener)
 
-        store.dispatchAction(Action<Unit>("test"))
+        store.dispatch(Action<Unit>("test"))
     }
 
 
@@ -461,7 +461,7 @@ class SuasStoreListenerTest : Helper {
 
         val store = store()
         store.addListener(filter, selector, listener)
-        store.dispatchAction(Action<Unit>("test"))
+        store.dispatch(Action<Unit>("test"))
 
         latch.await()
     }
@@ -487,7 +487,7 @@ class SuasStoreListenerTest : Helper {
         store.addListener(filter, selector, listener)
         store.removeListener(listener)
 
-        store.dispatchAction(Action<Unit>("test"))
+        store.dispatch(Action<Unit>("test"))
     }
 
     @Test
@@ -512,7 +512,7 @@ class SuasStoreListenerTest : Helper {
 
         val store = store()
         store.addListener(filter, selector, listener)
-        store.dispatchAction(Action<Unit>("test"))
+        store.dispatch(Action<Unit>("test"))
 
         latch.await()
     }

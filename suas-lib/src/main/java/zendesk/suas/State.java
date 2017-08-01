@@ -112,8 +112,8 @@ public class State implements Serializable {
     /**
      * Add or update the provided scope.
      */
-    void updateKey(String key, Object newState) {
-        state.put(key, newState);
+    void updateKey(String stateKey, Object newState) {
+        state.put(stateKey, newState);
     }
 
     <E> void updateKey(Class<E> stateKey, E newState) {
