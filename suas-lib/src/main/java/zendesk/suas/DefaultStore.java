@@ -1,40 +1,32 @@
 package zendesk.suas;
 
 
-import android.os.Handler;
-import android.os.Looper;
 import android.support.annotation.NonNull;
 
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.Executor;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 class DefaultStore implements Store {
 
-    static boolean isAndroid = false;
-
-    static {
-        try {
-            Class.forName("android.os.Build");
-            isAndroid = true;
-        } catch (Exception ignored) {
-            isAndroid = false;
-        }
-    }
 
     private State state;
     private final CombinedReducer reducer;
     private final CombinedMiddleware middleware;
     private final Filter defaultFilter;
-
+    private final Executor executor;
     private final Map<Listener, Listeners.StateListener> listenerStateListenerMap;
+    private final AtomicBoolean isReducing = new AtomicBoolean(false);
 
     DefaultStore(State state, CombinedReducer reducer, CombinedMiddleware combinedMiddleware,
-                 Filter<Object> defaultFilter) {
+                 Filter<Object> defaultFilter, Executor executor) {
         this.state = state;
         this.reducer = reducer;
         this.middleware = combinedMiddleware;
         this.defaultFilter = defaultFilter;
+        this.executor = executor;
         this.listenerStateListenerMap = new HashMap<>();
     }
 
@@ -45,31 +37,24 @@ class DefaultStore implements Store {
     }
 
     @Override
-    public void dispatchAction(@NonNull final Action action) {
-        if(isAndroid) {
-            if(Looper.myLooper() == Looper.getMainLooper()) {
-                dispatchActionInternal(action);
-            } else {
-                new Handler(Looper.getMainLooper()).post(new Runnable() {
+    public synchronized void dispatchAction(@NonNull final Action action) {
+        executor.execute(new Runnable() {
+            @Override
+            public void run() {
+                middleware.onAction(action, DefaultStore.this, DefaultStore.this, new Continuation() {
                     @Override
-                    public void run() {
-                        dispatchActionInternal(action);
+                    public void next(@NonNull Action<?> action) {
+                        if(isReducing.compareAndSet(false,true)) {
+                            final State oldState = getState();
+                            final CombinedReducer.ReduceResult result = reducer.reduce(getState(), action);
+                            DefaultStore.this.state = result.getNewState();
+                            notifyListener(oldState, getState(), result.getUpdatedKeys());
+                            isReducing.set(false);
+                        } else {
+                            throw new RuntimeException("You must not dispatch actions in your reducer. Seriously. (╯°□°）╯︵ ┻━┻");
+                        }
                     }
                 });
-            }
-        } else {
-            dispatchActionInternal(action);
-        }
-    }
-
-    private void dispatchActionInternal(Action action) {
-        middleware.onAction(action, this, this, new Continuation() {
-            @Override
-            public void next(@NonNull Action<?> action) {
-                final State oldState = getState();
-                final CombinedReducer.ReduceResult result = reducer.reduce(getState(), action);
-                DefaultStore.this.state = result.getNewState();
-                notifyListener(oldState, getState(), result.getUpdatedKeys());
             }
         });
     }

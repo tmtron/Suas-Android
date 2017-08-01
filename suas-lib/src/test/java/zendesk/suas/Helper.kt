@@ -20,13 +20,12 @@ interface Helper {
               middleware: List<Middleware> = listOf(),
               initialState: State? = null
               ): Store {
-        val store: DefaultStore = Suas.createStore(reducer).apply {
+        return Suas.createStore(reducer).apply {
             withMiddleware(middleware)
+            withExecutor(Executors.getDefaultExecutor())
             if(filter != null) withDefaultFilter(filter)
             if(initialState != null) withInitialState(initialState)
-        }.build() as DefaultStore
-        DefaultStore.isAndroid = false
-        return store
+        }.build()
     }
 
     class TestReducer(val customKey: String? = null) : Reducer<String>() {

@@ -6,11 +6,23 @@ import android.support.annotation.NonNull;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.concurrent.Executor;
 
 /**
  * Suas - This is the entry point.
  */
 public class Suas {
+
+    private static boolean isAndroid = false;
+
+    static {
+        try {
+            Class.forName("android.os.Build");
+            isAndroid = true;
+        } catch (Exception ignored) {
+
+        }
+    }
 
     private Suas() {
         // intentionally empty
@@ -63,6 +75,7 @@ public class Suas {
         private State state;
         private Collection<Middleware> middleware = new ArrayList<>();
         private Filter<Object> notifier = Filters.DEFAULT;
+        private Executor executor;
 
         Builder(@NonNull Collection<Reducer> reducers) {
             this.reducers = reducers;
@@ -116,6 +129,11 @@ public class Suas {
             return this;
         }
 
+        Builder withExecutor(Executor executor) {
+            this.executor = executor;
+            return this;
+        }
+
         /**
          * Creates an instance {@link Store} with the provided options.
          *
@@ -125,8 +143,9 @@ public class Suas {
             final CombinedReducer combinedReducer = new CombinedReducer(reducers);
             final CombinedMiddleware combinedMiddleware = new CombinedMiddleware(middleware);
             final State initialState = buildState(combinedReducer, state);
+            final Executor executor = getExecutor();
 
-            return new DefaultStore(initialState, combinedReducer, combinedMiddleware, notifier);
+            return new DefaultStore(initialState, combinedReducer, combinedMiddleware, notifier, executor);
         }
 
         private State buildState(CombinedReducer combinedReducer, State state) {
@@ -146,6 +165,16 @@ public class Suas {
             }
 
             return initialState;
+        }
+
+        private Executor getExecutor() {
+            if(executor != null) {
+                return executor;
+            } else if(isAndroid) {
+                return Executors.getAndroidExecutor();
+            } else {
+                return Executors.getDefaultExecutor();
+            }
         }
 
         private void assertArgumentsNotNull(Object input, String msg) {
