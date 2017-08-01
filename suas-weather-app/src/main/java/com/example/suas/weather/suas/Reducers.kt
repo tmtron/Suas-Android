@@ -28,7 +28,7 @@ interface Reducers {
             }
         }
 
-        override fun getEmptyState(): StateModels.FoundLocations = StateModels.FoundLocations()
+        override fun getInitialState(): StateModels.FoundLocations = StateModels.FoundLocations()
 
     }
 
@@ -53,7 +53,7 @@ interface Reducers {
             }
         }
 
-        override fun getEmptyState(): StateModels.Progress = StateModels.Progress()
+        override fun getInitialState(): StateModels.Progress = StateModels.Progress()
     }
 
     class LocationsReducer : Reducer<StateModels.Locations>() {
@@ -72,7 +72,7 @@ interface Reducers {
             }
         }
 
-        override fun getEmptyState(): StateModels.Locations = StateModels.Locations()
+        override fun getInitialState(): StateModels.Locations = StateModels.Locations()
 
     }
 
@@ -89,7 +89,7 @@ interface Reducers {
             }
         }
 
-        override fun getEmptyState(): StateModels.SelectedLocation = StateModels.SelectedLocation()
+        override fun getInitialState(): StateModels.SelectedLocation = StateModels.SelectedLocation()
 
     }
 
@@ -106,7 +106,7 @@ interface Reducers {
             }
         }
 
-        override fun getEmptyState(): StateModels.LoadedObservations = StateModels.LoadedObservations()
+        override fun getInitialState(): StateModels.LoadedObservations = StateModels.LoadedObservations()
 
     }
 

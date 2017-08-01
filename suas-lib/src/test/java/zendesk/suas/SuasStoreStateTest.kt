@@ -3,7 +3,7 @@ package zendesk.suas
 import com.google.common.truth.Truth.assertThat
 import org.junit.Test
 
-class ReduxStoreStateTest : Helper {
+class SuasStoreStateTest : Helper {
 
     @Test
     fun `store state - test default state`() {
@@ -33,7 +33,7 @@ class ReduxStoreStateTest : Helper {
         assertThat(store.state.getState(String::class.java))
                 .isEqualTo("empty_state")
 
-        store.dispatchAction(Action<Unit>("something"))
+        store.dispatch(Action<Unit>("something"))
 
         assertThat(store.state.getState(String::class.java))
                 .isEqualTo("new_state")

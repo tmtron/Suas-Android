@@ -19,7 +19,7 @@ public interface Continuation {
      *     not calling {@link Continuation#next(Action)}.
      * </p>
      *
-     * @param action the actino
+     * @param action the action
      */
     void next(@NonNull Action<?> action);
 }

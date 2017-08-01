@@ -3,18 +3,20 @@ package com.example.suas.weather.search
 import android.app.Activity
 import android.os.Bundle
 import com.example.suas.weather.R
-import com.example.suas.weather.Subscription
 import com.example.suas.weather.WeatherApplication
 import com.example.suas.weather.network.WeatherService
+import com.example.suas.weather.suas.StateModels
 import kotlinx.android.synthetic.main.activity_add_location.*
+import zendesk.suas.CombinedSubscription
 import zendesk.suas.Store
+import zendesk.suas.Subscription
 
 class AddLocationActivity : Activity() {
 
     private val store: Store by lazy { WeatherApplication.from(this).store }
     private val service: WeatherService by lazy { WeatherApplication.from(this).weatherService }
 
-    private lateinit var subscriptions: List<Subscription>
+    private lateinit var subscriptions: Subscription
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -23,22 +25,29 @@ class AddLocationActivity : Activity() {
         setActionBar(toolbar)
         toolbarBackButton.setOnClickListener{ onBackPressed() }
 
-        subscriptions = listOf(
-                SearchBoxComponent(searchForCity, store, service),
-                NoResultsComponent(noLocationsFoundLabel),
-                ProgressComponent(locationProgressbar),
-                ListComponent(locationList, store))
+        val searchBox = SearchBoxComponent(searchForCity, store, service)
+        val noResult = NoResultsComponent(noLocationsFoundLabel)
+        val progress = ProgressComponent(locationProgressbar)
+        val listComponent = ListComponent(locationList, store)
+
+        subscriptions = CombinedSubscription.from(
+                store.addListener(StateModels.Progress::class.java, searchBox),
+                store.addListener(noResult.selector, noResult),
+                store.addListener(StateModels.Progress::class.java, progress),
+                store.addListener(StateModels.FoundLocations::class.java, listComponent)
+        )
+        subscriptions.informWithCurrentState()
     }
 
     override fun onResume() {
         super.onResume()
-        subscriptions.forEach { it.connect(store) }
+        subscriptions.addListener()
+        subscriptions.informWithCurrentState()
     }
 
     override fun onPause() {
         super.onPause()
-        subscriptions.forEach { it.disconnect(store) }
+        subscriptions.removeListener()
     }
 
 }
-

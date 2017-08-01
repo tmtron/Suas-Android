@@ -38,7 +38,7 @@ public class TodoReducer extends Reducer<TodoList> {
 
     @NonNull
     @Override
-    public TodoList getEmptyState() {
+    public TodoList getInitialState() {
         return new TodoList(new ArrayList<String>());
     }
 

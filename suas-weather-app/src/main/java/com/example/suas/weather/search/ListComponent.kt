@@ -8,15 +8,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import com.example.suas.weather.R
-import com.example.suas.weather.Subscription
 import com.example.suas.weather.suas.AddLocation
 import com.example.suas.weather.suas.StateModels
-import zendesk.suas.Component
 import zendesk.suas.Dispatcher
-import zendesk.suas.Selector
-import zendesk.suas.Store
+import zendesk.suas.Listener
 
-class ListComponent(recyclerView: RecyclerView, dispatcher: Dispatcher) : Component<StateModels.FoundLocations, List<ListComponent.ListItem>>, Subscription {
+class ListComponent(recyclerView: RecyclerView, dispatcher: Dispatcher) : Listener<StateModels.FoundLocations> {
 
     private val adapter: LocationAdapter = LocationAdapter(this, dispatcher)
     private var list: List<ListItem> = listOf()
@@ -26,26 +23,14 @@ class ListComponent(recyclerView: RecyclerView, dispatcher: Dispatcher) : Compon
         recyclerView.adapter = adapter
     }
 
-    override fun update(e: List<ListItem>) {
-        list = e
+    override fun update(e: StateModels.FoundLocations) {
+        list = e.foundLocation.map { ListItem(it, it.name.hashCode().toLong()) }
         adapter.notifyDataSetChanged()
-    }
-
-    override fun getSelector(): Selector<StateModels.FoundLocations, List<ListItem>> = Selector {
-        it.foundLocation.map { ListItem(it, it.name.hashCode().toLong()) }
     }
 
     fun forPosition(position: Int): ListItem = list[position]
 
     fun listSize(): Int = list.size
-
-    override fun disconnect(store: Store) {
-        store.disconnect(this)
-    }
-
-    override fun connect(store: Store) {
-        store.connect(this, StateModels.FoundLocations::class.java)
-    }
 
     class LocationAdapter(val listComponent: ListComponent, val dispatcher: Dispatcher) : RecyclerView.Adapter<LocationViewHolder>() {
 
@@ -76,7 +61,7 @@ class ListComponent(recyclerView: RecyclerView, dispatcher: Dispatcher) : Compon
         fun bind(item: ListItem, dispatcher: Dispatcher) {
             view.findViewById<TextView>(R.id.searchItemLabel).text = item.location.name
             view.setOnClickListener {
-                dispatcher.dispatchAction(AddLocation(item.location))
+                dispatcher.dispatch(AddLocation(item.location))
                 (it.context as? Activity)?.finish()
             }
         }

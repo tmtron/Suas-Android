@@ -18,14 +18,14 @@
  *     Network network = new Network();
  *     network.load(new Callback() {
  *       public void onResult(Object data) {
- *         dispatcher.dispatchAction(new Action<>("network_success", data));
+ *         dispatcher.dispatch(new Action<>("network_success", data));
  *       }
  *     });
  *   }
  * };
  *
  * Action action = AsyncMiddleware.create(asyncAction);
- * store.dispatchAction(action);
+ * store.dispatch(action);
  * </pre>
  * For convenience there's {@link zendesk.suas.AsyncMiddleware#forBlockingAction(AsyncAction)}. An {@link zendesk.suas.Action}
  * created with that function will be be executed on a background thread. For doing so it uses

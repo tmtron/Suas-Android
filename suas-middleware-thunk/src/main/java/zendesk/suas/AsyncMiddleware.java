@@ -23,14 +23,14 @@ import android.support.annotation.NonNull;
  *     Network network = new Network();
  *     network.load(new Callback() {
  *       public void onResult(Object data) {
- *         dispatcher.dispatchAction(new Action<>("network_success", data));
+ *         dispatcher.dispatch(new Action<>("network_success", data));
  *       }
  *     });
  *   }
  * };
  *
  * Action action = AsyncMiddleware.create(asyncAction);
- * store.dispatchAction(action);
+ * store.dispatch(action);
  * </pre>
  * For convenience there's {@link AsyncMiddleware#forBlockingAction(AsyncAction)}. An {@link Action}
  * created with that function will be be executed on a background thread. For doing so it uses

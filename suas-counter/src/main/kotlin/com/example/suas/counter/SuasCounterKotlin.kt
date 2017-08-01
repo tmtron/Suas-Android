@@ -5,13 +5,13 @@ import zendesk.suas.*
 
 fun main(args: Array<String>) {
     val store = store()
-    store.addListener(Counter::class.java) { _, (value) ->
+    store.addListener(Counter::class.java) { (value) ->
         println("Kotlin - State changed to $value")
     }
 
-    store.dispatchAction(IncrementAction(10))
-    store.dispatchAction(IncrementAction(1))
-    store.dispatchAction(DecrementAction(5))
+    store.dispatch(IncrementAction(10))
+    store.dispatch(IncrementAction(1))
+    store.dispatch(DecrementAction(5))
 }
 
 fun store(): Store {
@@ -35,7 +35,7 @@ class CounterReducer : Reducer<Counter>() {
         }
     }
 
-    override fun getEmptyState(): Counter = Counter()
+    override fun getInitialState(): Counter = Counter()
 
 }
 

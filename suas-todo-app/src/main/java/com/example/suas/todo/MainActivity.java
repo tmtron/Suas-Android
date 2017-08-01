@@ -2,7 +2,6 @@ package com.example.suas.todo;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,16 +16,14 @@ import java.util.List;
 import java.util.UUID;
 
 import zendesk.suas.Action;
-import zendesk.suas.Component;
 import zendesk.suas.Filters;
 import zendesk.suas.Listener;
 import zendesk.suas.LoggerMiddleware;
 import zendesk.suas.Middleware;
-import zendesk.suas.Selector;
 import zendesk.suas.Store;
 import zendesk.suas.Suas;
 
-public class MainActivity extends AppCompatActivity implements Component<TodoList, String> {
+public class MainActivity extends AppCompatActivity implements Listener<TodoList> {
 
     Store store;
 
@@ -51,14 +48,14 @@ public class MainActivity extends AppCompatActivity implements Component<TodoLis
         findViewById(R.id.add_item).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                store.dispatchAction(ActionFactory.addAction(UUID.randomUUID().toString()));
+                store.dispatch(ActionFactory.addAction(UUID.randomUUID().toString()));
             }
         });
 
         findViewById(R.id.nothing).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                store.dispatchAction(new Action("bla bla"));
+                store.dispatch(new Action("bla bla"));
             }
         });
 
@@ -66,47 +63,37 @@ public class MainActivity extends AppCompatActivity implements Component<TodoLis
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 String item = todoListAdapter.getItem(i);
-                store.dispatchAction(ActionFactory.deleteAction(item));
+                store.dispatch(ActionFactory.deleteAction(item));
             }
         });
 
         store.addListener(TodoList.class, new Listener<TodoList>() {
             @Override
-            public void update(@NonNull TodoList oldState, @NonNull TodoList newState) {
-                todoListAdapter.update(newState.getItems());
+            public void update(@NonNull TodoList e) {
+                todoListAdapter.update(e.getItems());
             }
         });
+    }
+
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        store.addListener(TodoList.class, this);
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        store.disconnect(this);
+        store.removeListener(this);
         System.out.println();
     }
 
     @Override
-    protected void onStart() {
-        store.connect(this, TodoList.class, Filters.DEFAULT);
-        super.onStart();
+    public void update(@NonNull TodoList todoList) {
+        System.out.println("update update " + todoList.getItems());
     }
 
-    @Override
-    public void update(@NonNull String s) {
-        System.out.println("update update " + s);
-    }
-
-    @NonNull
-    @Override
-    public Selector<TodoList, String> getSelector() {
-        return new Selector<TodoList, String>() {
-            @Nullable
-            @Override
-            public String selectData(@NonNull TodoList data) {
-                return data.getItems().toString();
-            }
-        };
-    }
 
     class TodoListAdapter extends BaseAdapter {
 

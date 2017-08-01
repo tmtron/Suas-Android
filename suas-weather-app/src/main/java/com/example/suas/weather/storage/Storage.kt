@@ -2,8 +2,6 @@ package com.example.suas.weather.storage
 
 import android.content.Context
 import android.content.SharedPreferences
-import android.os.Handler
-import android.os.Looper
 import com.example.suas.weather.suas.LocationsLoaded
 import com.example.suas.weather.suas.StateModels
 import com.google.gson.Gson
@@ -36,9 +34,7 @@ class Storage(context: Context) {
         return AsyncMiddleware.forBlockingAction{ dispatcher, _ ->
             val data = load()
             data?.let {
-                Handler(Looper.getMainLooper()).post({
-                    dispatcher.dispatchAction(LocationsLoaded(it))
-                })
+                dispatcher.dispatch(LocationsLoaded(it))
             }
         }
     }
@@ -47,7 +43,7 @@ class Storage(context: Context) {
         store.addListener(
                 StateModels.Locations::class.java,
                 { oldState, newState -> newState != oldState },
-                { _, newState -> store(newState) }
+                { store(it) }
         )
     }
 }

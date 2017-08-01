@@ -1,62 +1,72 @@
 package zendesk.suas;
 
 
-import android.support.annotation.NonNull;
-
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * Helper class for registering {@link Listener} or {@link Component} to a
- * certain part of the {@link State}
+ * Helper class for registering {@link Listener} to a certain part of the {@link State}
  */
 class Listeners {
 
     private static final Logger L = Logger.getLogger("Suas");
     private static final String WRONG_TYPE = "Either new value or old value cannot be converted to type expected type.";
-    private static final String KEY_NOT_FOUND = "Requested key not found in store";
+    private static final String KEY_NOT_FOUND = "Requested stateKey not found in store";
 
     private Listeners() {
         // intentionally empty
     }
 
-    static <E> StateListener create(String key, Filter<E> notifier, Listener<E> listener) {
-        return new StringKeyedListener<>(key, listener, notifier);
+    static <E> StateListener create(String stateKey, Filter<E> notifier, Listener<E> listener) {
+        return new StringKeyedListener<>(stateKey, listener, notifier);
     }
 
     static <E> StateListener create(Class<E> clazz, Filter<E> notifier, Listener<E> listener) {
         return new ClassKeyedListener<>(clazz, listener, notifier);
     }
 
-    static <E> StateListener create(String key, Class<E> clazz, Filter<E> notifier, Listener<E> listener) {
-        return new ClassStringKeyedListener<>(key, clazz, listener, notifier);
+    static <E> StateListener create(String stateKey, Class<E> clazz, Filter<E> notifier, Listener<E> listener) {
+        return new ClassStringKeyedListener<>(stateKey, clazz, listener, notifier);
     }
 
     static StateListener create(Filter<State> notifier, Listener<State> listener) {
         return new Default(listener, notifier);
     }
 
-    static <E, F> Listener<E> create(Component<E, F> component) {
-        return new ComponentListener<>(component);
+    static <E> StateListener create(StateSelector<E> stateSelector, Filter<State> filter, Listener<E> listener) {
+        return new StateSelectorListener<>(listener, stateSelector, filter);
     }
 
-    interface StateListener extends Listener<State> {
-        String getKey();
+    interface StateListener {
+        String getStateKey();
+        void update(State oldState, State newState, boolean skipFilter);
     }
 
-    private static class ComponentListener<E, F> implements Listener<E> {
+    private static class StateSelectorListener<E> implements StateListener {
 
-        private final Component<E, F> component;
+        private final Listener<E> listener;
+        private final StateSelector<E> stateSelector;
+        private final Filter<State> filter;
 
-        private ComponentListener(Component<E, F> component) {
-            this.component = component;
+        private StateSelectorListener(Listener<E> listener, StateSelector<E> stateSelector, Filter<State> filter) {
+            this.listener = listener;
+            this.stateSelector = stateSelector;
+            this.filter = filter;
         }
 
         @Override
-        public void update(@NonNull E oldState, @NonNull E newState) {
-            final F selectedData = component.getSelector().selectData(newState);
-            if(selectedData != null) {
-                component.update(selectedData);
+        public String getStateKey() {
+            return null;
+        }
+
+        @Override
+        public void update(State oldState, State newState, boolean skipFilter) {
+            if((skipFilter && newState != null) ||
+                    (oldState != null && newState != null && filter.filter(oldState, newState))) {
+                final E data = stateSelector.selectData(newState);
+                if(data != null) {
+                    listener.update(data);
+                }
             }
         }
     }
@@ -72,79 +82,59 @@ class Listeners {
         }
 
         @Override
-        public void update(@NonNull State oldState, @NonNull State newState) {
-            if(filter.filter(oldState, newState)) {
-                listener.update(oldState, newState);
+        public void update(State oldState, State newState, boolean skipFilter) {
+            if((skipFilter && newState != null) ||
+                    (oldState != null && newState != null && filter.filter(oldState, newState))) {
+                listener.update(newState);
             }
         }
 
         @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-
-            Default that = (Default) o;
-
-            return listener != null ? listener.equals(that.listener) : that.listener == null;
-        }
-
-        @Override
-        public int hashCode() {
-            return listener != null ? listener.hashCode() : 0;
-        }
-
-        @Override
-        public String getKey() {
+        public String getStateKey() {
             return null;
         }
+
     }
 
     private static class StringKeyedListener<E> implements StateListener {
 
-        private final String key;
+        private final String stateKey;
         private final Listener<E> listener;
         private final Filter<E> filter;
 
-        private StringKeyedListener(String key, Listener<E> listener, Filter<E> filter) {
-            this.key = key;
+        private StringKeyedListener(String stateKey, Listener<E> listener, Filter<E> filter) {
+            this.stateKey = stateKey;
             this.listener = listener;
             this.filter = filter;
         }
 
         @Override
-        public void update(@NonNull State oldState, @NonNull State newState) {
+        public void update(State oldState, State newState, boolean skipFilter) {
             try {
-                @SuppressWarnings("unchecked") final E oldStateTyped = (E) oldState.getState(key);
-                @SuppressWarnings("unchecked") final E newStateTyped = (E) newState.getState(key);
-                if(oldStateTyped != null && newStateTyped != null && filter.filter(oldStateTyped, newStateTyped)) {
-                    listener.update(oldStateTyped, newStateTyped);
-                } else {
-                    L.log(Level.WARNING, KEY_NOT_FOUND);
+                E newStateTyped = null;
+                E oldStateTyped = null;
+
+                if(oldState != null) {
+                    //noinspection unchecked
+                    oldStateTyped = (E) oldState.getState(stateKey);
                 }
+                if(newState != null) {
+                    //noinspection unchecked
+                    newStateTyped = (E) newState.getState(stateKey);
+                }
+
+                Listeners.update(newStateTyped, oldStateTyped, filter, listener, skipFilter);
+
             } catch (ClassCastException ignored) {
                 L.log(Level.WARNING, WRONG_TYPE);
             }
         }
 
         @Override
-        public String getKey() {
-            return key;
+        public String getStateKey() {
+            return stateKey;
         }
 
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-
-            StringKeyedListener<?> that = (StringKeyedListener<?>) o;
-
-            return listener != null ? listener.equals(that.listener) : that.listener == null;
-        }
-
-        @Override
-        public int hashCode() {
-            return listener != null ? listener.hashCode() : 0;
-        }
     }
 
     private static class ClassKeyedListener<E> implements StateListener {
@@ -160,37 +150,24 @@ class Listeners {
         }
 
         @Override
-        public void update(@NonNull State oldState, @NonNull State newState) {
-            final E oldStateTyped = oldState.getState(clazz);
-            final E newStateTyped = newState.getState(clazz);
+        public void update(State oldState, State newState, boolean skipFilter) {
 
-            if(oldStateTyped != null && newStateTyped != null) {
-                if(filter.filter(oldStateTyped, newStateTyped)) {
-                    listener.update(oldStateTyped, newStateTyped);
-                }
-            } else {
-                L.log(Level.WARNING, WRONG_TYPE + " or " + KEY_NOT_FOUND);
+            E newStateTyped = null;
+            E oldStateTyped = null;
+
+            if(oldState != null) {
+                oldStateTyped = oldState.getState(clazz);
             }
+            if(newState != null) {
+                newStateTyped = newState.getState(clazz);
+            }
+
+            Listeners.update(newStateTyped, oldStateTyped, filter, listener, skipFilter);
         }
 
         @Override
-        public String getKey() {
+        public String getStateKey() {
             return State.keyForClass(clazz);
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-
-            ClassKeyedListener<?> that = (ClassKeyedListener<?>) o;
-
-            return listener != null ? listener.equals(that.listener) : that.listener == null;
-        }
-
-        @Override
-        public int hashCode() {
-            return listener != null ? listener.hashCode() : 0;
         }
 
     }
@@ -198,49 +175,53 @@ class Listeners {
     private static class ClassStringKeyedListener<E> implements StateListener {
 
         private final Class<E> clazz;
-        private final String key;
+        private final String stateKey;
         private final Listener<E> listener;
         private final Filter<E> filter;
 
-        private ClassStringKeyedListener(String key, Class<E> clazz, Listener<E> listener, Filter<E> filter) {
+        private ClassStringKeyedListener(String stateKey, Class<E> clazz, Listener<E> listener, Filter<E> filter) {
             this.clazz = clazz;
             this.listener = listener;
-            this.key = key;
+            this.stateKey = stateKey;
             this.filter = filter;
         }
 
         @Override
-        public void update(@NonNull State oldState, @NonNull State newState) {
-            final E oldStateTyped = oldState.getState(key, clazz);
-            final E newStateTyped = newState.getState(key, clazz);
+        public void update(State oldState, State newState, boolean skipFilter) {
 
-            if(oldStateTyped != null && newStateTyped != null && filter.filter(oldStateTyped, newStateTyped)) {
-                listener.update(oldStateTyped, newStateTyped);
-            } else {
-                L.log(Level.WARNING, WRONG_TYPE + " or " + KEY_NOT_FOUND);
+            E newStateTyped = null;
+            E oldStateTyped = null;
+
+            if(oldState != null) {
+                oldStateTyped = oldState.getState(stateKey, clazz);
             }
+            if(newState != null) {
+                newStateTyped = newState.getState(stateKey, clazz);
+            }
+
+            Listeners.update(newStateTyped, oldStateTyped, filter, listener, skipFilter);
         }
 
         @Override
-        public String getKey() {
-            return key;
+        public String getStateKey() {
+            return stateKey;
         }
 
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
+    }
 
-            ClassStringKeyedListener<?> that = (ClassStringKeyedListener<?>) o;
 
-            return listener != null ? listener.equals(that.listener) : that.listener == null;
+    private static <E> void update(E newState, E oldState, Filter<E> filter, Listener<E> listener, boolean skipFilter) {
+        if(newState != null && skipFilter) {
+            listener.update(newState);
+
+        } else if(newState != null && oldState != null) {
+            if(filter.filter(oldState, newState)) {
+                listener.update(newState);
+            }
+
+        } else {
+            L.log(Level.WARNING, KEY_NOT_FOUND);
         }
-
-        @Override
-        public int hashCode() {
-            return listener != null ? listener.hashCode() : 0;
-        }
-
     }
 
 }

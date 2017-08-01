@@ -29,7 +29,7 @@ class CombinedReducer {
 
         final Set<String> keys = new HashSet<>();
         for(Reducer r : reducers) {
-            keys.add(r.getKey());
+            keys.add(r.getStateKey());
         }
         if(keys.size() != reducers.size()) {
             throw new IllegalArgumentException("Two or more reducers are tied to the same key");
@@ -39,7 +39,7 @@ class CombinedReducer {
     private Collection<String> getKeys(Collection<Reducer> reducers) {
         final Collection<String> keys = new HashSet<>();
         for(Reducer reducer : reducers) {
-            keys.add(reducer.getKey());
+            keys.add(reducer.getStateKey());
         }
         return keys;
     }
@@ -50,13 +50,13 @@ class CombinedReducer {
         final Collection<String> updatedKeys = new HashSet<>();
 
         for(Reducer reducer : reducers) {
-            final Object oldStateForKey = oldState.getState(reducer.getKey());
+            final Object oldStateForKey = oldState.getState(reducer.getStateKey());
             @SuppressWarnings("unchecked") final Object newStateForKey = reducer.reduce(oldStateForKey, action);
             if(newStateForKey != null) {
-                state.updateKey(reducer.getKey(), newStateForKey);
-                updatedKeys.add(reducer.getKey());
+                state.updateKey(reducer.getStateKey(), newStateForKey);
+                updatedKeys.add(reducer.getStateKey());
             } else {
-                state.updateKey(reducer.getKey(), oldStateForKey);
+                state.updateKey(reducer.getStateKey(), oldStateForKey);
             }
         }
 
@@ -67,8 +67,8 @@ class CombinedReducer {
         final Map<String, Object> stateMap = new HashMap<>(reducers.size());
 
         for(Reducer r : reducers) {
-            final Object emptyState = r.getEmptyState();
-            stateMap.put(r.getKey(), emptyState);
+            final Object emptyState = r.getInitialState();
+            stateMap.put(r.getStateKey(), emptyState);
         }
 
         return new State(stateMap);

@@ -3,20 +3,17 @@ package com.example.suas.weather.locationList
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
-import com.example.suas.weather.Subscription
 import com.example.suas.weather.suas.StateModels
 import com.squareup.picasso.Picasso
-import zendesk.suas.Component
-import zendesk.suas.Selector
-import zendesk.suas.State
-import zendesk.suas.Store
+import zendesk.suas.Listener
+import zendesk.suas.StateSelector
 
 class WeatherComponent(val imageView: ImageView,
                        val location: TextView,
                        val weather: TextView,
                        val precip: TextView,
                        val wind: TextView
-) : Component<State, WeatherComponent.Weather>, Subscription {
+) : Listener<WeatherComponent.Weather> {
 
 
     private val views = listOf(imageView, location, precip, wind, weather)
@@ -37,7 +34,7 @@ class WeatherComponent(val imageView: ImageView,
         }
     }
 
-    override fun getSelector(): Selector<State, WeatherComponent.Weather> = Selector { state ->
+    val selector = StateSelector { state ->
         val selectedLocation = state.getState(StateModels.SelectedLocation::class.java)
         val loadedLocation = state.getState(StateModels.LoadedObservations::class.java)
 
@@ -47,14 +44,6 @@ class WeatherComponent(val imageView: ImageView,
         } else {
             Weather.NoForecast
         }
-    }
-
-    override fun disconnect(store: Store) {
-        store.disconnect(this)
-    }
-
-    override fun connect(store: Store) {
-        store.connect(this)
     }
 
     sealed class Weather {

@@ -1,7 +1,9 @@
 package zendesk.suas
 
-import com.google.common.truth.Truth.assertThat
+import com.google.common.truth.Truth
+import com.google.common.truth.Truth.*
 import org.junit.Test
+import java.math.BigDecimal
 import java.util.*
 import java.util.concurrent.Future
 
@@ -81,6 +83,29 @@ class StateTest {
 
         assertThat(state1.equals(state2)).isTrue()
         assertThat(state1.hashCode()).isEqualTo(state2.hashCode())
+    }
+
+    @Test
+    fun `merge stats`() {
+        val emptyState = State(
+                mapOf(
+                        "1" to Date(1),
+                        "2" to "test",
+                        "3" to BigDecimal(10)
+                )
+        )
+
+        val partialState = State(
+                mapOf(
+                        "3" to BigDecimal(100)
+                )
+        )
+
+        val newState = State.mergeStates(emptyState, partialState)
+
+        assertThat(newState.getState("1")).isEqualTo(Date(1))
+        assertThat(newState.getState("2")).isEqualTo("test")
+        assertThat(newState.getState("3")).isEqualTo(BigDecimal(100))
     }
 
 }

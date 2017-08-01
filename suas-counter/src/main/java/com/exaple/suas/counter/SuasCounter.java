@@ -18,13 +18,13 @@ public class SuasCounter {
 
         Store store = createStore();
 
-        store.addListener(Counter.class, (oldState, newState) -> {
-            System.out.println("Java - State changed to " + newState.count);
+        store.addListener(Counter.class, (state) -> {
+            System.out.println("Java - State changed to " + state.count);
         });
 
-        store.dispatchAction(getIncrementAction(10));
-        store.dispatchAction(getIncrementAction(1));
-        store.dispatchAction(getDecrementAction(5));
+        store.dispatch(getIncrementAction(10));
+        store.dispatch(getIncrementAction(1));
+        store.dispatch(getDecrementAction(5));
 
     }
 
@@ -69,7 +69,7 @@ public class SuasCounter {
 
         @NonNull
         @Override
-        public Counter getEmptyState() {
+        public Counter getInitialState() {
             // Provide a default value
             return new Counter(0);
         }

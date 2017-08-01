@@ -29,9 +29,9 @@ class CombinedReducerTest {
 
         val state = cr.emptyState
 
-        assertThat(state.getState("1")).isEqualTo(r1.emptyState)
-        assertThat(state.getState("2")).isEqualTo(r2.emptyState)
-        assertThat(state.getState("3")).isEqualTo(r3.emptyState)
+        assertThat(state.getState("1")).isEqualTo(r1.initialState)
+        assertThat(state.getState("2")).isEqualTo(r2.initialState)
+        assertThat(state.getState("3")).isEqualTo(r3.initialState)
     }
 
     @Test
@@ -50,6 +50,22 @@ class CombinedReducerTest {
     }
 
     @Test
+    fun `reduce - no changes`() {
+        val r1 = TestReducer("1", null)
+        val r2 = TestReducer("2", "new_state_2")
+        val r3 = TestReducer("3", null)
+        val cr = CombinedReducer(listOf(r1, r2, r3))
+
+        val newState = cr.reduce(cr.emptyState, Action<Unit>("bla"))
+
+        assertThat(newState.newState.getState("1")).isEqualTo(r1.initialState)
+        assertThat(newState.newState.getState("2")).isEqualTo(r2.newState)
+        assertThat(newState.newState.getState("3")).isEqualTo(r3.initialState)
+        assertThat(newState.updatedKeys).hasSize(1)
+        assertThat(newState.updatedKeys).contains("2")
+    }
+
+    @Test
     fun `get all keys`() {
         val r1 = TestReducer("1")
         val r2 = TestReducer("2")
@@ -59,15 +75,15 @@ class CombinedReducerTest {
         assertThat(cr.allKeys).containsExactly("1", "2", "3")
     }
 
-    private class TestReducer(val myKey: String, val newState : String = "new_state") : Reducer<String>() {
-        override fun reduce(oldState: String, action: Action<*>): String {
+    private class TestReducer(val myKey: String, val newState : String? = "new_state") : Reducer<String>() {
+        override fun reduce(oldState: String, action: Action<*>): String? {
             return newState
         }
 
-        override fun getEmptyState(): String {
+        override fun getInitialState(): String {
             return ""
         }
 
-        override fun getKey(): String = myKey
+        override fun getStateKey(): String = myKey
     }
 }

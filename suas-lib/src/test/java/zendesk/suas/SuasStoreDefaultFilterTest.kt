@@ -4,7 +4,7 @@ import org.junit.Assert.fail
 import org.junit.Test
 import java.util.concurrent.CountDownLatch
 
-class ReduxStoreDefaultFilterTest : Helper {
+class SuasStoreDefaultFilterTest : Helper {
 
     @Test
     fun `redux store - custom default filter - filter filters`() {
@@ -16,13 +16,13 @@ class ReduxStoreDefaultFilterTest : Helper {
             false
         }
 
-        val listener = Listener { _: State, _: State ->
+        val listener = Listener { _: State ->
             fail("Listener must not be called")
         }
 
         val store = store(filter = customDefaultFilter)
         store.addListener(listener)
-        store.dispatchAction(Action<Unit>("bla"))
+        store.dispatch(Action<Unit>("bla"))
 
         latch.awaitOrFail()
     }
@@ -37,13 +37,13 @@ class ReduxStoreDefaultFilterTest : Helper {
             true
         }
 
-        val listener = Listener { _: State, _: State ->
+        val listener = Listener { _: State ->
             latch.countDown("Listener must not be called")
         }
 
         val store = store(filter = customDefaultFilter)
         store.addListener(listener)
-        store.dispatchAction(Action<Unit>("bla"))
+        store.dispatch(Action<Unit>("bla"))
 
         latch.awaitOrFail()
     }
