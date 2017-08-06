@@ -1,5 +1,7 @@
 ![Screenshot](/misc/Logo.png?raw=true)
 
+[![Build Status](https://travis-ci.com/zendesk/Suas-Android.svg?token=iTfSE3QQamPUFfPk3VRD&branch=master)](https://travis-ci.com/zendesk/Suas-Android)
+
 `Suas` is a [Unidirectional Data Flow architecture](doc:why-unidirectional-architectures) implementation for iOS/MacOS/TvOS/WatchOs and Android heavily inspired by [Redux](http://redux.js.org). It provides an easy to use library that helps to create applications that are consistent, deterministic and scalable.
 
 Suas has frameworks for iOS, Android, and MacOS. And it aims to have good developer tooling such as customizable logging and state transition monitoring.
