@@ -19,6 +19,7 @@ public interface Store extends GetState, Dispatcher {
      * Resets the full internal state with a new state and notifies all registered {@link Listener}
      *
      * @param state the new state
+     * @return a subscription for managing the listener's lifecycle
      */
     void reset(@NonNull State state);
 
@@ -33,6 +34,7 @@ public interface Store extends GetState, Dispatcher {
      * </p>
      *
      * @param listener callback to be notified on state changes
+     * @return a subscription for managing the listener's lifecycle
      */
     Subscription addListener(@NonNull Listener<State> listener);
 
@@ -46,13 +48,47 @@ public interface Store extends GetState, Dispatcher {
      *
      * @param filter function used to decide whether to notify or not
      * @param listener callback to be notified on state changes
+     * @return a subscription for managing the listener's lifecycle
      */
     Subscription addListener(@NonNull Filter<State> filter, @NonNull Listener<State> listener);
 
-
-
+    /**
+     * Adds a new {@link Listener} to the store.
+     *
+     * <p>
+     *     The provided {@link Listener} will be notified on any state changes.
+     *     If the provided type {@code E} doesn't match the object behind the passed in {@code key}
+     *     the listener will never be notified and a warning will be logged.
+     *     <br>
+     *     If nothing else provided {@link Filters#DEFAULT} will be used to decide whether to
+     *     notify or not.
+     * </p>
+     *
+     * @param stateSelector function for converting {@link State} to an object of type {@code <E>}
+     * @param listener callback to be notified on state changes
+     * @param <E> type of the returned object of the state selector
+     * @return a subscription for managing the listener's lifecycle
+     */
     <E> Subscription addListener(@NonNull StateSelector<E> stateSelector, @NonNull Listener<E> listener);
 
+    /**
+     * Adds a new {@link Listener} to the store.
+     *
+     * <p>
+     *     The provided {@link Listener} will be notified on any state changes.
+     *     If the provided type {@code E} doesn't match the object behind the passed in {@code key}
+     *     the listener will never be notified and a warning will be logged.
+     *     <br>
+     *     If nothing else provided {@link Filters#DEFAULT} will be used to decide whether to
+     *     notify or not.
+     * </p>
+     *
+     * @param filter function used to decide whether to notify or not
+     * @param stateSelector function for converting {@link State} to an object of type {@code <E>}
+     * @param listener callback to be notified on state changes
+     * @param <E> type of the returned object of the state selector
+     * @return a subscription for managing the listener's lifecycle
+     */
     <E> Subscription addListener(@NonNull Filter<State> filter, @NonNull StateSelector<E> stateSelector, @NonNull Listener<E> listener);
 
 
@@ -72,6 +108,7 @@ public interface Store extends GetState, Dispatcher {
      * @param stateKey the state key to listen for changes
      * @param listener callback to be notified on state changes
      * @param <E> type of the state that's registered on the provided {@code key}
+     * @return a subscription for managing the listener's lifecycle
      */
     <E> Subscription addListener(@NonNull String stateKey, @NonNull Listener<E> listener);
 
@@ -91,6 +128,7 @@ public interface Store extends GetState, Dispatcher {
      * @param filter function used to decide whether to notify or not
      * @param listener callback to be notified on state changes
      * @param <E> type of the state that's registered on the provided {@code key}
+     * @return a subscription for managing the listener's lifecycle
      */
     <E> Subscription addListener(@NonNull String stateKey, @NonNull Filter<E> filter, @NonNull Listener<E> listener);
 
@@ -111,6 +149,7 @@ public interface Store extends GetState, Dispatcher {
      * @param clazz the state key and type listen for changes
      * @param listener callback to be notified on state changes
      * @param <E> type of the state that's registered on the provided {@code key}
+     * @return a subscription for managing the listener's lifecycle
      */
     <E> Subscription addListener(@NonNull Class<E> clazz, @NonNull Listener<E> listener);
 
@@ -130,6 +169,7 @@ public interface Store extends GetState, Dispatcher {
      * @param filter function used to decide whether to notify or not
      * @param listener callback to be notified on state changes
      * @param <E> type of the state that's registered on the provided {@code clazz}
+     * @return a subscription for managing the listener's lifecycle
      */
     <E> Subscription addListener(@NonNull Class<E> clazz, @NonNull Filter<E> filter, @NonNull Listener<E> listener);
 
@@ -151,6 +191,7 @@ public interface Store extends GetState, Dispatcher {
      * @param clazz the state type to listen for changes
      * @param listener callback to be notified on state changes
      * @param <E> type of the state that's registered on the provided {@code key}
+     * @return a subscription for managing the listener's lifecycle
      */
     <E> Subscription addListener(@NonNull String stateKey, @NonNull Class<E> clazz, @NonNull Listener<E> listener);
 
@@ -171,6 +212,7 @@ public interface Store extends GetState, Dispatcher {
      * @param filter function used to decide whether to notify or not
      * @param listener callback to be notified on state changes
      * @param <E> type of the state that's registered on the provided {@code key}
+     * @return a subscription for managing the listener's lifecycle
      */
     <E> Subscription addListener(@NonNull String stateKey, @NonNull Class<E> clazz, @NonNull Filter<E> filter, @NonNull Listener<E> listener);
 
