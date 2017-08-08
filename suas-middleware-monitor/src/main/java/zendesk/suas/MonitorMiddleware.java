@@ -81,12 +81,12 @@ public class MonitorMiddleware implements Middleware, ConnectionHandler {
                     final String name = String.format(Locale.US, "%s - %s", Build.MODEL, packageName);
 
                     if(builder.enableBonjour) {
-                        network = new NetworkSocketServer(name, "_redux-monitor._tcp.", MonitorMiddleware.this);
+                        network = new NetworkSocketServer(name, "_suas-monitor._tcp.", MonitorMiddleware.this);
                         network.start(builder.context);
                     }
 
                     if(builder.enableAdb) {
-                        unixSocketServer = new UnixSocketServer("redux_monitor_" + packageName, MonitorMiddleware.this);
+                        unixSocketServer = new UnixSocketServer("suas_monitor_" + packageName, MonitorMiddleware.this);
                         unixSocketServer.start();
                     }
 
