@@ -2,6 +2,7 @@ package zendesk.suas;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.VisibleForTesting;
 
 import java.io.Serializable;
 import java.util.Collection;
@@ -109,14 +110,13 @@ public class State implements Serializable {
         return new State(new HashMap<>(state));
     }
 
-    /**
-     * Add or update the provided scope.
-     */
-    void updateKey(String stateKey, Object newState) {
+    @VisibleForTesting
+    public void updateKey(String stateKey, Object newState) {
         state.put(stateKey, newState);
     }
 
-    <E> void updateKey(Class<E> stateKey, E newState) {
+    @VisibleForTesting
+    public <E> void updateKey(Class<E> stateKey, E newState) {
         state.put(keyForClass(stateKey), newState);
     }
 
