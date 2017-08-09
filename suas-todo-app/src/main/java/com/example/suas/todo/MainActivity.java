@@ -8,13 +8,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
-
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
-
 import zendesk.suas.Action;
 import zendesk.suas.Filters;
 import zendesk.suas.Listener;
@@ -25,45 +23,52 @@ import zendesk.suas.Suas;
 
 public class MainActivity extends AppCompatActivity implements Listener<TodoList> {
 
-    Store store;
+    private Store store;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         final ListView listView = findViewById(R.id.list);
-        final TodoListAdapter todoListAdapter = new TodoListAdapter(new ArrayList<String>());
+        final TodoListAdapter todoListAdapter = new TodoListAdapter(new ArrayList<TodoItem>());
         listView.setAdapter(todoListAdapter);
 
-        final Middleware build = new LoggerMiddleware.Builder()
+        final Middleware middleware = new LoggerMiddleware.Builder()
                 .withSerialization(LoggerMiddleware.Serialization.TO_STRING)
                 .withLineLength(120)
                 .build();
 
         store = Suas.createStore(new TodoReducer())
-                .withMiddleware(build)
+                .withMiddleware(middleware)
                 .withDefaultFilter(Filters.EQUALS)
                 .build();
 
+        final EditText newItemInput = findViewById(R.id.new_item_input);
         findViewById(R.id.add_item).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                store.dispatch(ActionFactory.addAction(UUID.randomUUID().toString()));
+                String newTitle = newItemInput.getText().toString();
+                Action addAction = ActionFactory.addAction(newTitle);
+                store.dispatch(addAction);
+
+                newItemInput.setText("");
             }
         });
 
-        findViewById(R.id.nothing).setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.trigger_invalid_action).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                store.dispatch(new Action("bla bla"));
+                Action invalidAction = new Action("bla bla");
+                store.dispatch(invalidAction);
             }
         });
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                String item = todoListAdapter.getItem(i);
-                store.dispatch(ActionFactory.deleteAction(item));
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Action deleteAction = ActionFactory.deleteAction(position);
+                store.dispatch(deleteAction);
             }
         });
 
@@ -74,7 +79,6 @@ public class MainActivity extends AppCompatActivity implements Listener<TodoList
             }
         });
     }
-
 
     @Override
     protected void onStart() {
@@ -94,16 +98,15 @@ public class MainActivity extends AppCompatActivity implements Listener<TodoList
         System.out.println("update update " + todoList.getItems());
     }
 
-
     class TodoListAdapter extends BaseAdapter {
 
-        final List<String> item;
+        final List<TodoItem> item;
 
-        TodoListAdapter(List<String> item) {
+        TodoListAdapter(List<TodoItem> item) {
             this.item = item;
         }
 
-        void update(List<String> items) {
+        void update(List<TodoItem> items) {
             item.clear();
             item.addAll(items);
             notifyDataSetChanged();
@@ -115,7 +118,7 @@ public class MainActivity extends AppCompatActivity implements Listener<TodoList
         }
 
         @Override
-        public String getItem(int i) {
+        public TodoItem getItem(int i) {
             return item.get(i);
         }
 
@@ -127,14 +130,14 @@ public class MainActivity extends AppCompatActivity implements Listener<TodoList
         @Override
         public View getView(int i, View view, ViewGroup viewGroup) {
             View v = view;
-            if(v == null) {
+            if (v == null) {
                 v = LayoutInflater
                         .from(viewGroup.getContext())
                         .inflate(android.R.layout.simple_list_item_1, viewGroup, false);
             }
 
             TextView txt = v.findViewById(android.R.id.text1);
-            txt.setText(item.get(i));
+            txt.setText(item.get(i).getTitle());
 
             return v;
         }

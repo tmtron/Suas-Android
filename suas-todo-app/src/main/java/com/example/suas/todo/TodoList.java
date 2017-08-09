@@ -5,13 +5,13 @@ import java.util.List;
 
 public class TodoList {
 
-    private final List<String> items;
+    private final List<TodoItem> items;
 
-    TodoList(List<String> items) {
+    TodoList(List<TodoItem> items) {
         this.items = new ArrayList<>(items);
     }
 
-    List<String> getItems() {
+    List<TodoItem> getItems() {
         return new ArrayList<>(items);
     }
 
