@@ -3,13 +3,14 @@ package com.example.suas.todo;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.BaseAdapter;
+import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.ListView;
 import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,9 +31,12 @@ public class MainActivity extends AppCompatActivity implements Listener<TodoList
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        final ListView listView = findViewById(R.id.list);
+        final RecyclerView todoList = findViewById(R.id.list);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+        todoList.setLayoutManager(layoutManager);
+
         final TodoListAdapter todoListAdapter = new TodoListAdapter(new ArrayList<TodoItem>());
-        listView.setAdapter(todoListAdapter);
+        todoList.setAdapter(todoListAdapter);
 
         final Middleware middleware = new LoggerMiddleware.Builder()
                 .withSerialization(LoggerMiddleware.Serialization.TO_STRING)
@@ -64,14 +68,6 @@ public class MainActivity extends AppCompatActivity implements Listener<TodoList
             }
         });
 
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Action deleteAction = ActionFactory.deleteAction(position);
-                store.dispatch(deleteAction);
-            }
-        });
-
         store.addListener(TodoList.class, new Listener<TodoList>() {
             @Override
             public void update(@NonNull TodoList e) {
@@ -98,49 +94,79 @@ public class MainActivity extends AppCompatActivity implements Listener<TodoList
         System.out.println("update update " + todoList.getItems());
     }
 
-    class TodoListAdapter extends BaseAdapter {
+    class TodoListAdapter extends RecyclerView.Adapter<TodoListAdapter.ViewHolder> {
 
-        final List<TodoItem> item;
+        final List<TodoItem> items;
 
-        TodoListAdapter(List<TodoItem> item) {
-            this.item = item;
+        class ViewHolder extends RecyclerView.ViewHolder {
+
+            private final TextView titleLabel;
+            private final CheckBox checkBox;
+            private final View deleteButton;
+
+            ViewHolder(View view) {
+                super(view);
+
+                titleLabel = view.findViewById(R.id.label);
+                checkBox = view.findViewById(R.id.checkbox);
+                deleteButton = view.findViewById(R.id.delete);
+
+                deleteButton.setOnClickListener(new OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Action deleteAction = ActionFactory.deleteAction(getAdapterPosition());
+                        store.dispatch(deleteAction);
+                    }
+                });
+
+                view.setOnClickListener(new OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Action toggleAction = ActionFactory.toggleAction(getAdapterPosition());
+                        store.dispatch(toggleAction);
+                    }
+                });
+            }
+
+            void setTitle(String title) {
+                titleLabel.setText(title);
+            }
+
+            void setIsCompleted(boolean isCompleted) {
+                checkBox.setChecked(isCompleted);
+            }
+        }
+
+        TodoListAdapter(List<TodoItem> items) {
+            this.items = items;
         }
 
         void update(List<TodoItem> items) {
-            item.clear();
-            item.addAll(items);
+            this.items.clear();
+            this.items.addAll(items);
             notifyDataSetChanged();
         }
 
         @Override
-        public int getCount() {
-            return item.size();
+        public TodoListAdapter.ViewHolder onCreateViewHolder(ViewGroup parent,
+                int viewType) {
+
+            View view = LayoutInflater.from(parent.getContext())
+                    .inflate(R.layout.list_item, parent, false);
+
+            return new ViewHolder(view);
         }
 
         @Override
-        public TodoItem getItem(int i) {
-            return item.get(i);
+        public void onBindViewHolder(ViewHolder holder, int position) {
+            TodoItem todoItem = items.get(position);
+            holder.setTitle(todoItem.getTitle());
+            holder.setIsCompleted(todoItem.isCompleted());
         }
 
         @Override
-        public long getItemId(int i) {
-            return 0;
-        }
-
-        @Override
-        public View getView(int i, View view, ViewGroup viewGroup) {
-            View v = view;
-            if (v == null) {
-                v = LayoutInflater
-                        .from(viewGroup.getContext())
-                        .inflate(android.R.layout.simple_list_item_1, viewGroup, false);
-            }
-
-            TextView txt = v.findViewById(android.R.id.text1);
-            txt.setText(item.get(i).getTitle());
-
-            return v;
+        public int getItemCount() {
+            return items.size();
         }
     }
-
 }

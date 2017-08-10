@@ -35,6 +35,7 @@ dependencies {
     }
 
     implementation group: 'com.android.support', name: 'appcompat-v7', version: rootProject.ext.supportLibVersion
+    implementation group: 'com.android.support', name: 'recyclerview-v7', version: rootProject.ext.supportLibVersion
 
     testImplementation 'junit:junit:4.12'
 }
