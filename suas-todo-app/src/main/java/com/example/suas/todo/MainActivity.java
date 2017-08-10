@@ -2,9 +2,12 @@ package com.example.suas.todo;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.util.Pair;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.RecyclerView.ViewHolder;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -48,6 +51,50 @@ public class MainActivity extends AppCompatActivity implements Listener<TodoList
                 .withDefaultFilter(Filters.EQUALS)
                 .build();
 
+        store.addListener(TodoList.class, new Listener<TodoList>() {
+            @Override
+            public void update(@NonNull TodoList e) {
+                todoListAdapter.update(e.getItems());
+            }
+        });
+
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(
+                new ItemTouchHelper.SimpleCallback(
+                        ItemTouchHelper.UP | ItemTouchHelper.DOWN,
+                        ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
+
+                    @Override
+                    public boolean isLongPressDragEnabled() {
+                        return true;
+                    }
+
+                    public boolean onMove(RecyclerView recyclerView,
+                            ViewHolder viewHolder, ViewHolder target) {
+
+                        final int fromPos = viewHolder.getAdapterPosition();
+                        final int toPos = target.getAdapterPosition();
+
+                        Pair<Integer, Integer> fromToPositions = new Pair<>(fromPos, toPos);
+                        Action moveAction = ActionFactory.moveAction(fromToPositions);
+                        store.dispatch(moveAction);
+
+                        return true;
+                    }
+
+                    @Override
+                    public boolean isItemViewSwipeEnabled() {
+                        return true;
+                    }
+
+                    public void onSwiped(ViewHolder viewHolder, int direction) {
+                        Action deleteAction = ActionFactory
+                                .deleteAction(viewHolder.getAdapterPosition());
+                        store.dispatch(deleteAction);
+                    }
+                });
+
+        itemTouchHelper.attachToRecyclerView(todoList);
+
         final EditText newItemInput = findViewById(R.id.new_item_input);
         findViewById(R.id.add_item).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -65,13 +112,6 @@ public class MainActivity extends AppCompatActivity implements Listener<TodoList
             public void onClick(View view) {
                 Action invalidAction = new Action("bla bla");
                 store.dispatch(invalidAction);
-            }
-        });
-
-        store.addListener(TodoList.class, new Listener<TodoList>() {
-            @Override
-            public void update(@NonNull TodoList e) {
-                todoListAdapter.update(e.getItems());
             }
         });
     }
@@ -102,22 +142,12 @@ public class MainActivity extends AppCompatActivity implements Listener<TodoList
 
             private final TextView titleLabel;
             private final CheckBox checkBox;
-            private final View deleteButton;
 
             ViewHolder(View view) {
                 super(view);
 
                 titleLabel = view.findViewById(R.id.label);
                 checkBox = view.findViewById(R.id.checkbox);
-                deleteButton = view.findViewById(R.id.delete);
-
-                deleteButton.setOnClickListener(new OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        Action deleteAction = ActionFactory.deleteAction(getAdapterPosition());
-                        store.dispatch(deleteAction);
-                    }
-                });
 
                 view.setOnClickListener(new OnClickListener() {
                     @Override
