@@ -2,70 +2,59 @@ package com.example.suas.todo;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.util.Pair;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.RecyclerView.ViewHolder;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.BaseAdapter;
-import android.widget.ListView;
+import android.widget.CheckBox;
+import android.widget.EditText;
 import android.widget.TextView;
-
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
-
 import zendesk.suas.Action;
 import zendesk.suas.Filters;
 import zendesk.suas.Listener;
 import zendesk.suas.LoggerMiddleware;
 import zendesk.suas.Middleware;
+import zendesk.suas.MonitorMiddleware;
 import zendesk.suas.Store;
 import zendesk.suas.Suas;
 
 public class MainActivity extends AppCompatActivity implements Listener<TodoList> {
 
-    Store store;
+    private Store store;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        final ListView listView = findViewById(R.id.list);
-        final TodoListAdapter todoListAdapter = new TodoListAdapter(new ArrayList<String>());
-        listView.setAdapter(todoListAdapter);
 
-        final Middleware build = new LoggerMiddleware.Builder()
+        final RecyclerView todoList = findViewById(R.id.list);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+        todoList.setLayoutManager(layoutManager);
+
+        final TodoListAdapter todoListAdapter = new TodoListAdapter(new ArrayList<TodoItem>());
+        todoList.setAdapter(todoListAdapter);
+
+        final Middleware monitorMiddleware = new MonitorMiddleware.Builder(this)
+                .withEnableAdb(true)
+                .build();
+
+        final Middleware loggerMiddleware = new LoggerMiddleware.Builder()
                 .withSerialization(LoggerMiddleware.Serialization.TO_STRING)
                 .withLineLength(120)
                 .build();
 
         store = Suas.createStore(new TodoReducer())
-                .withMiddleware(build)
+                .withMiddleware(monitorMiddleware, loggerMiddleware)
                 .withDefaultFilter(Filters.EQUALS)
                 .build();
-
-        findViewById(R.id.add_item).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                store.dispatch(ActionFactory.addAction(UUID.randomUUID().toString()));
-            }
-        });
-
-        findViewById(R.id.nothing).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                store.dispatch(new Action("bla bla"));
-            }
-        });
-
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                String item = todoListAdapter.getItem(i);
-                store.dispatch(ActionFactory.deleteAction(item));
-            }
-        });
 
         store.addListener(TodoList.class, new Listener<TodoList>() {
             @Override
@@ -73,8 +62,64 @@ public class MainActivity extends AppCompatActivity implements Listener<TodoList
                 todoListAdapter.update(e.getItems());
             }
         });
-    }
 
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(
+                new ItemTouchHelper.SimpleCallback(
+                        ItemTouchHelper.UP | ItemTouchHelper.DOWN,
+                        ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
+
+                    @Override
+                    public boolean isLongPressDragEnabled() {
+                        return true;
+                    }
+
+                    public boolean onMove(RecyclerView recyclerView,
+                            ViewHolder viewHolder, ViewHolder target) {
+
+                        final int fromPos = viewHolder.getAdapterPosition();
+                        final int toPos = target.getAdapterPosition();
+
+                        Pair<Integer, Integer> fromToPositions = new Pair<>(fromPos, toPos);
+                        Action moveAction = ActionFactory.moveAction(fromToPositions);
+                        store.dispatch(moveAction);
+
+                        return true;
+                    }
+
+                    @Override
+                    public boolean isItemViewSwipeEnabled() {
+                        return true;
+                    }
+
+                    public void onSwiped(ViewHolder viewHolder, int direction) {
+                        Action deleteAction = ActionFactory
+                                .deleteAction(viewHolder.getAdapterPosition());
+                        store.dispatch(deleteAction);
+                    }
+                });
+
+        itemTouchHelper.attachToRecyclerView(todoList);
+
+        final EditText newItemInput = findViewById(R.id.new_item_input);
+        findViewById(R.id.add_item).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String newTitle = newItemInput.getText().toString();
+                Action addAction = ActionFactory.addAction(newTitle);
+                store.dispatch(addAction);
+
+                newItemInput.setText("");
+            }
+        });
+
+        findViewById(R.id.trigger_invalid_action).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Action invalidAction = new Action("bla bla");
+                store.dispatch(invalidAction);
+            }
+        });
+    }
 
     @Override
     protected void onStart() {
@@ -94,50 +139,69 @@ public class MainActivity extends AppCompatActivity implements Listener<TodoList
         System.out.println("update update " + todoList.getItems());
     }
 
+    class TodoListAdapter extends RecyclerView.Adapter<TodoListAdapter.ViewHolder> {
 
-    class TodoListAdapter extends BaseAdapter {
+        final List<TodoItem> items;
 
-        final List<String> item;
+        class ViewHolder extends RecyclerView.ViewHolder {
 
-        TodoListAdapter(List<String> item) {
-            this.item = item;
+            private final TextView titleLabel;
+            private final CheckBox checkBox;
+
+            ViewHolder(View view) {
+                super(view);
+
+                titleLabel = view.findViewById(R.id.label);
+                checkBox = view.findViewById(R.id.checkbox);
+
+                view.setOnClickListener(new OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Action toggleAction = ActionFactory.toggleAction(getAdapterPosition());
+                        store.dispatch(toggleAction);
+                    }
+                });
+            }
+
+            void setTitle(String title) {
+                titleLabel.setText(title);
+            }
+
+            void setIsCompleted(boolean isCompleted) {
+                checkBox.setChecked(isCompleted);
+            }
         }
 
-        void update(List<String> items) {
-            item.clear();
-            item.addAll(items);
+        TodoListAdapter(List<TodoItem> items) {
+            this.items = items;
+        }
+
+        void update(List<TodoItem> items) {
+            this.items.clear();
+            this.items.addAll(items);
             notifyDataSetChanged();
         }
 
         @Override
-        public int getCount() {
-            return item.size();
+        public TodoListAdapter.ViewHolder onCreateViewHolder(ViewGroup parent,
+                int viewType) {
+
+            View view = LayoutInflater.from(parent.getContext())
+                    .inflate(R.layout.list_item, parent, false);
+
+            return new ViewHolder(view);
         }
 
         @Override
-        public String getItem(int i) {
-            return item.get(i);
+        public void onBindViewHolder(ViewHolder holder, int position) {
+            TodoItem todoItem = items.get(position);
+            holder.setTitle(todoItem.getTitle());
+            holder.setIsCompleted(todoItem.isCompleted());
         }
 
         @Override
-        public long getItemId(int i) {
-            return 0;
-        }
-
-        @Override
-        public View getView(int i, View view, ViewGroup viewGroup) {
-            View v = view;
-            if(v == null) {
-                v = LayoutInflater
-                        .from(viewGroup.getContext())
-                        .inflate(android.R.layout.simple_list_item_1, viewGroup, false);
-            }
-
-            TextView txt = v.findViewById(android.R.id.text1);
-            txt.setText(item.get(i));
-
-            return v;
+        public int getItemCount() {
+            return items.size();
         }
     }
-
 }
