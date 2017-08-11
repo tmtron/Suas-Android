@@ -22,6 +22,7 @@ import zendesk.suas.Filters;
 import zendesk.suas.Listener;
 import zendesk.suas.LoggerMiddleware;
 import zendesk.suas.Middleware;
+import zendesk.suas.MonitorMiddleware;
 import zendesk.suas.Store;
 import zendesk.suas.Suas;
 
@@ -41,13 +42,17 @@ public class MainActivity extends AppCompatActivity implements Listener<TodoList
         final TodoListAdapter todoListAdapter = new TodoListAdapter(new ArrayList<TodoItem>());
         todoList.setAdapter(todoListAdapter);
 
-        final Middleware middleware = new LoggerMiddleware.Builder()
+        final Middleware monitorMiddleware = new MonitorMiddleware.Builder(this)
+                .withEnableAdb(true)
+                .build();
+
+        final Middleware loggerMiddleware = new LoggerMiddleware.Builder()
                 .withSerialization(LoggerMiddleware.Serialization.TO_STRING)
                 .withLineLength(120)
                 .build();
 
         store = Suas.createStore(new TodoReducer())
-                .withMiddleware(middleware)
+                .withMiddleware(monitorMiddleware, loggerMiddleware)
                 .withDefaultFilter(Filters.EQUALS)
                 .build();
 
