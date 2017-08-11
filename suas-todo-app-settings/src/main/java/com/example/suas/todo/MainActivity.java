@@ -1,5 +1,6 @@
 package com.example.suas.todo;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.util.Pair;
@@ -9,6 +10,9 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.RecyclerView.ViewHolder;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -101,19 +105,19 @@ public class MainActivity extends AppCompatActivity implements Listener {
     }
 
     @Override
-    public void update(@NonNull Object state) {
-        if (state instanceof TodoList) {
-            TodoList todoList = (TodoList) state;
-            todoListAdapter.update(todoList.getItems());
-            return;
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.main_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.action_settings) {
+            startActivity(new Intent(this, SettingsActivity.class));
         }
 
-        if (state instanceof TodoSettings) {
-            TodoSettings todoSettings = (TodoSettings) state;
-            todoListAdapter.setTheme(
-                    todoSettings.getBackgroundColor(),
-                    todoSettings.getTextColor());
-        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -127,6 +131,22 @@ public class MainActivity extends AppCompatActivity implements Listener {
     protected void onStop() {
         super.onStop();
         store.removeListener(this);
+    }
+
+    @Override
+    public void update(@NonNull Object state) {
+        if (state instanceof TodoList) {
+            TodoList todoList = (TodoList) state;
+            todoListAdapter.update(todoList.getItems());
+            return;
+        }
+
+        if (state instanceof TodoSettings) {
+            TodoSettings todoSettings = (TodoSettings) state;
+            todoListAdapter.setTheme(
+                    todoSettings.getBackgroundColor(),
+                    todoSettings.getTextColor());
+        }
     }
 
     class TodoListAdapter extends RecyclerView.Adapter<TodoListAdapter.ViewHolder> {
@@ -187,6 +207,7 @@ public class MainActivity extends AppCompatActivity implements Listener {
         void setTheme(int backgroundColor, int textColor) {
             this.backgroundColor = backgroundColor;
             this.textColor = textColor;
+            notifyDataSetChanged();
         }
 
         @Override
