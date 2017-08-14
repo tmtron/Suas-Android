@@ -29,6 +29,7 @@ import zendesk.suas.Suas;
 public class MainActivity extends AppCompatActivity implements Listener<TodoList> {
 
     private Store store;
+    private TodoListAdapter todoListAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,7 +40,7 @@ public class MainActivity extends AppCompatActivity implements Listener<TodoList
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         todoList.setLayoutManager(layoutManager);
 
-        final TodoListAdapter todoListAdapter = new TodoListAdapter(new ArrayList<TodoItem>());
+        todoListAdapter = new TodoListAdapter(new ArrayList<TodoItem>());
         todoList.setAdapter(todoListAdapter);
 
         final Middleware monitorMiddleware = new MonitorMiddleware.Builder(this)
@@ -55,13 +56,6 @@ public class MainActivity extends AppCompatActivity implements Listener<TodoList
                 .withMiddleware(monitorMiddleware, loggerMiddleware)
                 .withDefaultFilter(Filters.EQUALS)
                 .build();
-
-        store.addListener(TodoList.class, new Listener<TodoList>() {
-            @Override
-            public void update(@NonNull TodoList e) {
-                todoListAdapter.update(e.getItems());
-            }
-        });
 
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(
                 new ItemTouchHelper.SimpleCallback(
@@ -131,12 +125,11 @@ public class MainActivity extends AppCompatActivity implements Listener<TodoList
     protected void onStop() {
         super.onStop();
         store.removeListener(this);
-        System.out.println();
     }
 
     @Override
     public void update(@NonNull TodoList todoList) {
-        System.out.println("update update " + todoList.getItems());
+        todoListAdapter.update(todoList.getItems());
     }
 
     class TodoListAdapter extends RecyclerView.Adapter<TodoListAdapter.ViewHolder> {
