@@ -1,1 +1,1 @@
-include ':suas-todo-app', ':suas-lib', ':suas-weather-app', ':suas-middleware-thunk', ':suas-middleware-logger', ':suas-middleware-monitor', ':suas-counter'
+include ':suas-todo-app', ':suas-lib', ':suas-weather-app', ':suas-middleware-thunk', ':suas-middleware-logger', ':suas-middleware-monitor', ':suas-counter', ':suas-todo-app-settings'
