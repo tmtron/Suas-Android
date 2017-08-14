@@ -3,6 +3,7 @@ package com.example.suas.todo;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.util.Pair;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -23,9 +24,12 @@ import java.util.ArrayList;
 import java.util.List;
 import zendesk.suas.Action;
 import zendesk.suas.Listener;
+import zendesk.suas.State;
+import zendesk.suas.StateSelector;
 import zendesk.suas.Store;
 
-public class MainActivity extends AppCompatActivity implements Listener {
+public class MainActivity extends AppCompatActivity implements StateSelector<TodoListViewModel>,
+        Listener<TodoListViewModel> {
 
     private Store store;
     private TodoListAdapter todoListAdapter;
@@ -39,7 +43,7 @@ public class MainActivity extends AppCompatActivity implements Listener {
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         todoList.setLayoutManager(layoutManager);
 
-        todoListAdapter = new TodoListAdapter(new ArrayList<TodoItem>());
+        todoListAdapter = new TodoListAdapter();
         todoList.setAdapter(todoListAdapter);
 
         store = ((TodoApplication) getApplication()).getStore();
@@ -123,8 +127,7 @@ public class MainActivity extends AppCompatActivity implements Listener {
     @Override
     protected void onStart() {
         super.onStart();
-        store.addListener(TodoSettings.class, this).informWithCurrentState();
-        store.addListener(TodoList.class, this);
+        store.addListener(this, this).informWithCurrentState();
     }
 
     @Override
@@ -133,27 +136,23 @@ public class MainActivity extends AppCompatActivity implements Listener {
         store.removeListener(this);
     }
 
+    @Nullable
     @Override
-    public void update(@NonNull Object state) {
-        if (state instanceof TodoList) {
-            TodoList todoList = (TodoList) state;
-            todoListAdapter.update(todoList.getItems());
-            return;
-        }
+    public TodoListViewModel selectData(@NonNull State state) {
+        TodoList todoList = state.getState(TodoList.class);
+        TodoSettings todoSettings = state.getState(TodoSettings.class);
+        return new TodoListViewModel(todoList, todoSettings);
+    }
 
-        if (state instanceof TodoSettings) {
-            TodoSettings todoSettings = (TodoSettings) state;
-            todoListAdapter.setTheme(
-                    todoSettings.getBackgroundColor(),
-                    todoSettings.getTextColor());
-        }
+    @Override
+    public void update(@NonNull TodoListViewModel todoListViewModel) {
+        todoListAdapter.update(todoListViewModel);
     }
 
     class TodoListAdapter extends RecyclerView.Adapter<TodoListAdapter.ViewHolder> {
 
         private final List<TodoItem> items;
-        private int backgroundColor;
-        private int textColor;
+        private TodoSettings settings;
 
         class ViewHolder extends RecyclerView.ViewHolder {
 
@@ -194,19 +193,14 @@ public class MainActivity extends AppCompatActivity implements Listener {
             }
         }
 
-        TodoListAdapter(List<TodoItem> items) {
-            this.items = items;
+        TodoListAdapter() {
+            this.items = new ArrayList<>();
         }
 
-        void update(List<TodoItem> items) {
+        void update(TodoListViewModel viewModel) {
             this.items.clear();
-            this.items.addAll(items);
-            notifyDataSetChanged();
-        }
-
-        void setTheme(int backgroundColor, int textColor) {
-            this.backgroundColor = backgroundColor;
-            this.textColor = textColor;
+            this.items.addAll(viewModel.getTodoList().getItems());
+            this.settings = viewModel.getTodoSettings();
             notifyDataSetChanged();
         }
 
@@ -225,8 +219,8 @@ public class MainActivity extends AppCompatActivity implements Listener {
             TodoItem todoItem = items.get(position);
             holder.setTitle(todoItem.getTitle());
             holder.setIsCompleted(todoItem.isCompleted());
-            holder.setBackgroundColor(backgroundColor);
-            holder.setTextColor(textColor);
+            holder.setBackgroundColor(settings.getBackgroundColor());
+            holder.setTextColor(settings.getTextColor());
         }
 
         @Override
