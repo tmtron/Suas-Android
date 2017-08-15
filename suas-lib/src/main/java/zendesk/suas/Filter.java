@@ -13,7 +13,7 @@ public interface Filter<E> {
      *
      * @param oldState old state
      * @param newState new state
-     * @return {@code true} if the component or listener should be notified, {@link false} if not
+     * @return {@code true} if the component or listener should be notified, {@code false} otherwise
      */
     boolean filter(@NonNull E oldState, @NonNull E newState);
 }

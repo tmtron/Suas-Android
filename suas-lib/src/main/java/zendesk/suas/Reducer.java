@@ -6,7 +6,7 @@ import android.support.annotation.Nullable;
 /**
  * Definition of a Reducer. The implementation should be able to
  * mutate state on a provided {@link Action}.
- * <br />
+ * <br>
  * Each {@link Reducer} implementation is responsible for a certain type of state.
  *
  * @param <E> type of the state

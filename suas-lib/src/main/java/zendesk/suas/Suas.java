@@ -85,6 +85,7 @@ public class Suas {
          * Configure the {@link Store} with a non empty {@link State}
          *
          * @param state an initial state
+         * @return a instance of {@link Builder} for further configuration
          */
         public Builder withInitialState(@NonNull State state) {
             assertArgumentsNotNull(state, "Initial state must not be null");
@@ -96,6 +97,7 @@ public class Suas {
          * Configure the {@link Store} with one or many {@link Middleware}
          *
          * @param middleware a list of {@link Middleware}
+         * @return a instance of {@link Builder} for further configuration
          */
         public Builder withMiddleware(@NonNull Collection<Middleware> middleware) {
             assertArgumentsNotNull(middleware, "Middleware must not be null");
@@ -107,6 +109,7 @@ public class Suas {
          * Configure the {@link Store} with one or many {@link Middleware}
          *
          * @param middleware a list of {@link Middleware}
+         * @return a instance of {@link Builder} for further configuration
          */
         public Builder withMiddleware(@NonNull Middleware... middleware) {
             assertArgumentsNotNull(middleware, "Middleware must not be null");
@@ -122,6 +125,7 @@ public class Suas {
          * </p>
          *
          * @param filter a custom default filter
+         * @return a instance of {@link Builder} for further configuration
          */
         public Builder withDefaultFilter(Filter<Object> filter) {
             assertArgumentsNotNull(filter, "Notifier must not be null");
@@ -137,7 +141,7 @@ public class Suas {
         /**
          * Creates an instance {@link Store} with the provided options.
          *
-         * @return a new store
+         * @return a new {@link Store}
          */
         public Store build() {
             final CombinedReducer combinedReducer = new CombinedReducer(reducers);

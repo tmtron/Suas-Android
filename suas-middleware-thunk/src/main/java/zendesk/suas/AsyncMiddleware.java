@@ -23,7 +23,7 @@ import android.support.annotation.NonNull;
  *     Network network = new Network();
  *     network.load(new Callback() {
  *       public void onResult(Object data) {
- *         dispatcher.dispatch(new Action<>("network_success", data));
+ *         dispatcher.dispatch(new Action&lt;&gt;("network_success", data));
  *       }
  *     });
  *   }

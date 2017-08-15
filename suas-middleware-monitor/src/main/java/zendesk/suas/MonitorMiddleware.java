@@ -17,7 +17,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- * Middleware for logging {@link State} changes to <a href="">Suas Monitor</a>
+ * Middleware for logging {@link State} changes to <a href="https://github.com/zendesk/Suas-Monitor">Suas Monitor</a>
  * <br>
  * <p>
  * Create an instance using the default constructor:
@@ -164,6 +164,7 @@ public class MonitorMiddleware implements Middleware, ConnectionHandler {
 
         /**
          * Enable/disable debugging over ADB.
+         * @param enableAdb true for enabling ADB, false otherwise.
          */
         @NonNull
         public Builder withEnableAdb(boolean enableAdb) {
@@ -173,6 +174,7 @@ public class MonitorMiddleware implements Middleware, ConnectionHandler {
 
         /**
          * Enable/disable debugging over the network/bonjour.
+         * @param enableBonjour true for enabling Bonjour, false otherwise.
          */
         @NonNull
         public Builder withEnableBonjour(boolean enableBonjour) {
