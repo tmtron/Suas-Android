@@ -1,6 +1,6 @@
 <p align="center">
 <a href="http://imgur.com/a0IkBEX"><img src="http://i.imgur.com/a0IkBEX.png" title="source: imgur.com" /></a>
-<p>
+</p>
 
 <p align="center">
 <a href="https://travis-ci.com/zendesk/Suas-Android"><img src="https://travis-ci.com/zendesk/Suas-Android.svg?token=iTfSE3QQamPUFfPk3VRD&branch=master" alt="Build Status" /></a>
@@ -247,7 +247,7 @@ For any question, suggestion, or just to say hi, you can find the core team on t
 - [Sebastian Chlan](https://twitter.com/sebchlan)
 - [Steven Diviney](https://twitter.com/DivoDivenson)
 - [Giacomo Rebonato](https://twitter.com/GiacomoRebonato)
-- [Elvis Porebski](https://twitter.com/)
+- [Elvis Porebski](https://twitter.com/@eepDev)
 - [Vitor Nunes](https://twitter.com/@vitornovictor)
 
 # Suas future
