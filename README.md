@@ -4,14 +4,12 @@
 
 <p align="center">
 <a href="https://travis-ci.com/zendesk/Suas-Android"><img src="https://travis-ci.com/zendesk/Suas-Android.svg?token=iTfSE3QQamPUFfPk3VRD&branch=master" alt="Build Status" /></a>
-</p>
-<p align="center">
 <a href="https://raw.githubusercontent.com/zendesk/Suas-Android/master/LICENSE?token=AIff-tRF1JNYHzdVtmezFOz6ujRZMWozks5ZlpRrwA%3D%3D"><img src="https://img.shields.io/badge/License-Apache%202.0-blue.svg" alt="License" /></a>
-
 <a href="https://gitter.im/SuasArch/Lobby?utm_source=badge&amp;utm_medium=badge&amp;utm_campaign=pr-badge&amp;utm_content=badge"><img src="https://badges.gitter.im/Join%20Chat.svg" alt="Join the chat at https://gitter.im/SuasArch/Lobby" /></a>
-<br />
-<br />
 </p>
+
+<br />
+<br />
 
 Suas is a [unidirectional data flow architecture](https://suas.readme.io/docs/why-unidirectional-architectures) implementation for iOS/macOS/tvOS/watchOS and Android heavily inspired by [Redux](http://redux.js.org). It provides an easy-to-use library that helps to create applications that are consistent, deterministic, and scalable.
 
