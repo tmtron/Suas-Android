@@ -19,7 +19,6 @@ public interface Store extends GetState, Dispatcher {
      * Resets the full internal state with a new state and notifies all registered {@link Listener}
      *
      * @param state the new state
-     * @return a subscription for managing the listener's lifecycle
      */
     void reset(@NonNull State state);
 

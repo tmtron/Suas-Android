@@ -19,31 +19,30 @@ public interface Middleware {
      * Called before an {@link Action} gets passed to the {@link Reducer}s.
      *
      * <p>
-     *     Examples:
+     * Examples:
      *
-     *     Log state changes:
-     *<pre>
-     *void onAction(...) {
+     * Log state changes:
+     * <pre>
+     * void onAction(...) {
      *    State oldState = state.getState();
      *    continuation.next(action);
      *    State newState = state.getState();
      *
      *    System.out.println(stateDiff(oldState, newState));
-     *}
-     *</pre>
+     * }
+     * </pre>
      *
-     *     Consume an {@link Action} and dispatch it on a background thread:
-     *<pre>
-     *void onAction(...) {
+     * Consume an {@link Action} and dispatch it on a background thread:
+     * <pre>
+     * void onAction(...) {
      *    if(action.getData() instanceof AsyncAction) {
      *        // consume action
      *        backgroundTask.start(action.getData, dispatcher);
      *    } else {
      *        continuation.next(action);
      *    }
-     *}
-     *</pre>
-     * </p>
+     * }
+     * </pre>
      *
      * @param action a dispatched action
      * @param state access to the current state
