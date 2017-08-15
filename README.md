@@ -209,7 +209,7 @@ The `MonitorMiddleware` helps to track state transition and action dispatch hist
 When using `MonitorMiddleware` the `Action` dispatched and `State` changes are sent to our [Suas Monitor desktop application](https://github.com/zendesk/Suas-Monitor).
 
 <p align="center">
-<img src="http://i.imgur.com/QsbDsN7.gif" title="source: imgur.com" />
+<img src="http://i.imgur.com/Gu1kYwb.gif" title="source: imgur.com" />
 </p>
 
 Read how to install and start using the `MonitorMiddleware` by heading to [getting started with monitor middleware article](https://suas.readme.io/docs/monitor-middleware-monitor-js).
