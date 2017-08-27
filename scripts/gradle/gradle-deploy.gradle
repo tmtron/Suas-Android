@@ -5,10 +5,13 @@ apply from: '../scripts/gradle/gradle-commons.gradle'
 ext {
     SDK_GROUP_ID = 'com.zendesk.suas'
     SDK_URL = 'https://github.com/zendesk/Suas-Android'
+    PROJECT_NAME = 'Suas'
     SDK_VERSION_NAME = rootProject.ext.versionName
     SDK_ARTIFACT_ID = project.ext.artifactId
     SDK_PACKAGING = project.ext.packaging
     JAVA_DOC_TITLE = project.ext.javadocTitle
+    POM_DEVELOPER_ID = 'zendesk'
+    POM_DEVELOPER_NAME = 'Zendesk, Inc.'
 
     repoUsername = getConfigurationParameter("zenSonatypeUsername")
     repoPassword = getConfigurationParameter("zenSonatypePassword")
@@ -29,6 +32,7 @@ afterEvaluate { project ->
                 }
 
                 pom.project {
+                    name PROJECT_NAME
                     groupId SDK_GROUP_ID
                     artifactId SDK_ARTIFACT_ID
                     packaging SDK_PACKAGING
@@ -45,6 +49,13 @@ afterEvaluate { project ->
                         license {
                             name 'The Apache License, Version 2.0'
                             url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                        }
+                    }
+
+                    developers {
+                        developer {
+                            id POM_DEVELOPER_ID
+                            name POM_DEVELOPER_NAME
                         }
                     }
                 }
