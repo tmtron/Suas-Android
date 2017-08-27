@@ -1,76 +1,81 @@
 apply plugin: 'maven'
+apply plugin: 'signing'
 apply from: '../scripts/gradle/gradle-commons.gradle'
 
 ext {
-    sdkGroupId = 'com.zendesk.suas'
-    sdkVersionName = rootProject.ext.versionName
-    sdkArtifactId = project.ext.artifactId
-    sdkPackaging = project.ext.packaging
-    javadocTitle = project.ext.javadocTitle
+    SDK_GROUP_ID = 'com.zendesk.suas'
+    SDK_URL = 'https://github.com/zendesk/Suas-Android'
+    SDK_VERSION_NAME = rootProject.ext.versionName
+    SDK_ARTIFACT_ID = project.ext.artifactId
+    SDK_PACKAGING = project.ext.packaging
+    JAVA_DOC_TITLE = project.ext.javadocTitle
 
-    repoUsername = getConfigurationParameter("zdRepoUsername")
-    repoPassword = getConfigurationParameter("zdRepoPassword")
-}
-
-
-task sourcesJar(type: Jar, dependsOn:classes) {
-    classifier = 'sources'
-    from sourceSets.main.allSource
-}
-
-tasks.withType(Javadoc) {
-    source = sourceSets.main.allJava
-    options.addStringOption('Xdoclint:none', '-quiet')
-    title = javadocTitle
-    options.links("http://docs.oracle.com/javase/8/docs/api/")
-}
-
-task javadocJar(type: Jar, dependsOn:javadoc) {
-    classifier = 'javadoc'
-    from javadoc.destinationDir
-}
-
-artifacts {
-    archives sourcesJar
-    archives javadocJar
+    repoUsername = getConfigurationParameter("zenSonatypeUsername")
+    repoPassword = getConfigurationParameter("zenSonatypePassword")
 }
 
 afterEvaluate { project ->
     uploadArchives {
         repositories {
             mavenDeployer {
+                beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
 
-                snapshotRepository(url: "https://zdrepo.jfrog.io/zdrepo/simple/libs-snapshots-local/") {
+                snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots") {
                     authentication(userName: repoUsername, password: repoPassword)
                 }
 
-                repository(url: "https://zendesk.jfrog.io/zendesk/simple/libs-releases-local/") {
+                repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2") {
                     authentication(userName: repoUsername, password: repoPassword)
                 }
 
                 pom.project {
-                    groupId sdkGroupId
-                    artifactId sdkArtifactId
-                    packaging sdkPackaging
-                    version sdkVersionName
+                    groupId SDK_GROUP_ID
+                    artifactId SDK_ARTIFACT_ID
+                    packaging SDK_PACKAGING
+                    version SDK_VERSION_NAME
+                    url SDK_URL
+
+                    scm {
+                        url SDK_URL
+                        connection 'scm:git:https://github.com/zendesk/Suas-Android.git'
+                        developerConnection 'scm:git:git@github.com:zendesk/Suas-Android.git'
+                    }
 
                     licenses {
                         license {
-                            name 'Zendesk Master Subscription Agreement'
-                            url 'https://www.zendesk.com/company/customers-partners/#master-subscription-agreement'
-                            distribution 'repo'
-                            comments 'By downloading or using the Zendesk Mobile SDK, You agree to the Zendesk Master Subscription Agreement https://www.zendesk.com/company/customers-partners/#master-subscription-agreement and Application Developer and API License Agreement https://www.zendesk.com/company/customers-partners/#application-developer-api-license-agreement and acknowledge that such terms govern Your use of and access to the Mobile SDK.'
-                        }
-
-                        license {
-                            name 'Application Developer and API License Agreement'
-                            url 'https://www.zendesk.com/company/application-developer-and-api-license-agreement'
-                            distribution 'repo'
-                            comments 'By downloading or using the Zendesk Mobile SDK, You agree to the Zendesk Master Subscription Agreement https://www.zendesk.com/company/customers-partners/#master-subscription-agreement and Application Developer and API License Agreement https://www.zendesk.com/company/customers-partners/#application-developer-api-license-agreement and acknowledge that such terms govern Your use of and access to the Mobile SDK.'
+                            name 'The Apache License, Version 2.0'
+                            url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
                         }
                     }
                 }
             }
         }
+    }
+
+    signing {
+        required { isReleaseBuild() }
+        sign configurations.archives
+    }
+
+    task sourcesJar(type: Jar, dependsOn:classes) {
+        classifier = 'sources'
+        from sourceSets.main.allSource
+    }
+
+    tasks.withType(Javadoc) {
+        source = sourceSets.main.allJava
+        options.addStringOption('Xdoclint:none', '-quiet')
+        title = JAVA_DOC_TITLE
+        options.links("http://docs.oracle.com/javase/8/docs/api/")
+    }
+
+    task javadocJar(type: Jar, dependsOn:javadoc) {
+        classifier = 'javadoc'
+        from javadoc.destinationDir
+    }
+
+    artifacts {
+        archives sourcesJar
+        archives javadocJar
     }
 }

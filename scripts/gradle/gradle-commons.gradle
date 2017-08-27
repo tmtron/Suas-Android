@@ -1,5 +1,9 @@
 ext {
 
+    isReleaseBuild = {
+        return rootProject.ext.versionName.contains("SNAPSHOT") == false
+    }
+
     getConfigurationParameter = { keyName ->
         return System.getenv(keyName) ?:
                 rootProject.hasProperty(keyName) ? rootProject.properties[keyName] : ''

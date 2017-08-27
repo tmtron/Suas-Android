@@ -19,7 +19,7 @@ exitOnFailedBuild() {
 }
 
 runUnitTests() {
-    ./gradlew --settings-file settings-suas-lib.gradle :suas-lib:test
+    ./gradlew --settings-file settings-suas-lib.gradle :suas-lib:test :suas-lib:jacocoTestReport
     exitOnFailedBuild "suas-lib unit tests"
 
     ./gradlew --settings-file settings-suas-middleware.gradle :suas-middleware-thunk:test :suas-middleware-monitor:test :suas-middleware-logger:test
@@ -58,6 +58,7 @@ prBuild() {
     if [ "$COMPONENT" == "unit" ]; then
         boxOut "Running unit tests"
         runUnitTests
+        bash <(curl -s https://codecov.io/bash) || true
 
     elif [ "$COMPONENT" == "sample_todo" ]; then
         boxOut "Building Sample App: Todo"
