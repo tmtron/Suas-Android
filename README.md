@@ -6,6 +6,7 @@
 <a href="https://travis-ci.org/zendesk/Suas-Android"><img src="https://travis-ci.org/zendesk/Suas-Android.svg?branch=master" alt="Build Status" /></a>
 <a href="https://codecov.io/gh/zendesk/Suas-Android"><img src="https://codecov.io/gh/zendesk/Suas-Android/branch/master/graph/badge.svg" alt="Codecov" /></a>
 <a href="https://raw.githubusercontent.com/zendesk/Suas-Android/master/LICENSE"><img src="https://img.shields.io/badge/License-Apache%202.0-blue.svg" alt="License" /></a>
+<img src="https://img.shields.io/maven-central/v/com.zendesk.suas/suas.svg" alt="Suas version" />
 <a href="https://gitter.im/SuasArch/Lobby?utm_source=badge&amp;utm_medium=badge&amp;utm_campaign=pr-badge&amp;utm_content=badge"><img src="https://badges.gitter.im/Join%20Chat.svg" alt="Join the chat at https://gitter.im/SuasArch/Lobby" /></a>
 </p>
 
@@ -99,6 +100,25 @@ class Counter {
     }
 }
 ```
+
+<table  align="center">
+  <tr>
+    <td>Suas</td>
+    <td><img src="https://img.shields.io/maven-central/v/com.zendesk.suas/suas.svg" alt="Suas version" /></td>
+  </tr>
+  <tr>
+    <td>Suas Logger</td>
+    <td><img src="https://img.shields.io/maven-central/v/com.zendesk.suas/suas-logger.svg" alt="Suas Logger" /></td>
+  </tr>
+  <tr>
+    <td>Suas Thunk</td>
+    <td><img src="https://img.shields.io/maven-central/v/com.zendesk.suas/suas-thunk.svg" alt="Suas Thunk" /></td>
+  </tr>
+  <tr>
+    <td>Suas Monitor</td>
+    <td><img src="https://img.shields.io/maven-central/v/com.zendesk.suas/suas-monitor.svg" alt="Suas version" /></td>
+  </tr>
+</table>
 
 We then define the actions that affect the state. For the counter, we need increment and decrement actions.
 

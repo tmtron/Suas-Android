@@ -6,6 +6,7 @@ ext {
     SDK_GROUP_ID = 'com.zendesk.suas'
     SDK_URL = 'https://github.com/zendesk/Suas-Android'
     PROJECT_NAME = 'Suas'
+    PROJECT_DESCRIPTION = 'Unidirectional data flow architecture implementation for Android'
     SDK_VERSION_NAME = rootProject.ext.versionName
     SDK_ARTIFACT_ID = project.ext.artifactId
     SDK_PACKAGING = project.ext.packaging
@@ -33,6 +34,7 @@ afterEvaluate { project ->
 
                 pom.project {
                     name PROJECT_NAME
+                    description PROJECT_DESCRIPTION
                     groupId SDK_GROUP_ID
                     artifactId SDK_ARTIFACT_ID
                     packaging SDK_PACKAGING
