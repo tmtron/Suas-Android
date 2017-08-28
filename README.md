@@ -80,6 +80,25 @@ Maven:
 </dependency>
 ```
 
+<table  align="center">
+  <tr>
+    <td>Suas</td>
+    <td><img src="https://img.shields.io/maven-central/v/com.zendesk.suas/suas.svg" alt="Suas version" /></td>
+  </tr>
+  <tr>
+    <td>Suas Logger</td>
+    <td><img src="https://img.shields.io/maven-central/v/com.zendesk.suas/suas-logger.svg" alt="Suas Logger" /></td>
+  </tr>
+  <tr>
+    <td>Suas Thunk</td>
+    <td><img src="https://img.shields.io/maven-central/v/com.zendesk.suas/suas-thunk.svg" alt="Suas Thunk" /></td>
+  </tr>
+  <tr>
+    <td>Suas Monitor</td>
+    <td><img src="https://img.shields.io/maven-central/v/com.zendesk.suas/suas-monitor.svg" alt="Suas version" /></td>
+  </tr>
+</table>
+
 # Getting started
 
 Let's get started by building a counter application.
@@ -100,25 +119,6 @@ class Counter {
     }
 }
 ```
-
-<table  align="center">
-  <tr>
-    <td>Suas</td>
-    <td><img src="https://img.shields.io/maven-central/v/com.zendesk.suas/suas.svg" alt="Suas version" /></td>
-  </tr>
-  <tr>
-    <td>Suas Logger</td>
-    <td><img src="https://img.shields.io/maven-central/v/com.zendesk.suas/suas-logger.svg" alt="Suas Logger" /></td>
-  </tr>
-  <tr>
-    <td>Suas Thunk</td>
-    <td><img src="https://img.shields.io/maven-central/v/com.zendesk.suas/suas-thunk.svg" alt="Suas Thunk" /></td>
-  </tr>
-  <tr>
-    <td>Suas Monitor</td>
-    <td><img src="https://img.shields.io/maven-central/v/com.zendesk.suas/suas-monitor.svg" alt="Suas version" /></td>
-  </tr>
-</table>
 
 We then define the actions that affect the state. For the counter, we need increment and decrement actions.
 
