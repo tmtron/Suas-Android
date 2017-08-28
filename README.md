@@ -13,6 +13,8 @@
 <br />
 <br />
 
+[![Analytics](https://ga-beacon.appspot.com/UA-105410314-3/github/Suas-Android?pixel)](https://github.com/zendesk/Suas-Android)
+
 Suas is a [unidirectional data flow architecture](https://suas.readme.io/docs/why-unidirectional-architectures) implementation for iOS/macOS/tvOS/watchOS and Android heavily inspired by [Redux](http://redux.js.org). It provides an easy-to-use library that helps to create applications that are consistent, deterministic, and scalable.
 
 Suas focuses on providing [good developer experience](#developer-experience-and-tooling) and tooling such as [customizable logging](#customizable-logging) and [state changes monitoring](#state-changes-monitoring).
