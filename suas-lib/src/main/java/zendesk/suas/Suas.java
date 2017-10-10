@@ -30,18 +30,18 @@ public class Suas {
 
     /**
      * Creates a {@link Store}.
-     *
      * <p>
-     *     A {@link Store} must at least have one {@link Reducer}.
-     *     <br>
-     *     It's not allowed to have two {@link Reducer} registered to the same key.
+     * <p>
+     * A {@link Store} must at least have one {@link Reducer}.
+     * <br>
+     * It's not allowed to have two {@link Reducer} registered to the same key.
      * </p>
      *
      * @param reducers a collection of {@link Reducer}
      * @return a instance of {@link Builder} for further configuration
      */
     public static Builder createStore(@NonNull Collection<Reducer> reducers) {
-        if(reducers == null || reducers.isEmpty()) {
+        if (reducers == null || reducers.isEmpty()) {
             throw new IllegalArgumentException("Reducer must not be null or empty");
         }
         return new Builder(reducers);
@@ -49,18 +49,18 @@ public class Suas {
 
     /**
      * Creates a {@link Store}.
-     *
      * <p>
-     *     A {@link Store} must at least have one {@link Reducer}.
-     *     <br>
-     *     It's not allowed to have two {@link Reducer} registered to the same key.
+     * <p>
+     * A {@link Store} must at least have one {@link Reducer}.
+     * <br>
+     * It's not allowed to have two {@link Reducer} registered to the same key.
      * </p>
      *
      * @param reducers a collection of {@link Reducer}
      * @return a instance of {@link Builder} for further configuration
      */
     public static Builder createStore(@NonNull Reducer... reducers) {
-        if(reducers == null || reducers.length == 0) {
+        if (reducers == null || reducers.length == 0) {
             throw new IllegalArgumentException("Reducer must not be null or empty");
         }
         return new Builder(Arrays.asList(reducers));
@@ -119,9 +119,9 @@ public class Suas {
 
         /**
          * Configure the {@link Store} with a default {@link Filter}.
-         *
          * <p>
-         *     Default: {@link Filters#DEFAULT}
+         * <p>
+         * Default: {@link Filters#DEFAULT}
          * </p>
          *
          * @param filter a custom default filter
@@ -133,7 +133,13 @@ public class Suas {
             return this;
         }
 
-        Builder withExecutor(Executor executor) {
+        /**
+         * Configure the {@link Store} with a non empty {@link Executor}
+         *
+         * @param executor an implemented executor
+         * @return a instance of {@link Builder} for further configuration
+         */
+        public Builder withExecutor(Executor executor) {
             this.executor = executor;
             return this;
         }
@@ -153,9 +159,9 @@ public class Suas {
         }
 
         private Executor getExecutor() {
-            if(executor != null) {
+            if (executor != null) {
                 return executor;
-            } else if(isAndroid) {
+            } else if (isAndroid) {
                 return Executors.getAndroidExecutor();
             } else {
                 return Executors.getDefaultExecutor();
@@ -163,7 +169,7 @@ public class Suas {
         }
 
         private void assertArgumentsNotNull(Object input, String msg) {
-            if(input == null) {
+            if (input == null) {
                 throw new IllegalArgumentException(msg);
             }
         }
