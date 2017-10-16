@@ -4,8 +4,8 @@ package zendesk.suas;
 import android.support.annotation.NonNull;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -29,7 +29,7 @@ class SuasStore implements Store {
         this.middleware = combinedMiddleware;
         this.defaultFilter = defaultFilter;
         this.executor = executor;
-        this.listenerStateListenerMap = new HashMap<>();
+        this.listenerStateListenerMap = new ConcurrentHashMap<>();
     }
 
     @NonNull
@@ -128,7 +128,7 @@ class SuasStore implements Store {
 
     @Override
     public void removeListener(@NonNull Listener listener) {
-        listenerStateListenerMap.remove(listener);
+       listenerStateListenerMap.remove(listener);
     }
 
     private Subscription registerListener(Listener listener, Listeners.StateListener stateListener) {
