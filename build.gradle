@@ -11,16 +11,15 @@ ext {
     ]
 
     compileSdkVersion = 26
-    buildToolsVersion = '26.0.1'
     minSdkVersion = 21
     targetSdkVersion = 26
-    supportLibVersion = '26.0.1'
+    supportLibVersion = '26.1.0'
 }
 
 buildscript {
 
     ext {
-        kotlinVersion = "1.1.4-2"
+        kotlinVersion = "1.1.51"
     }
 
     repositories {
@@ -29,7 +28,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.0.0-beta3'
+        classpath 'com.android.tools.build:gradle:3.0.0-rc1'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:${rootProject.ext.kotlinVersion}"
     }
 }
