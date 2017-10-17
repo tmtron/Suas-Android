@@ -50,8 +50,8 @@ class SuasStore implements Store {
                             final State oldState = getState();
                             final CombinedReducer.ReduceResult result = reducer.reduce(getState(), action);
                             SuasStore.this.state = result.getNewState();
-                            notifyListener(oldState, getState(), result.getUpdatedKeys());
                             isReducing.set(false);
+                            notifyListener(oldState, getState(), result.getUpdatedKeys());
                         } else {
                             throw new RuntimeException("You must not dispatch actions in your reducer. Seriously. (╯°□°）╯︵ ┻━┻");
                         }
