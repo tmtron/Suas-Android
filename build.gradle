@@ -2,12 +2,12 @@ apply from: 'scripts/gradle/gradle-commons.gradle'
 apply from: 'scripts/gradle/gradle-repos.gradle'
 
 ext {
-    versionName = '1.1.0-SNAPSHOT'
+    versionName = '1.1.0'
 
     buildSettings = [
             localBuild : true,
-            libVersion : '1.1.0-SNAPSHOT',
-            middleWareVersion : '1.1.0-SNAPSHOT'
+            libVersion : '1.1.0',
+            middleWareVersion : '1.1.0'
     ]
 
     compileSdkVersion = 26
@@ -28,7 +28,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.0.0-rc1'
+        classpath 'com.android.tools.build:gradle:3.0.1'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:${rootProject.ext.kotlinVersion}"
     }
 }
