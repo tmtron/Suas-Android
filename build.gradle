@@ -2,12 +2,12 @@ apply from: 'scripts/gradle/gradle-commons.gradle'
 apply from: 'scripts/gradle/gradle-repos.gradle'
 
 ext {
-    versionName = '1.1.0'
+    versionName = '1.2.0-SNAPSHOT'
 
     buildSettings = [
             localBuild : true,
-            libVersion : '1.1.0',
-            middleWareVersion : '1.1.0'
+            libVersion : '1.2.0-SNAPSHOT',
+            middleWareVersion : '1.2.0-SNAPSHOT'
     ]
 
     compileSdkVersion = 26
