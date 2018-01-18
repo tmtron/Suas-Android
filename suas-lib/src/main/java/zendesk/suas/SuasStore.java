@@ -4,7 +4,10 @@ package zendesk.suas;
 import android.support.annotation.NonNull;
 
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -20,6 +23,7 @@ class SuasStore implements Store {
     private final Filter defaultFilter;
     private final Executor executor;
     private final Map<Listener, Listeners.StateListener> listenerStateListenerMap;
+    private final Set<Listener<Action<?>>> actionListener;
     private final AtomicBoolean isReducing = new AtomicBoolean(false);
 
     SuasStore(State state, CombinedReducer reducer, CombinedMiddleware combinedMiddleware,
@@ -29,6 +33,7 @@ class SuasStore implements Store {
         this.middleware = combinedMiddleware;
         this.defaultFilter = defaultFilter;
         this.executor = executor;
+        this.actionListener = Collections.synchronizedSet(new HashSet<Listener<Action<?>>>());
         this.listenerStateListenerMap = new ConcurrentHashMap<>();
     }
 
@@ -43,6 +48,7 @@ class SuasStore implements Store {
         executor.execute(new Runnable() {
             @Override
             public void run() {
+                notifyActionListener(action);
                 middleware.onAction(action, SuasStore.this, SuasStore.this, new Continuation() {
                     @Override
                     public void next(@NonNull Action<?> action) {
@@ -66,6 +72,12 @@ class SuasStore implements Store {
             if(listener.getStateKey() == null || updatedKeys.contains(listener.getStateKey())) {
                 listener.update(oldState, newState, false);
             }
+        }
+    }
+
+    private void notifyActionListener(Action<?> action) {
+        for (Listener<Action<?>> listener : actionListener) {
+            listener.update(action);
         }
     }
 
@@ -117,6 +129,13 @@ class SuasStore implements Store {
     }
 
     @Override
+    public Subscription addActionListener(Listener<Action<?>> actionListener) {
+        final Subscription subscription = new ActionListenerSubscription(actionListener);
+        subscription.addListener();
+        return subscription;
+    }
+
+    @Override
     public Subscription addListener(@NonNull Listener<State> listener) {
         return registerListener(listener, Listeners.create(defaultFilter, listener));
     }
@@ -129,12 +148,38 @@ class SuasStore implements Store {
     @Override
     public void removeListener(@NonNull Listener listener) {
        listenerStateListenerMap.remove(listener);
+       actionListener.remove(listener);
     }
 
     private Subscription registerListener(Listener listener, Listeners.StateListener stateListener) {
         final Subscription suasSubscription = new DefaultSubscription(stateListener, listener);
         suasSubscription.addListener();
         return suasSubscription;
+    }
+
+    private class ActionListenerSubscription implements Subscription {
+
+        private final Listener<Action<?>> listener;
+
+        private ActionListenerSubscription(Listener<Action<?>> listener) {
+            this.listener = listener;
+        }
+
+        @Override
+        public void removeListener() {
+            SuasStore.this.removeListener(listener);
+        }
+
+        @Override
+        public void addListener() {
+            actionListener.add(listener);
+        }
+
+        @Override
+        public void informWithCurrentState() {
+            // no implemented
+        }
+
     }
 
     private class DefaultSubscription implements Subscription {

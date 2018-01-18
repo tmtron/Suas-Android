@@ -10,16 +10,16 @@ ext {
             middleWareVersion : '1.2.0-SNAPSHOT'
     ]
 
-    compileSdkVersion = 26
+    compileSdkVersion = 27
     minSdkVersion = 21
-    targetSdkVersion = 26
-    supportLibVersion = '26.1.0'
+    targetSdkVersion = 27
+    supportLibVersion = '27.0.2'
 }
 
 buildscript {
 
     ext {
-        kotlinVersion = "1.1.51"
+        kotlinVersion = "1.2.20"
     }
 
     repositories {

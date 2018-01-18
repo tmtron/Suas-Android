@@ -13,13 +13,14 @@ cache:
 android:
   components:
   - tools
-  - android-26
+  - android-27
   - platform-tools
-  - build-tools-26.0.2
+  - build-tools-27.0.3
   - extra-android-m2repository
   licenses:
-  - android-sdk-license-[0-9a-f]{8}
-  - android-sdk-preview-license-[0-9a-f]{8}
+  - 'android-sdk-preview-license-.+'
+  - 'android-sdk-license-.+'
+  - '.+'
 branches:
   only:
   - master
