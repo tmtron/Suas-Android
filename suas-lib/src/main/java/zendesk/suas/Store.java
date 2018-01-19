@@ -216,6 +216,18 @@ public interface Store extends GetState, Dispatcher {
     <E> Subscription addListener(@NonNull String stateKey, @NonNull Class<E> clazz, @NonNull Filter<E> filter, @NonNull Listener<E> listener);
 
     /**
+     * Adds a new {@link Listener<Action>} to the store.
+     *
+     * <p>
+     *      Action listeners will be notified whenever a new action is dispatched. Inside the
+     *      action notification you cast to the specific action and read the payload of the action.
+     * </p>
+     * @param actionListener callback to be notified when an action happens.
+     * @return a subscription for managing the listener's lifecycle
+     */
+    Subscription addActionListener(Listener<Action<?>> actionListener);
+
+    /**
      * Remove a listener from the store.
      *
      * @param listener the listener to remove

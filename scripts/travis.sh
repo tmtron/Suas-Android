@@ -18,6 +18,11 @@ exitOnFailedBuild() {
     fi
 }
 
+acceptLicenses() {
+    mkdir -p ${ANDROID_HOME}licenses
+    echo -e "\nd56f5187479451eabf01fb78af6dfcb131a6481e" > ${ANDROID_HOME}licenses/android-sdk-license
+}
+
 runUnitTests() {
     ./gradlew --settings-file settings-suas-lib.gradle :suas-lib:test :suas-lib:jacocoTestReport
     exitOnFailedBuild "suas-lib unit tests"
@@ -97,7 +102,7 @@ branchBuild() {
     exit 0
 }
 
-
+acceptLicenses
 if isPullRequest ; then
     boxOut "This is a PR. Hook: script"
     prBuild
