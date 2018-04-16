@@ -38,8 +38,10 @@ public class SuasCounter {
         // Create a store with a CounterReducer
         // LoggerMiddleware for advanced logging
         return Suas.createStore(new CounterReducer())
-                .withMiddleware(new LoggerMiddleware())
-                .build();
+                .withMiddleware(new LoggerMiddleware.Builder()
+                        .withSerialization(LoggerMiddleware.Serialization.TO_STRING)
+                        .build()
+                ) .build();
     }
 
     private static class IntAction extends Action<Integer> {
@@ -53,6 +55,14 @@ public class SuasCounter {
         @SuppressWarnings("unchecked")
         public @NonNull Integer getData() {
             return data;
+        }
+
+        @Override
+        public String toString() {
+            return "Action{" +
+                    "actionType='" + getActionType() + '\'' +
+                    ", intValue=" + data +
+                    '}';
         }
     }
 
