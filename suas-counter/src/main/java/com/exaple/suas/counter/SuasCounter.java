@@ -6,8 +6,10 @@ import android.support.annotation.Nullable;
 import zendesk.suas.Action;
 import zendesk.suas.LoggerMiddleware;
 import zendesk.suas.Reducer;
+import zendesk.suas.State;
 import zendesk.suas.Store;
 import zendesk.suas.Suas;
+import zendesk.suas.Subscription;
 
 public class SuasCounter {
 
@@ -18,12 +20,18 @@ public class SuasCounter {
 
         Store store = createStore();
 
-        store.addListener(Counter.class, (state) -> System.out.println("Java - State changed to " + state.count));
+        Subscription subscription = store.addListener(Counter.class, (state) -> System.out.println("Java - State is now " + state.count));
 
+        final State initialState = store.getState();
+        final Counter initialCounter = initialState.getState(Counter.class);
+        if (initialCounter != null) System.out.println("Java - initialState " + initialCounter.count);
+
+        subscription.informWithCurrentState();
         store.dispatch(getIncrementAction(10));
         store.dispatch(getIncrementAction(1));
-        store.dispatch(getDecrementAction(5));
 
+        store.dispatch(getDecrementAction(5));
+        subscription.removeListener();
     }
 
     private static IntAction getDecrementAction(int value) {
@@ -94,7 +102,7 @@ public class SuasCounter {
         @Override
         public Counter getInitialState() {
             // Provide a default value
-            return new Counter(0);
+            return new Counter(3);
         }
     }
 
