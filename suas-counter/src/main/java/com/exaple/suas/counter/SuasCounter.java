@@ -18,9 +18,7 @@ public class SuasCounter {
 
         Store store = createStore();
 
-        store.addListener(Counter.class, (state) -> {
-            System.out.println("Java - State changed to " + state.count);
-        });
+        store.addListener(Counter.class, (state) -> System.out.println("Java - State changed to " + state.count));
 
         store.dispatch(getIncrementAction(10));
         store.dispatch(getIncrementAction(1));
@@ -28,12 +26,12 @@ public class SuasCounter {
 
     }
 
-    private static Action getDecrementAction(int value) {
-        return new Action<>(DECREMENT_ACTION, value);
+    private static IntAction getDecrementAction(int value) {
+        return new IntAction(DECREMENT_ACTION, value);
     }
 
-    private static Action getIncrementAction(int value) {
-        return new Action<>(INCREMENT_ACTION, value);
+    private static IntAction getIncrementAction(int value) {
+        return new IntAction(INCREMENT_ACTION, value);
     }
 
     private static Store createStore() {
@@ -44,27 +42,42 @@ public class SuasCounter {
                 .build();
     }
 
+    private static class IntAction extends Action<Integer> {
+        final private int data;
+
+        public IntAction(@NonNull String actionType, int data) {
+            super(actionType, data);
+            this.data = data;
+        }
+
+        @SuppressWarnings("unchecked")
+        public @NonNull Integer getData() {
+            return data;
+        }
+    }
+
     private static class CounterReducer extends Reducer<Counter> {
 
         @Nullable
         @Override
         public Counter reduce(@NonNull Counter oldState, @NonNull Action<?> action) {
-            switch (action.getActionType()) {
-                case INCREMENT_ACTION: {
-                    // Handle increment action
-                    int incrementValue = action.getData();
-                    return new Counter(oldState.count + incrementValue);
-                }
-                case DECREMENT_ACTION: {
-                    // Handle decrement action
-                    int decrementValue = action.getData();
-                    return new Counter(oldState.count - decrementValue);
-                }
-                default: {
-                    // Important: If action does not affect, return null
-                    return null;
+            if (action instanceof IntAction) {
+                final IntAction actionInt = (IntAction)action;
+                switch (action.getActionType()) {
+                    case INCREMENT_ACTION: {
+                        // Handle increment action
+                        int incrementValue = actionInt.getData();
+                        return new Counter(oldState.count + incrementValue);
+                    }
+                    case DECREMENT_ACTION: {
+                        // Handle decrement action
+                        int decrementValue = actionInt.getData();
+                        return new Counter(oldState.count - decrementValue);
+                    }
                 }
             }
+            // Important: If action does not affect, return null
+            return null;
         }
 
         @NonNull
