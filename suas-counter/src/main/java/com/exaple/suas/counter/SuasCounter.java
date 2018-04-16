@@ -64,14 +64,6 @@ public class SuasCounter {
         public @NonNull Integer getData() {
             return data;
         }
-
-        @Override
-        public String toString() {
-            return "Action{" +
-                    "actionType='" + getActionType() + '\'' +
-                    ", intValue=" + data +
-                    '}';
-        }
     }
 
     private static class CounterReducer extends Reducer<Counter> {
