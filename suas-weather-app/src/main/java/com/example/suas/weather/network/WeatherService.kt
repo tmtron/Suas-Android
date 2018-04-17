@@ -20,17 +20,18 @@ class WeatherService(val autocomplete: AutocompleteService, val weather: Wunderg
         }
     }
 
-    fun loadWeather(location: StateModels.Location): Action<*> {
+    fun loadWeather(location: Location): Action<*> {
         return AsyncMiddleware.create { dispatcher, getState ->
             dispatcher.dispatch(LoadWeather(location))
 
             val observations = getState.state.getState(StateModels.LoadedObservations::class.java)
-            val o = observations?.data?.get(location)
+            val observation = observations?.data?.get(location)
 
-            if(o != null) {
-                dispatcher.dispatch(LoadWeatherSuccess(o, location))
-
+            if(observation != null) {
+                // return the cached observation
+                dispatcher.dispatch(LoadWeatherSuccess(observation, location))
             } else {
+                // start a network-call
                 loadWeatherFromNetwork(location) {
                     when (it) {
                         is NetworkError -> dispatcher.dispatch(LoadWeatherError())
@@ -41,19 +42,26 @@ class WeatherService(val autocomplete: AutocompleteService, val weather: Wunderg
         }
     }
 
-    private fun loadCitiesFromNetwork(query: String, callback: Callback) {
+    // networkCallback will be executed when we get back a result: NetworkSuccess or Error
+    private fun loadCitiesFromNetwork(query: String, networkCallback: NetworkCallback) {
         autocomplete
+                // execute the retrofit call
                 .autocomplete(query = query)
-                .bridge(callback){ (items) -> SuggestionResult(items) }
+                .bridge(networkCallback){ (/* AutocompleteResult.*/ items) -> SuggestionResult(items) }
     }
 
-    private fun loadWeatherFromNetwork(location: StateModels.Location, callback : Callback) {
+    private fun loadWeatherFromNetwork(location: Location, networkCallback : NetworkCallback) {
         weather
                 .getConditions(id = location.id)
-                .bridge(callback) { (currentObservation) -> ConditionResult(currentObservation) }
+                .bridge(networkCallback) { (/* ConditionResponse.*/currentObservation) -> ConditionResult(currentObservation) }
     }
 
-    private fun <E, F> Call<E>.bridge(callback: Callback, convert: (data: E) -> Success<F>) {
+    // bridge the retrofit NetworkCallback to our NetworkResult classes
+    // convert will only be used in the success case to map from the AutocompleteResult to our NetworkResult classes
+    //         e.g. AutocompleteResult to SuggestionResult
+    //         note: both classes contain a list of AutocompleteItem objects: in Clean Architecture we should map
+    //               the AutocompleteItem  to a new data-object
+    private fun <E, F> Call<E>.bridge(networkCallback: NetworkCallback, convert: (data: E) -> NetworkSuccess<F>) {
         enqueue(object : retrofit2.Callback<E>{
 
             override fun onResponse(call: Call<E>?, response: Response<E>?) {
@@ -63,11 +71,11 @@ class WeatherService(val autocomplete: AutocompleteService, val weather: Wunderg
                     NetworkError(response?.message() ?: "Err0r")
                 }
 
-                callback(result)
+                networkCallback(result)
             }
 
             override fun onFailure(call: Call<E>?, t: Throwable?) {
-                callback(NetworkError(t?.message ?: "Err0r"))
+                networkCallback(NetworkError(t?.message ?: "Err0r"))
             }
 
         })

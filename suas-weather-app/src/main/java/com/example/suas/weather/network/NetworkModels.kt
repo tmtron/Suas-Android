@@ -14,7 +14,7 @@ interface NetworkModels {
             val lat: Float,
             val lon: Float)
 
-    data class ConditionReponse(
+    data class ConditionResponse(
             @SerializedName("current_observation") val currentObservation: Observation)
 
     data class Observation(

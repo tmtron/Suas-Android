@@ -64,7 +64,9 @@ class WeatherApplication : Application() {
                 .withDefaultFilter(Filters.EQUALS)
                 .build()
 
+        // load the existing location list from the shared preferences
         store.dispatch(storage.loadAction())
+        // register a listener that will save location changes to the shared preferences
         storage.register(store)
 
         store

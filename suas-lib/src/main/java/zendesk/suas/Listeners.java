@@ -10,7 +10,7 @@ import java.util.logging.Logger;
 class Listeners {
 
     private static final Logger L = Logger.getLogger("Suas");
-    private static final String WRONG_TYPE = "Either new value or old value cannot be converted to type expected type.";
+    private static final String WRONG_TYPE = "Either new value or old value cannot be converted to the expected type.";
     private static final String KEY_NOT_FOUND = "Requested stateKey not found in store";
 
     private Listeners() {

@@ -2,7 +2,6 @@ package com.example.suas.weather.suas
 
 import com.example.suas.weather.network.NetworkModels
 import com.example.suas.weather.network.NetworkModels.AutocompleteItem
-import com.example.suas.weather.suas.StateModels.Location
 import com.example.suas.weather.suas.StateModels.Locations
 import zendesk.suas.Action
 
@@ -31,7 +30,7 @@ class SuggestedCitiesError: Action<String>(ActionTypes.suggestionsError)
 
 class AddLocation(val location: Location): Action<Location>(ActionTypes.addLocation, location)
 
-class LocationsLoaded(val location: Locations): Action<Locations>(ActionTypes.locationsLoadedFromDisk, location)
+class LocationsLoaded(val locations: Locations): Action<Locations>(ActionTypes.locationsLoadedFromDisk, locations)
 
 class LocationSelected(val location: Location): Action<Location>(ActionTypes.selectLocation, location)
 
@@ -40,4 +39,5 @@ class LoadWeather(val location: Location): Action<Location>(ActionTypes.loadWeat
 
 class LoadWeatherError: Action<String>(ActionTypes.loadWeatherError)
 
-class LoadWeatherSuccess(val observation: NetworkModels.Observation, val location: Location): Action<Pair<NetworkModels.Observation, Location>>(ActionTypes.loadWeatherSuccess, Pair(observation, location))
+class LoadWeatherSuccess(val observation: NetworkModels.Observation, val location: Location)
+    : Action<Pair<NetworkModels.Observation, Location>>(ActionTypes.loadWeatherSuccess, Pair(observation, location))

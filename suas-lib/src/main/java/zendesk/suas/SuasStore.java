@@ -23,7 +23,7 @@ class SuasStore implements Store {
     private final Filter defaultFilter;
     private final Executor executor;
     private final Map<Listener, Listeners.StateListener> listenerStateListenerMap;
-    private final Set<Listener<Action<?>>> actionListener;
+    private final Set<Listener<Action<?>>> actionListeners;
     private final AtomicBoolean isReducing = new AtomicBoolean(false);
 
     SuasStore(State state, CombinedReducer reducer, CombinedMiddleware combinedMiddleware,
@@ -33,7 +33,7 @@ class SuasStore implements Store {
         this.middleware = combinedMiddleware;
         this.defaultFilter = defaultFilter;
         this.executor = executor;
-        this.actionListener = Collections.synchronizedSet(new HashSet<Listener<Action<?>>>());
+        this.actionListeners = Collections.synchronizedSet(new HashSet<Listener<Action<?>>>());
         this.listenerStateListenerMap = new ConcurrentHashMap<>();
     }
 
@@ -76,7 +76,7 @@ class SuasStore implements Store {
     }
 
     private void notifyActionListener(Action<?> action) {
-        for (Listener<Action<?>> listener : actionListener) {
+        for (Listener<Action<?>> listener : actionListeners) {
             listener.update(action);
         }
     }
@@ -148,7 +148,7 @@ class SuasStore implements Store {
     @Override
     public void removeListener(@NonNull Listener listener) {
        listenerStateListenerMap.remove(listener);
-       actionListener.remove(listener);
+       actionListeners.remove(listener);
     }
 
     private Subscription registerListener(Listener listener, Listeners.StateListener stateListener) {
@@ -172,7 +172,7 @@ class SuasStore implements Store {
 
         @Override
         public void addListener() {
-            actionListener.add(listener);
+            actionListeners.add(listener);
         }
 
         @Override

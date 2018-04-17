@@ -10,6 +10,6 @@ interface WundergroundService {
     fun getConditions(
             @Path("key") key: String ="49415a822ff30632",
             @Path("id") id: String
-    ): Call<NetworkModels.ConditionReponse>
+    ): Call<NetworkModels.ConditionResponse>
 
 }

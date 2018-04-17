@@ -21,7 +21,7 @@ class NoResultsComponent(val view: TextView) : Listener<Boolean> {
         val locations = it.getState(StateModels.FoundLocations::class.java)
 
         if (progress != null && locations != null) {
-            progress.count == 0 && locations.query.isNotBlank() && locations.foundLocation.isEmpty()
+            progress.count == 0 && locations.query.isNotBlank() && locations.foundLocations.isEmpty()
         } else {
             false
         }

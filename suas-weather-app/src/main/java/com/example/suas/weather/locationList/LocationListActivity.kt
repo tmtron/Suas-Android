@@ -38,6 +38,7 @@ class LocationListActivity : AppCompatActivity() {
                 store.addListener(weatherComponent.selector, weatherComponent),
                 store.addListener(StateModels.Progress::class.java, progressComponent)
         )
+        // TODO MTR: why do we need this when it is called in onResume anyway?
         subscriptions.informWithCurrentState()
     }
 

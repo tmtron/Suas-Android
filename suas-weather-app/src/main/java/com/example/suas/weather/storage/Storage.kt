@@ -9,20 +9,22 @@ import zendesk.suas.Action
 import zendesk.suas.AsyncMiddleware
 import zendesk.suas.Store
 
+private const val SHARED_PREFS_KEY = "1"
+
 class Storage(context: Context) {
 
     private val sharedPrefs: SharedPreferences by lazy { context.getSharedPreferences("locations", Context.MODE_PRIVATE) }
     private val gson: Gson by lazy { Gson() }
 
-    private fun store(location: StateModels.Locations) {
+    private fun store(locations: StateModels.Locations) {
         sharedPrefs
                 .edit()
-                .putString("l", gson.toJson(location))
+                .putString(SHARED_PREFS_KEY, gson.toJson(locations))
                 .apply()
     }
 
     private fun load(): StateModels.Locations? {
-        val data = sharedPrefs.getString("l", "")
+        val data = sharedPrefs.getString(SHARED_PREFS_KEY, "")
         return try {
             gson.fromJson(data, StateModels.Locations::class.java)
         } catch (e: Exception) {

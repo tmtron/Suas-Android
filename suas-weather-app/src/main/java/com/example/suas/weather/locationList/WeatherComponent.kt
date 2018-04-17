@@ -36,9 +36,14 @@ class WeatherComponent(val imageView: ImageView,
 
     val selector = StateSelector { state ->
         val selectedLocation = state.getState(StateModels.SelectedLocation::class.java)
-        val loadedLocation = state.getState(StateModels.LoadedObservations::class.java)
+        val loadedLocationToObservationsMap = state.getState(StateModels.LoadedObservations::class.java)
 
-        val observation = selectedLocation?.location?.let { loadedLocation?.data?.get(it) }
+        val observation =
+                // when we have a selected location,
+                selectedLocation?.location?.let {
+                    // we search for this location in the loaded data map and return the observation for this location
+                    loadedLocationToObservationsMap?.data?.get(it)
+                }
         if (observation != null) {
             Weather.Forecast(observation.location.full, observation.temp, observation.iconUrl, observation.weather, observation.wind, observation.precip)
         } else {

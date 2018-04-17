@@ -4,9 +4,7 @@ import com.example.suas.weather.network.NetworkModels
 
 interface StateModels {
 
-    data class FoundLocations(val query: String = "", val foundLocation: List<Location> = listOf())
-
-    data class Location(val name: String = "", val id: String)
+    data class FoundLocations(val query: String = "", val foundLocations: List<Location> = listOf())
 
     data class Progress(val count: Int = 0)
 

@@ -41,7 +41,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * Middleware monitor = new MonitorMiddleware(context)
  *
  * Store store = Suas.createStore(...)
- *       .widthMiddleware(middleware1, middleware2, ... middlewareN, monitor)
+ *       .withMiddleware(middleware1, middleware2, ... middlewareN, monitor)
  *       .builder().
  * </pre>
  */

@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import com.example.suas.weather.R
 import com.example.suas.weather.suas.AddLocation
+import com.example.suas.weather.suas.Location
 import com.example.suas.weather.suas.StateModels
 import zendesk.suas.Dispatcher
 import zendesk.suas.Listener
@@ -24,7 +25,7 @@ class ListComponent(recyclerView: RecyclerView, dispatcher: Dispatcher) : Listen
     }
 
     override fun update(e: StateModels.FoundLocations) {
-        list = e.foundLocation.map { ListItem(it, it.name.hashCode().toLong()) }
+        list = e.foundLocations.map { ListItem(it, it.name.hashCode().toLong()) }
         adapter.notifyDataSetChanged()
     }
 
@@ -54,7 +55,7 @@ class ListComponent(recyclerView: RecyclerView, dispatcher: Dispatcher) : Listen
         }
     }
 
-    data class ListItem(val location: StateModels.Location, val id: Long)
+    data class ListItem(val location: Location, val id: Long)
 
     class LocationViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
 

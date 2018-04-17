@@ -8,16 +8,17 @@ import android.view.ViewGroup
 import android.widget.TextView
 import com.example.suas.weather.R
 import com.example.suas.weather.network.WeatherService
+import com.example.suas.weather.suas.Location
 import com.example.suas.weather.suas.StateModels
 import zendesk.suas.Listener
 import zendesk.suas.Dispatcher
 
-typealias LocationSelected = (location: StateModels.Location) -> Unit
+typealias LocationSelected = (location: Location) -> Unit
 
 class ListComponent(recyclerView: RecyclerView, weatherService: WeatherService, dispatcher: Dispatcher)
     : Listener<StateModels.Locations> {
 
-    private var list: List<StateModels.Location> = listOf()
+    private var list: List<Location> = listOf()
     private val adapter = LocationAdapter(this, { location ->
         dispatcher.dispatch(com.example.suas.weather.suas.LocationSelected(location))
         dispatcher.dispatch(weatherService.loadWeather(location))
@@ -34,7 +35,7 @@ class ListComponent(recyclerView: RecyclerView, weatherService: WeatherService, 
     }
 
 
-    fun forPosition(position: Int): StateModels.Location = list[position]
+    fun forPosition(position: Int): Location = list[position]
 
     fun listSize(): Int = list.size
 
@@ -59,7 +60,7 @@ class ListComponent(recyclerView: RecyclerView, weatherService: WeatherService, 
 
     class LocationViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
-        fun bind(location: StateModels.Location, listener: LocationSelected) {
+        fun bind(location: Location, listener: LocationSelected) {
             itemView.findViewById<TextView>(R.id.searchItemLabel).text = location.name
             itemView.setOnClickListener { listener(location) }
         }

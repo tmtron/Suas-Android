@@ -14,8 +14,9 @@ interface Reducers {
                 }
 
                 is SuggestedCitiesLoaded -> {
-                    val locations = action.result.map { StateModels.Location(it.name, it.zmw) }
-                    oldState.copy(foundLocation = locations)
+                    // map each AutocompleteItem to a Location
+                    val locations = action.result.map { Location(it.name, id = it.zmw) }
+                    oldState.copy(foundLocations = locations)
                 }
 
                 is SuggestedCitiesError -> {
@@ -64,7 +65,7 @@ interface Reducers {
                     oldState.copy(locations = oldState.locations + listOf(action.location))
                 }
                 is LocationsLoaded -> {
-                    action.location
+                    action.locations
                 }
                 else -> {
                     oldState
@@ -97,7 +98,10 @@ interface Reducers {
         override fun reduce(oldState: StateModels.LoadedObservations, action: Action<*>): StateModels.LoadedObservations {
             return when(action) {
                 is LoadWeatherSuccess -> {
-                    oldState.copy(data = oldState.data + (action.location to action.observation))
+                    oldState.copy(data = oldState.data +
+                            // new map item which maps location (key) to observation (value)
+                            (action.location to action.observation)
+                    )
                 }
 
                 else -> {
