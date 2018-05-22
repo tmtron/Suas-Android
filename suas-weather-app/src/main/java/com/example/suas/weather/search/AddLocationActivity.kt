@@ -5,6 +5,7 @@ import android.os.Bundle
 import com.example.suas.weather.R
 import com.example.suas.weather.WeatherApplication
 import com.example.suas.weather.network.WeatherService
+import com.example.suas.weather.suas.ResetSuggestedCities
 import com.example.suas.weather.suas.StateModels
 import kotlinx.android.synthetic.main.activity_add_location.*
 import zendesk.suas.CombinedSubscription
@@ -29,6 +30,9 @@ class AddLocationActivity : Activity() {
         val noResult = NoResultsComponent(noLocationsFoundLabel)
         val progress = ProgressComponent(locationProgressbar)
         val listComponent = ListComponent(locationList, store)
+
+        // clear data from a previous search
+        store.dispatch(ResetSuggestedCities())
 
         subscriptions = CombinedSubscription.from(
                 store.addListener(StateModels.Progress::class.java, searchBox),

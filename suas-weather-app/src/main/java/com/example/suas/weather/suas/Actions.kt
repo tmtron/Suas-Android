@@ -10,7 +10,7 @@ object ActionTypes {
     const val loadSuggestions = "LOAD_CITIES"
     const val suggestionsLoaded = "CITIES_LOADED_SUCCESS"
     const val suggestionsError= "CITIES_LOADED_ERROR"
-
+    const val suggestionsReset = "CITIES_RESET"
 
     const val loadWeather = "LOAD_WEATHER"
     const val loadWeatherError = "LOAD_WEATHER_ERROR"
@@ -26,6 +26,7 @@ class LoadSuggestedCities(val query: String): Action<String>(ActionTypes.loadSug
 class SuggestedCitiesLoaded(val result: List<AutocompleteItem>): Action<List<AutocompleteItem>>(ActionTypes.suggestionsLoaded, result)
 
 class SuggestedCitiesError: Action<String>(ActionTypes.suggestionsError)
+class ResetSuggestedCities: Action<String>(ActionTypes.suggestionsReset)
 
 
 class AddLocation(val location: Location): Action<Location>(ActionTypes.addLocation, location)

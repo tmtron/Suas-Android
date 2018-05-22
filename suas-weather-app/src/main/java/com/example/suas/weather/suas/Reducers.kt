@@ -7,7 +7,7 @@ interface Reducers {
 
     class SuggestedLocationsReducer : Reducer<StateModels.FoundLocations>() {
 
-        override fun reduce(oldState: StateModels.FoundLocations, action: Action<*>): StateModels.FoundLocations {
+        override fun reduce(oldState: StateModels.FoundLocations, action: Action<*>): StateModels.FoundLocations? {
             return when(action) {
                 is LoadSuggestedCities -> {
                     oldState.copy(query = action.query)
@@ -23,8 +23,13 @@ interface Reducers {
                     StateModels.FoundLocations()
                 }
 
+                is ResetSuggestedCities -> {
+                    initialState
+                }
+
                 else -> {
-                    oldState
+                    // note: maybe this should return null?
+                    null
                 }
             }
         }

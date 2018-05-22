@@ -20,8 +20,10 @@ import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
+
 import java.util.ArrayList;
 import java.util.List;
+
 import zendesk.suas.Action;
 import zendesk.suas.Listener;
 import zendesk.suas.State;
@@ -139,6 +141,8 @@ public class MainActivity extends AppCompatActivity implements StateSelector<Tod
     @Nullable
     @Override
     public TodoListViewModel selectData(@NonNull State state) {
+        // this is the state-selector
+        // maybe not the best example, because it uses the complete state
         TodoList todoList = state.getState(TodoList.class);
         TodoSettings todoSettings = state.getState(TodoSettings.class);
         return new TodoListViewModel(todoList, todoSettings);
