@@ -53,16 +53,14 @@ public class SuasCounter {
     }
 
     private static class IntAction extends Action<Integer> {
-        final private int data;
-
         public IntAction(@NonNull String actionType, int data) {
             super(actionType, data);
-            this.data = data;
         }
 
-        @SuppressWarnings("unchecked")
-        public @NonNull Integer getData() {
-            return data;
+        public int getDataAsInt() {
+            Integer rawData = getRawData();
+            if (rawData == null) throw new RuntimeException("rawData is null");
+            return rawData;
         }
     }
 
@@ -76,12 +74,12 @@ public class SuasCounter {
                 switch (action.getActionType()) {
                     case INCREMENT_ACTION: {
                         // Handle increment action
-                        int incrementValue = actionInt.getData();
+                        int incrementValue = actionInt.getDataAsInt();
                         return new Counter(oldState.count + incrementValue);
                     }
                     case DECREMENT_ACTION: {
                         // Handle decrement action
-                        int decrementValue = actionInt.getData();
+                        int decrementValue = actionInt.getDataAsInt();
                         return new Counter(oldState.count - decrementValue);
                     }
                 }
