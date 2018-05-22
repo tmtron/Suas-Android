@@ -54,7 +54,9 @@ class CombinedReducer {
             @SuppressWarnings("unchecked") final Object newStateForKey = reducer.reduce(oldStateForKey, action);
             if(newStateForKey != null) {
                 state.updateKey(reducer.getStateKey(), newStateForKey);
-                updatedKeys.add(reducer.getStateKey());
+                if (newStateForKey != oldStateForKey) {
+                    updatedKeys.add(reducer.getStateKey());
+                }
             } else {
                 state.updateKey(reducer.getStateKey(), oldStateForKey);
             }
